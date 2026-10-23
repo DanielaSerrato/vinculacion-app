@@ -413,6 +413,38 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
   .runt-strip{flex-direction:column;align-items:flex-start;gap:.35rem}
   .runt-strip-sep{display:none}
 }
+
+/* ===== RUNT categories grid ===== */
+.runt-cats-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin-top:.5rem;
+}
+.runt-cat-card{
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.6rem .75rem;
+}
+.runt-cat-card .cat-name{font-size:.82rem;font-weight:800;color:var(--navy)}
+.runt-cat-card .cat-dates{font-size:.72rem;color:var(--gray-500);margin-top:.2rem}
+.runt-cat-card .cat-dates strong{color:var(--gray-700)}
+
+/* ===== Table view ===== */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.25rem}
+.data-table{
+  width:100%;border-collapse:collapse;font-size:.8rem;background:var(--white);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);
+}
+.data-table thead{background:var(--navy);color:var(--white)}
+.data-table th{
+  padding:.65rem .75rem;text-align:left;font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;cursor:pointer;white-space:nowrap;
+  user-select:none;position:relative;
+}
+.data-table th:hover{background:rgba(255,255,255,.08)}
+.data-table th .sort-arrow{margin-left:.3rem;opacity:.4;font-size:.65rem}
+.data-table th.sorted .sort-arrow{opacity:1}
+.data-table td{padding:.55rem .75rem;border-bottom:1px solid var(--gray-100);color:var(--gray-700);white-space:nowrap}
+.data-table tbody tr:nth-child(even){background:var(--gray-50)}
+.data-table tbody tr:hover{background:#FFF5F5;cursor:pointer}
+.data-table tbody tr{transition:background .15s}
+.data-table .badge{font-size:.62rem}
 </style>
 </head>
 <body>
@@ -483,6 +515,14 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           Agrupar
         </button>
+        <button class="toggle-btn" id="tableToggle" onclick="toggleTableView()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;vertical-align:middle;margin-right:4px"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Tabla
+        </button>
+        <button class="btn btn-outline" onclick="exportCSV()" title="Exportar Excel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar
+        </button>
         <button class="btn btn-outline" onclick="refreshTab()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           Actualizar
@@ -535,7 +575,10 @@ let runtLicCache = {}; // latest per cedula
 let runtVehAll = [];   // ALL runt_vehiculos records
 let runtVehCache = {}; // latest per placa
 let groupByPlaca = false;
+let tableView = false;
 let searchQuery = '';
+let tableSortCol = null;
+let tableSortAsc = true;
 
 // ===== Auth gate =====
 function checkLogin() {
@@ -663,7 +706,9 @@ function renderTab(table, rows) {
     return;
   }
 
-  if (groupByPlaca && table !== 'propietarios') {
+  if (tableView) {
+    content.innerHTML = renderTableView(table, filtered);
+  } else if (groupByPlaca && table !== 'propietarios') {
     content.innerHTML = renderGroupedByPlaca(table, filtered);
   } else {
     let html = '<div class="cards">';
@@ -769,13 +814,22 @@ function cardConductor(r, idx) {
   // RUNT strip (always visible)
   let strip = '';
   if (runt && runt.success) {
-    const expired = isExpired(runt.fecha_vencimiento_cat);
+    const activeLic = getActiveLicense(runt);
+    const cats = activeLic ? activeLic.categorias || [] : [];
     strip += '<div class="runt-strip">';
-    strip += '<div class="runt-strip-item"><strong>Cat.</strong> ' + esc(runt.categoria) + '</div>';
-    strip += '<div class="runt-strip-sep"></div>';
     strip += '<div class="runt-strip-item"><strong>Lic.</strong> ' + (runt.estado_licencia ? estadoRuntBadge(runt.estado_licencia) : '-') + '</div>';
-    strip += '<div class="runt-strip-sep"></div>';
-    strip += '<div class="runt-strip-item"><strong>Vence</strong> ' + fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') + '</div>';
+    if (cats.length) {
+      cats.forEach((c, ci) => {
+        strip += '<div class="runt-strip-sep"></div>';
+        const exp = isExpired(c.fecha_vencimiento);
+        strip += '<div class="runt-strip-item"><strong>' + esc(c.categoria) + '</strong> &rarr; ' + fmtDateShort(c.fecha_vencimiento) + (exp ? ' <span class="badge badge-expired">Vencida</span>' : '') + '</div>';
+      });
+    } else {
+      // fallback to flat columns
+      const expired = isExpired(runt.fecha_vencimiento_cat);
+      strip += '<div class="runt-strip-sep"></div>';
+      strip += '<div class="runt-strip-item"><strong>' + esc(runt.categoria || '?') + '</strong> &rarr; ' + fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') + '</div>';
+    }
     strip += '</div>';
   } else if (!runt) {
     strip += '<div class="runt-strip"><div class="runt-strip-item"><span class="badge badge-pending-runt">RUNT pendiente</span></div></div>';
@@ -944,10 +998,12 @@ function renderRuntLicSection(conductor) {
     html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntLic(\'' + conductor.id + '\', \'' + escAttr(conductor.cedula) + '\', \'' + escAttr(conductor.primer_apellido) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
     html += '</div>';
   } else {
-    const expired = isExpired(runt.fecha_vencimiento_cat);
+    const activeLic = getActiveLicense(runt);
+    const cats = activeLic ? activeLic.categorias || [] : [];
+    const anyExpired = cats.some(c => isExpired(c.fecha_vencimiento)) || (!cats.length && isExpired(runt.fecha_vencimiento_cat));
     if (runt.success) {
       html += '<span class="badge badge-success">OK</span>';
-      if (expired) html += ' <span class="badge badge-expired">Vencida</span>';
+      if (anyExpired) html += ' <span class="badge badge-expired">Vencida</span>';
     } else {
       html += '<span class="badge badge-fail">Fallo</span>';
     }
@@ -955,14 +1011,34 @@ function renderRuntLicSection(conductor) {
     html += '<dl class="detail-grid">';
     html += dt('Estado conductor', runt.estado_conductor);
     html += dt('Estado licencia', runt.estado_licencia);
-    html += dt('Categoria', runt.categoria);
-    html += dt('Vencimiento', runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') : '-');
-    html += dt('Restricciones', runt.restricciones || 'Ninguna');
-    html += dt('Num. licencia', runt.numero_licencia);
-    html += dt('Organismo transito', runt.organismo_transito);
+    html += dt('Num. licencia', activeLic ? activeLic.numero_licencia : runt.numero_licencia);
+    html += dt('Organismo transito', activeLic ? activeLic.organismo_transito : runt.organismo_transito);
+    html += dt('Restricciones', (activeLic ? activeLic.restricciones : runt.restricciones) || 'Ninguna');
     html += dt('Ultima consulta', fmtDate(runt.fecha_consulta));
     if (runt.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(runt.error) + '</span>');
     html += '</dl>';
+    // Categories grid
+    if (cats.length) {
+      html += '<div style="font-size:.72rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-top:.75rem;margin-bottom:.35rem">Categorias de licencia</div>';
+      html += '<div class="runt-cats-grid">';
+      cats.forEach(c => {
+        const exp = isExpired(c.fecha_vencimiento);
+        html += '<div class="runt-cat-card">';
+        html += '<span class="cat-name">' + esc(c.categoria) + '</span>';
+        if (exp) html += ' <span class="badge badge-expired" style="font-size:.6rem">Vencida</span>';
+        html += '<div class="cat-dates"><strong>Exp.</strong> ' + fmtDateShort(c.fecha_expedicion) + '</div>';
+        html += '<div class="cat-dates"><strong>Vence</strong> ' + fmtDateShort(c.fecha_vencimiento) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    } else {
+      // fallback to flat columns
+      const expired = isExpired(runt.fecha_vencimiento_cat);
+      html += '<dl class="detail-grid" style="margin-top:.5rem">';
+      html += dt('Categoria', runt.categoria);
+      html += dt('Vencimiento', runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') : '-');
+      html += '</dl>';
+    }
     html += '<div class="runt-actions">';
     html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntLic(\'' + conductor.id + '\', \'' + escAttr(conductor.cedula) + '\', \'' + escAttr(conductor.primer_apellido) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
     html += '<button class="btn btn-outline btn-sm" onclick="showLicHistory(\'' + escAttr(conductor.cedula) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial</button>';
@@ -1071,21 +1147,30 @@ function showLicHistory(cedula) {
   } else {
     let html = '';
     records.forEach(r => {
-      const expired = isExpired(r.fecha_vencimiento_cat);
+      const activeLic = getActiveLicense(r);
+      const cats = activeLic ? activeLic.categorias || [] : [];
+      const anyExpired = cats.length ? cats.some(c => isExpired(c.fecha_vencimiento)) : isExpired(r.fecha_vencimiento_cat);
       html += '<div class="history-entry">';
       html += '<div class="history-date">';
       html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
       html += fmtDate(r.fecha_consulta) + ' ';
       html += r.success ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-fail">Fallo</span>';
-      if (expired) html += ' <span class="badge badge-expired">Vencida</span>';
+      if (anyExpired) html += ' <span class="badge badge-expired">Vencida</span>';
       html += '</div>';
       html += '<dl class="detail-grid">';
       html += dt('Estado conductor', r.estado_conductor);
       html += dt('Estado licencia', r.estado_licencia);
-      html += dt('Categoria', r.categoria);
-      html += dt('Vencimiento', fmtDateShort(r.fecha_vencimiento_cat));
-      html += dt('Restricciones', r.restricciones || 'Ninguna');
-      html += dt('Num. licencia', r.numero_licencia);
+      if (cats.length) {
+        html += dt('Categorias', cats.map(c => {
+          const exp = isExpired(c.fecha_vencimiento);
+          return esc(c.categoria) + ' &rarr; ' + fmtDateShort(c.fecha_vencimiento) + (exp ? ' <span class="badge badge-expired" style="font-size:.6rem">Vencida</span>' : '');
+        }).join('<br>'));
+      } else {
+        html += dt('Categoria', r.categoria);
+        html += dt('Vencimiento', fmtDateShort(r.fecha_vencimiento_cat));
+      }
+      html += dt('Restricciones', (activeLic ? activeLic.restricciones : r.restricciones) || 'Ninguna');
+      html += dt('Num. licencia', activeLic ? activeLic.numero_licencia : r.numero_licencia);
       if (r.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(r.error) + '</span>');
       html += '</dl></div>';
     });
@@ -1328,6 +1413,273 @@ function cardWrap(title, sub, estado, detail, uid, avatarContent, stripHtml, idx
   html += '<div class="card-detail"><div class="card-detail-inner"><div class="card-detail-content">' + detail + '</div></div></div>';
   html += '</div>';
   return html;
+}
+
+// ===== Parse active license from licencias_json =====
+function getActiveLicense(runtRecord) {
+  if (!runtRecord || !runtRecord.licencias_json) return null;
+  let arr = runtRecord.licencias_json;
+  if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch(e) { return null; } }
+  if (!Array.isArray(arr)) return null;
+  return arr.find(l => l.estado && l.estado.toUpperCase() === 'ACTIVA') || arr[0] || null;
+}
+
+function getAllLicenseCategories(runtRecord) {
+  const lic = getActiveLicense(runtRecord);
+  return lic && lic.categorias ? lic.categorias : [];
+}
+
+function getEarliestExpiry(cats) {
+  if (!cats.length) return null;
+  let earliest = null;
+  cats.forEach(c => {
+    if (c.fecha_vencimiento) {
+      const d = new Date(c.fecha_vencimiento);
+      if (!earliest || d < earliest) earliest = d;
+    }
+  });
+  return earliest;
+}
+
+function countDocs(r, table) {
+  const docFields = {
+    conductores: ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','seguridad_social','cert_bancaria'],
+    propietarios: ['cedula_frente','cedula_reverso','rut','cert_bancaria'],
+    vehiculos: ['tarjeta_frente','tarjeta_reverso','tecnomecanica','soat']
+  };
+  const fields = docFields[table] || [];
+  let count = fields.filter(f => r[f]).length;
+  if (table === 'vehiculos' && r.fotos && Array.isArray(r.fotos)) count += r.fotos.length;
+  return count;
+}
+
+// ===== Table view toggle =====
+function toggleTableView() {
+  tableView = !tableView;
+  document.getElementById('tableToggle').classList.toggle('active', tableView);
+  tableSortCol = null;
+  tableSortAsc = true;
+  if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
+}
+
+function renderTableView(table, rows) {
+  const cols = getTableColumns(table);
+  let sorted = [...rows];
+  if (tableSortCol !== null) {
+    const colDef = cols[tableSortCol];
+    sorted.sort((a, b) => {
+      let va = colDef.val(a), vb = colDef.val(b);
+      if (va == null) va = '';
+      if (vb == null) vb = '';
+      if (typeof va === 'number' && typeof vb === 'number') return tableSortAsc ? va - vb : vb - va;
+      va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
+      return tableSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  let html = '<div class="table-wrap"><table class="data-table"><thead><tr>';
+  cols.forEach((c, i) => {
+    const isSorted = tableSortCol === i;
+    const arrow = isSorted ? (tableSortAsc ? ' &#9650;' : ' &#9660;') : ' &#9650;';
+    html += '<th class="' + (isSorted ? 'sorted' : '') + '" onclick="sortTable(' + i + ')">' + c.label + '<span class="sort-arrow">' + arrow + '</span></th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  sorted.forEach(r => {
+    const uid = table.slice(0, 4) + '-' + r.id;
+    html += '<tr onclick="scrollToCard(\'' + uid + '\')">';
+    cols.forEach(c => {
+      html += '<td>' + c.render(r) + '</td>';
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function getTableColumns(table) {
+  if (table === 'conductores') {
+    return [
+      { label: 'Nombre', val: r => fullName(r), render: r => esc(fullName(r)) },
+      { label: 'Cedula', val: r => r.cedula, render: r => esc(r.cedula) },
+      { label: 'Placa', val: r => r.vehiculo_placa, render: r => esc(r.vehiculo_placa) },
+      { label: 'Ciudad', val: r => r.ciudad, render: r => esc(r.ciudad) },
+      { label: 'Telefono', val: r => r.telefono, render: r => esc(r.telefono) },
+      { label: 'Estado', val: r => r.estado, render: r => estadoBadge(r.estado) },
+      { label: 'Categorias', val: r => {
+        const runt = runtLicCache[r.cedula];
+        const cats = runt ? getAllLicenseCategories(runt) : [];
+        return cats.map(c => c.categoria).join(', ') || (runt ? runt.categoria : '-');
+      }, render: r => {
+        const runt = runtLicCache[r.cedula];
+        if (!runt || !runt.success) return '<span class="badge badge-pending-runt">Pendiente</span>';
+        const cats = getAllLicenseCategories(runt);
+        if (cats.length) return cats.map(c => {
+          const exp = isExpired(c.fecha_vencimiento);
+          return '<strong>' + esc(c.categoria) + '</strong>' + (exp ? ' <span class="badge badge-expired">V</span>' : '');
+        }).join(' ');
+        return esc(runt.categoria || '-');
+      }},
+      { label: 'Vence prox.', val: r => {
+        const runt = runtLicCache[r.cedula];
+        const cats = runt ? getAllLicenseCategories(runt) : [];
+        const e = getEarliestExpiry(cats);
+        return e ? e.getTime() : (runt && runt.fecha_vencimiento_cat ? new Date(runt.fecha_vencimiento_cat).getTime() : Infinity);
+      }, render: r => {
+        const runt = runtLicCache[r.cedula];
+        const cats = runt ? getAllLicenseCategories(runt) : [];
+        const e = getEarliestExpiry(cats);
+        if (e) { const exp = e < new Date(); return fmtDateShort(e.toISOString()) + (exp ? ' <span class="badge badge-expired">V</span>' : ''); }
+        if (runt && runt.fecha_vencimiento_cat) { const exp = isExpired(runt.fecha_vencimiento_cat); return fmtDateShort(runt.fecha_vencimiento_cat) + (exp ? ' <span class="badge badge-expired">V</span>' : ''); }
+        return '-';
+      }},
+      { label: 'Docs', val: r => countDocs(r, 'conductores'), render: r => String(countDocs(r, 'conductores')) }
+    ];
+  }
+  if (table === 'propietarios') {
+    return [
+      { label: 'Nombre', val: r => fullName(r), render: r => esc(fullName(r)) },
+      { label: 'Cedula', val: r => r.cedula, render: r => esc(r.cedula) },
+      { label: 'Placa', val: r => r.vehiculo_placa, render: r => esc(r.vehiculo_placa) },
+      { label: 'Ciudad', val: r => r.ciudad, render: r => esc(r.ciudad) },
+      { label: 'Telefono', val: r => r.telefono, render: r => esc(r.telefono) },
+      { label: 'Estado', val: r => r.estado, render: r => estadoBadge(r.estado) },
+      { label: 'Docs', val: r => countDocs(r, 'propietarios'), render: r => String(countDocs(r, 'propietarios')) }
+    ];
+  }
+  // vehiculos
+  return [
+    { label: 'Placa', val: r => r.placa, render: r => '<strong>' + esc(r.placa) + '</strong>' },
+    { label: 'Tipo', val: r => r.tipo, render: r => esc(r.tipo) },
+    { label: 'Satelital', val: r => r.satelital, render: r => esc(r.satelital) },
+    { label: 'Estado', val: r => r.estado, render: r => estadoBadge(r.estado) },
+    { label: 'RUNT', val: r => { const rv = runtVehCache[r.placa]; return rv ? rv.estado : ''; }, render: r => {
+      const rv = runtVehCache[r.placa];
+      if (!rv) return '<span class="badge badge-pending-runt">Pendiente</span>';
+      return rv.success ? estadoRuntBadge(rv.estado) : '<span class="badge badge-fail">Fallo</span>';
+    }},
+    { label: 'Docs', val: r => countDocs(r, 'vehiculos'), render: r => String(countDocs(r, 'vehiculos')) }
+  ];
+}
+
+function sortTable(colIdx) {
+  if (tableSortCol === colIdx) {
+    tableSortAsc = !tableSortAsc;
+  } else {
+    tableSortCol = colIdx;
+    tableSortAsc = true;
+  }
+  if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
+}
+
+function scrollToCard(uid) {
+  // Switch to card view and scroll to the card
+  if (tableView) {
+    tableView = false;
+    document.getElementById('tableToggle').classList.remove('active');
+    if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
+  }
+  setTimeout(() => {
+    const card = document.getElementById('card-' + uid);
+    if (card) {
+      card.classList.add('open');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.boxShadow = '0 0 0 3px var(--red)';
+      setTimeout(() => { card.style.boxShadow = ''; }, 2000);
+    }
+  }, 100);
+}
+
+// ===== CSV Export =====
+function exportCSV() {
+  const data = cache[activeTab];
+  if (!data || !data.length) { alert('No hay datos para exportar.'); return; }
+
+  let cols, rowFn;
+
+  if (activeTab === 'conductores') {
+    // Find max categories across all records
+    let maxCats = 0;
+    data.forEach(r => {
+      const runt = runtLicCache[r.cedula];
+      const cats = runt ? getAllLicenseCategories(runt) : [];
+      if (cats.length > maxCats) maxCats = cats.length;
+    });
+    if (maxCats === 0) maxCats = 1; // at least one fallback column
+
+    cols = ['Nombre','Cedula','Placa','Ciudad','Direccion','Telefono','Estado',
+            'Banco','Tipo_Cuenta','Num_Cuenta',
+            'Estado_Licencia','Num_Licencia','Restricciones'];
+    for (let i = 1; i <= maxCats; i++) {
+      cols.push('Cat_' + i, 'Vence_' + i);
+    }
+
+    rowFn = r => {
+      const runt = runtLicCache[r.cedula];
+      const activeLic = runt ? getActiveLicense(runt) : null;
+      const cats = activeLic ? activeLic.categorias || [] : [];
+      const row = [
+        fullName(r), r.cedula, r.vehiculo_placa, r.ciudad, r.direccion, r.telefono, r.estado,
+        r.banco, r.tipo_cuenta, r.numero_cuenta,
+        runt ? runt.estado_licencia : '',
+        activeLic ? activeLic.numero_licencia : (runt ? runt.numero_licencia : ''),
+        activeLic ? (activeLic.restricciones || '') : (runt ? (runt.restricciones || '') : '')
+      ];
+      for (let i = 0; i < maxCats; i++) {
+        if (cats[i]) {
+          row.push(cats[i].categoria, cats[i].fecha_vencimiento ? fmtDateShort(cats[i].fecha_vencimiento) : '');
+        } else if (i === 0 && runt && runt.categoria) {
+          row.push(runt.categoria, runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) : '');
+        } else {
+          row.push('', '');
+        }
+      }
+      return row;
+    };
+  } else if (activeTab === 'propietarios') {
+    cols = ['Nombre','Cedula','Placa','Ciudad','Direccion','Telefono','Estado',
+            'Banco','Tipo_Cuenta','Num_Cuenta','Factura_Electronica'];
+    rowFn = r => [
+      fullName(r), r.cedula, r.vehiculo_placa, r.ciudad, r.direccion, r.telefono, r.estado,
+      r.banco, r.tipo_cuenta, r.numero_cuenta, r.factura_electronica
+    ];
+  } else {
+    cols = ['Placa','Tipo','Satelital','Estado',
+            'RUNT_Estado','Marca','Linea','Modelo','Color',
+            'SOAT_Estado','SOAT_Vencimiento'];
+    rowFn = r => {
+      const rv = runtVehCache[r.placa];
+      return [
+        r.placa, r.tipo, r.satelital, r.estado,
+        rv ? rv.estado : '', rv ? rv.marca : '', rv ? rv.linea : '', rv ? rv.modelo : '', rv ? rv.color : '',
+        rv ? rv.soat_estado : '', rv && rv.soat_vencimiento ? fmtDateShort(rv.soat_vencimiento) : ''
+      ];
+    };
+  }
+
+  // Build CSV with BOM
+  const csvEscape = v => {
+    if (v == null) return '';
+    const s = String(v);
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+
+  let csv = '\uFEFF'; // UTF-8 BOM
+  csv += cols.map(csvEscape).join(',') + '\n';
+  data.forEach(r => {
+    csv += rowFn(r).map(csvEscape).join(',') + '\n';
+  });
+
+  const today = new Date().toISOString().slice(0, 10);
+  const filename = activeTab + '_' + today + '.csv';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
 }
 
 // Load counts
