@@ -6,54 +6,104 @@
 <title>Admin — Capital Cargo Colombia</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#1A1A1A;--red:#E32526;--white:#FFFFFF;--gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;--gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1)}
-html{font-size:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--gray-50);color:var(--gray-700);line-height:1.6;min-height:100vh}
-header{background:var(--white);color:var(--navy);padding:1.25rem 1rem;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.1);border-bottom:3px solid var(--red)}
-header h1{font-size:1.35rem;letter-spacing:.12em;font-weight:800;margin-bottom:.15rem}
-header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
-.red{color:var(--red)}
-.top-bar{display:flex;align-items:center;justify-content:space-between;max-width:960px;margin:0 auto;padding:.75rem 1rem}
-.top-bar a{color:var(--red);text-decoration:none;font-size:.85rem;font-weight:600}
-.top-bar a:hover{text-decoration:underline}
+:root{
+  --navy:#1A1A1A;--red:#E32526;--red-dark:#C41E1F;--white:#FFFFFF;
+  --gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;
+  --gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;
+  --radius:10px;--radius-lg:14px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+  --transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-50);color:var(--gray-700);line-height:1.6;min-height:100vh}
 
-/* Tabs */
-.tabs-wrap{max-width:960px;margin:0 auto;padding:0 1rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tabs{display:flex;gap:.5rem;padding:.5rem 0;min-width:max-content}
-.tab-btn{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.5rem 1rem;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;color:var(--gray-600)}
-.tab-btn:hover{border-color:var(--red);color:var(--red)}
-.tab-btn.active{background:var(--red);color:var(--white);border-color:var(--red)}
-.tab-count{display:inline-block;background:rgba(0,0,0,.12);border-radius:10px;padding:0 .5rem;font-size:.7rem;margin-left:.35rem}
-.tab-btn.active .tab-count{background:rgba(255,255,255,.3)}
+/* ===== Sidebar layout ===== */
+.app-layout{display:flex;min-height:100vh}
+.sidebar{
+  width:260px;background:var(--navy);color:var(--white);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;
+  z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-brand{padding:1.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand h1{font-size:1rem;font-weight:800;letter-spacing:.1em;line-height:1.3}
+.sidebar-brand .red{color:var(--red)}
+.sidebar-brand p{font-size:.7rem;color:rgba(255,255,255,.45);letter-spacing:.06em;margin-top:.15rem}
+.sidebar-nav{flex:1;padding:1rem 0}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.7rem 1.25rem;font-size:.82rem;font-weight:600;
+  color:rgba(255,255,255,.55);cursor:pointer;transition:var(--transition);
+  border-left:3px solid transparent;
+}
+.nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--white);background:rgba(255,255,255,.07);border-left-color:var(--red)}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-count{
+  margin-left:auto;background:rgba(255,255,255,.1);
+  padding:.1rem .5rem;border-radius:10px;font-size:.68rem;font-weight:700;
+  min-width:28px;text-align:center;
+}
+.nav-item.active .nav-count{background:var(--red)}
+.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-footer a{color:rgba(255,255,255,.45);text-decoration:none;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.5rem;transition:var(--transition)}
+.sidebar-footer a:hover{color:var(--white)}
+.sidebar-footer a svg{width:16px;height:16px}
 
-/* Content area */
-.content{max-width:960px;margin:0 auto;padding:1rem}
-.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
-.toolbar h2{font-size:1rem;color:var(--navy)}
-.toolbar-right{display:flex;gap:.5rem;align-items:center}
-.refresh-btn,.toggle-btn{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.4rem .85rem;font-size:.8rem;cursor:pointer;color:var(--gray-600);transition:all .2s}
-.refresh-btn:hover,.toggle-btn:hover{border-color:var(--red);color:var(--red)}
-.toggle-btn.active{background:var(--red);color:var(--white);border-color:var(--red)}
+/* Main content */
+.main-content{margin-left:260px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.top-bar{
+  background:var(--white);border-bottom:1px solid var(--gray-200);
+  padding:.85rem 1.75rem;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);
+}
+.top-bar-left{display:flex;align-items:center;gap:.75rem}
+.top-bar h2{font-size:1.05rem;font-weight:700;color:var(--navy)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:.25rem;color:var(--navy)}
+.hamburger svg{width:24px;height:24px}
+.top-bar-right{display:flex;align-items:center;gap:.5rem}
 
-/* Spinner */
-.spinner-wrap{display:flex;justify-content:center;padding:3rem 0}
+.content-area{flex:1;padding:1.5rem 1.75rem;max-width:1200px;width:100%}
+
+/* ===== Buttons ===== */
+.btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.45rem .85rem;border-radius:var(--radius);font-size:.78rem;font-weight:600;
+  cursor:pointer;border:1.5px solid transparent;transition:var(--transition);
+  line-height:1.4;white-space:nowrap;
+}
+.btn svg{width:14px;height:14px}
+.btn-primary{background:var(--red);color:var(--white);border-color:var(--red)}
+.btn-primary:hover{background:var(--red-dark);border-color:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(227,37,38,.25)}
+.btn-outline{background:var(--white);color:var(--gray-600);border-color:var(--gray-200)}
+.btn-outline:hover{border-color:var(--red);color:var(--red);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--gray-500);border-color:transparent;padding:.35rem .6rem}
+.btn-ghost:hover{color:var(--red);background:rgba(227,37,38,.05)}
+.btn-dark{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.btn-dark:hover{opacity:.88;transform:translateY(-1px)}
+.btn-danger{background:var(--white);color:#C92A2A;border-color:#FFE3E3}
+.btn-danger:hover{background:#FFF5F5;border-color:#C92A2A}
+.btn-sm{padding:.3rem .6rem;font-size:.72rem}
+.btn-icon{padding:.4rem;border-radius:8px}
+
+.toggle-btn{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:.45rem .85rem;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--gray-600);transition:var(--transition)}
+.toggle-btn:hover{border-color:var(--red);color:var(--red)}
+.toggle-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
+
+/* ===== Spinner ===== */
+.spinner-wrap{display:flex;justify-content:center;padding:4rem 0}
 .spinner{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
-.spinner-sm{width:18px;height:18px;border:2px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
+.spinner-sm{width:16px;height:16px;border:2px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Cards */
-.cards{display:flex;flex-direction:column;gap:.75rem}
-.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border-left:4px solid var(--red);overflow:hidden}
-.card-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;gap:.75rem;-webkit-tap-highlight-color:transparent}
-.card-header:hover{background:var(--gray-50)}
-.card-title{font-size:.9rem;font-weight:700;color:var(--navy)}
-.card-sub{font-size:.78rem;color:var(--gray-500);margin-top:.15rem}
-.card-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
-.expand-arrow{color:var(--gray-400);font-size:1.1rem;transition:transform .2s}
-.card.open .expand-arrow{transform:rotate(90deg)}
-
-/* Badge */
-.badge{display:inline-block;padding:.15rem .55rem;border-radius:10px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+/* ===== Badge ===== */
+.badge{
+  display:inline-flex;align-items:center;gap:.25rem;
+  padding:.2rem .6rem;border-radius:20px;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;
+}
 .badge-pendiente{background:#FFF3CD;color:#856404}
 .badge-revisado{background:#D0EBFF;color:#1864AB}
 .badge-aprobado{background:#D3F9D8;color:#2B8A3E}
@@ -62,74 +112,306 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 .badge-fail{background:#FFE3E3;color:#C92A2A}
 .badge-expired{background:#FFE3E3;color:#C92A2A}
 .badge-pending-runt{background:#FFF3CD;color:#856404}
+.badge-activo{background:#D3F9D8;color:#2B8A3E}
+.badge-vigente{background:#D3F9D8;color:#2B8A3E}
+.badge-vencida{background:#FFE3E3;color:#C92A2A}
+
+/* ===== Card ===== */
+.cards{display:flex;flex-direction:column;gap:.85rem}
+.card{
+  background:var(--white);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);
+  overflow:hidden;transition:var(--transition);
+  animation:cardIn .35s cubic-bezier(.4,0,.2,1) both;
+}
+.card:hover{box-shadow:var(--shadow)}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;cursor:pointer;gap:.75rem;
+  -webkit-tap-highlight-color:transparent;transition:background .15s;
+}
+.card-header:hover{background:var(--gray-50)}
+.card-header-left{display:flex;align-items:center;gap:.85rem;min-width:0}
+.card-avatar{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--navy),#333);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:.82rem;font-weight:800;flex-shrink:0;
+  overflow:hidden;
+}
+.card-avatar img{width:100%;height:100%;object-fit:cover}
+.card-title{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.3}
+.card-sub{font-size:.75rem;color:var(--gray-500);margin-top:.1rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.card-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.expand-arrow{
+  color:var(--gray-400);font-size:.85rem;transition:transform .25s cubic-bezier(.4,0,.2,1);
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;
+}
+.card.open .expand-arrow{transform:rotate(90deg)}
 
 /* Card detail */
-.card-detail{display:none;padding:0 1.25rem 1rem;border-top:1px solid var(--gray-100)}
-.card.open .card-detail{display:block}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.35rem .75rem;font-size:.78rem;margin-top:.75rem}
-.detail-grid dt{color:var(--gray-500);font-weight:600}
-.detail-grid dd{color:var(--navy);word-break:break-word}
-.file-link{color:var(--red);text-decoration:none;font-weight:600}
-.file-link:hover{text-decoration:underline}
-.file-check{color:#2B8A3E;font-weight:700}
-.file-missing{color:#C92A2A;font-weight:700}
+.card-detail{
+  display:grid;grid-template-rows:0fr;
+  transition:grid-template-rows .3s cubic-bezier(.4,0,.2,1);
+}
+.card.open .card-detail{grid-template-rows:1fr}
+.card-detail-inner{overflow:hidden}
+.card-detail-content{padding:0 1.25rem 1.25rem;border-top:1px solid var(--gray-100)}
 
-/* RUNT section inside cards */
-.runt-section{margin-top:1rem;padding:.85rem;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-200)}
-.runt-section h4{font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+/* RUNT summary strip (shown in card header area, always visible) */
+.runt-strip{
+  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
+  padding:.65rem 1.25rem;background:var(--gray-50);border-top:1px solid var(--gray-100);
+  font-size:.78rem;
+}
+.runt-strip-item{display:flex;align-items:center;gap:.3rem;color:var(--gray-600)}
+.runt-strip-item strong{color:var(--navy);font-weight:700}
+.runt-strip-item .badge{margin-left:.15rem}
+.runt-strip-sep{width:1px;height:16px;background:var(--gray-300)}
+
+/* Detail grid */
+.section-title{
+  font-size:.75rem;font-weight:700;color:var(--gray-500);
+  text-transform:uppercase;letter-spacing:.06em;
+  margin:1.25rem 0 .65rem;padding-bottom:.4rem;border-bottom:1px solid var(--gray-100);
+  display:flex;align-items:center;gap:.5rem;
+}
+.section-title:first-child{margin-top:.75rem}
+.section-title svg{width:14px;height:14px;opacity:.5}
+
+.detail-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:.4rem .85rem;font-size:.8rem;
+}
+.detail-grid dt{color:var(--gray-500);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;padding-top:.15rem}
+.detail-grid dd{color:var(--navy);word-break:break-word;font-weight:500}
+
+/* Document thumbnails */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.65rem;margin-top:.5rem}
+.doc-thumb{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  border:1.5px solid var(--gray-200);cursor:pointer;
+  aspect-ratio:4/3;background:var(--gray-100);
+  transition:var(--transition);display:flex;flex-direction:column;
+}
+.doc-thumb:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:var(--shadow)}
+.doc-thumb img{width:100%;height:100%;object-fit:cover;flex:1}
+.doc-thumb-label{
+  padding:.3rem .4rem;font-size:.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.03em;color:var(--gray-600);background:var(--white);
+  text-align:center;border-top:1px solid var(--gray-100);
+}
+.doc-missing{
+  border-radius:var(--radius);border:1.5px dashed var(--gray-300);
+  aspect-ratio:4/3;background:var(--gray-50);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--gray-400);font-size:.62rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.03em;gap:.25rem;
+}
+.doc-missing svg{width:20px;height:20px;opacity:.4}
+
+/* RUNT section */
+.runt-section{
+  margin-top:1rem;padding:1rem;background:var(--gray-50);
+  border-radius:var(--radius);border:1px solid var(--gray-200);
+}
+.runt-section h4{
+  font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:.6rem;
+  display:flex;align-items:center;gap:.5rem;
+}
 .runt-section .detail-grid{margin-top:.35rem}
+.runt-actions{display:flex;gap:.5rem;margin-top:.75rem;align-items:center}
 
-/* Action buttons */
-.card-actions{display:flex;gap:.5rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--gray-100);flex-wrap:wrap}
-.btn{padding:.35rem .75rem;border-radius:var(--radius);font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .2s}
-.btn-edit{background:var(--white);border-color:var(--gray-300);color:var(--gray-600)}
-.btn-edit:hover{border-color:var(--red);color:var(--red)}
-.btn-delete{background:var(--white);border-color:#FFE3E3;color:#C92A2A;font-size:.72rem}
-.btn-delete:hover{background:#FFE3E3}
-.btn-save{background:var(--red);color:var(--white);border-color:var(--red)}
-.btn-save:hover{opacity:.9}
-.btn-cancel{background:var(--white);border-color:var(--gray-300);color:var(--gray-600)}
-.btn-cancel:hover{background:var(--gray-100)}
-.btn-runt{background:var(--navy);color:var(--white);border-color:var(--navy);font-size:.72rem}
-.btn-runt:hover{opacity:.85}
+/* Card actions */
+.card-actions{
+  display:flex;gap:.5rem;margin-top:1.25rem;padding-top:.85rem;
+  border-top:1px solid var(--gray-100);flex-wrap:wrap;align-items:center;
+}
+.card-actions-right{margin-left:auto;display:flex;gap:.5rem}
 
 /* Edit mode */
-.edit-input{width:100%;padding:.3rem .5rem;border:1px solid var(--gray-300);border-radius:4px;font-size:.78rem;font-family:inherit}
-.edit-input:focus{outline:none;border-color:var(--red)}
-.edit-select{padding:.3rem .5rem;border:1px solid var(--gray-300);border-radius:4px;font-size:.78rem;font-family:inherit}
+.edit-input{
+  width:100%;padding:.35rem .55rem;border:1.5px solid var(--gray-300);
+  border-radius:8px;font-size:.8rem;font-family:inherit;transition:var(--transition);
+  background:var(--white);
+}
+.edit-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.1)}
+.edit-select{
+  padding:.35rem .55rem;border:1.5px solid var(--gray-300);
+  border-radius:8px;font-size:.8rem;font-family:inherit;
+  background:var(--white);transition:var(--transition);
+}
+.edit-select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.1)}
 
 /* Group by placa */
-.group-section{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1rem;overflow:hidden;border-left:4px solid var(--navy)}
-.group-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;background:var(--gray-50);border-bottom:1px solid var(--gray-100)}
-.group-header:hover{background:var(--gray-100)}
-.group-header h3{font-size:.92rem;font-weight:700;color:var(--navy)}
-.group-header .badge{margin-left:.5rem}
-.group-body{display:none;padding:.75rem}
+.group-section{
+  background:var(--white);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);
+  margin-bottom:.85rem;overflow:hidden;
+  animation:cardIn .35s cubic-bezier(.4,0,.2,1) both;
+}
+.group-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;cursor:pointer;transition:background .15s;
+}
+.group-header:hover{background:var(--gray-50)}
+.group-header h3{font-size:.9rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:.5rem}
+.group-header .badge{margin-left:.25rem}
+.group-body{display:none;padding:.85rem 1.25rem}
 .group-section.open .group-body{display:block}
-.group-sub-title{font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin:.75rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--gray-100)}
+.group-sub-title{
+  font-size:.7rem;font-weight:700;color:var(--gray-500);
+  text-transform:uppercase;letter-spacing:.06em;
+  margin:1rem 0 .4rem;padding-bottom:.3rem;border-bottom:1px solid var(--gray-100);
+}
 .group-sub-title:first-child{margin-top:0}
-.group-card{background:var(--gray-50);border-radius:var(--radius);padding:.85rem;margin-bottom:.5rem;border:1px solid var(--gray-200)}
+.group-card{
+  background:var(--gray-50);border-radius:var(--radius);
+  padding:.85rem;margin-bottom:.5rem;border:1px solid var(--gray-200);
+  transition:var(--transition);
+}
+.group-card:hover{border-color:var(--gray-300)}
 .group-card .card-title{font-size:.82rem}
 
-/* Login overlay */
-.login-overlay{position:fixed;inset:0;background:rgba(26,26,26,.95);display:flex;align-items:center;justify-content:center;z-index:1000}
-.login-box{background:var(--white);border-radius:var(--radius);padding:2rem;width:90%;max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
-.login-box h2{font-size:1.1rem;color:var(--navy);margin-bottom:.25rem}
-.login-box p{font-size:.82rem;color:var(--gray-500);margin-bottom:1.25rem}
-.login-box input{width:100%;padding:.65rem .85rem;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:.9rem;margin-bottom:.75rem;outline:none}
-.login-box input:focus{border-color:var(--red)}
-.login-box button{width:100%;padding:.65rem;background:var(--red);color:var(--white);border:none;border-radius:var(--radius);font-size:.9rem;font-weight:700;cursor:pointer}
-.login-box button:hover{opacity:.9}
-.login-error{color:var(--red);font-size:.8rem;margin-bottom:.5rem;display:none}
+/* ===== Lightbox ===== */
+.lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);
+  z-index:2000;display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:all .25s cubic-bezier(.4,0,.2,1);
+  backdrop-filter:blur(4px);
+}
+.lightbox.active{opacity:1;visibility:visible}
+.lightbox img{
+  max-width:90vw;max-height:85vh;border-radius:var(--radius);
+  box-shadow:0 16px 64px rgba(0,0,0,.4);
+  transform:scale(.92);transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.lightbox.active img{transform:scale(1)}
+.lightbox-close{
+  position:absolute;top:1rem;right:1rem;
+  background:rgba(255,255,255,.12);border:none;color:var(--white);
+  width:40px;height:40px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;transition:var(--transition);
+}
+.lightbox-close:hover{background:rgba(255,255,255,.25)}
+.lightbox-label{
+  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.6);color:var(--white);padding:.4rem 1rem;
+  border-radius:20px;font-size:.78rem;font-weight:600;
+}
 
-.empty-msg{text-align:center;padding:2rem;color:var(--gray-500);font-size:.88rem}
+/* ===== Modal (history) ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:1500;display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:all .25s;backdrop-filter:blur(2px);
+}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal{
+  background:var(--white);border-radius:var(--radius-lg);
+  width:90%;max-width:640px;max-height:85vh;overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(12px);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+}
+.modal-overlay.active .modal{transform:none}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);flex-shrink:0;
+}
+.modal-header h3{font-size:.95rem;font-weight:700;color:var(--navy)}
+.modal-body{overflow-y:auto;padding:1rem 1.25rem;flex:1}
+.modal-close{
+  background:none;border:none;cursor:pointer;color:var(--gray-400);
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+}
+.modal-close:hover{background:var(--gray-100);color:var(--navy)}
+.history-entry{
+  padding:.85rem;border-radius:var(--radius);border:1px solid var(--gray-200);
+  margin-bottom:.6rem;font-size:.8rem;
+}
+.history-entry:last-child{margin-bottom:0}
+.history-entry .detail-grid{margin-top:.35rem}
+.history-date{font-size:.7rem;color:var(--gray-500);font-weight:600;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
 
-@media(max-width:600px){
-  .detail-grid{grid-template-columns:1fr;gap:.25rem}
-  .detail-grid dd{margin-bottom:.35rem}
-  .content{padding:.75rem}
-  .card-header{padding:.85rem 1rem}
-  .toolbar{flex-direction:column;align-items:flex-start}
+/* ===== Login overlay ===== */
+.login-overlay{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,var(--navy) 0%,#2a2a2a 100%);
+  display:flex;align-items:center;justify-content:center;z-index:5000;
+}
+.login-box{
+  background:var(--white);border-radius:var(--radius-lg);
+  padding:2.5rem 2rem;width:90%;max-width:380px;text-align:center;
+  box-shadow:0 16px 64px rgba(0,0,0,.3);
+}
+.login-box .login-logo{
+  width:56px;height:56px;border-radius:14px;
+  background:var(--navy);color:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:900;margin:0 auto 1.25rem;
+}
+.login-box h2{font-size:1.15rem;color:var(--navy);margin-bottom:.15rem;font-weight:800}
+.login-box p{font-size:.82rem;color:var(--gray-500);margin-bottom:1.5rem}
+.login-box input{
+  width:100%;padding:.7rem 1rem;border:1.5px solid var(--gray-300);
+  border-radius:var(--radius);font-size:.88rem;margin-bottom:.85rem;
+  outline:none;transition:var(--transition);
+}
+.login-box input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.1)}
+.login-box button{
+  width:100%;padding:.75rem;background:var(--red);color:var(--white);
+  border:none;border-radius:var(--radius);font-size:.88rem;font-weight:700;
+  cursor:pointer;transition:var(--transition);
+}
+.login-box button:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(227,37,38,.3)}
+.login-error{color:var(--red);font-size:.8rem;margin-bottom:.65rem;display:none;font-weight:600}
+
+.empty-msg{text-align:center;padding:3rem;color:var(--gray-500);font-size:.88rem}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:90;backdrop-filter:blur(2px);
+}
+
+/* ===== Search bar ===== */
+.search-bar{
+  position:relative;max-width:320px;
+}
+.search-bar input{
+  width:100%;padding:.45rem .75rem .45rem 2rem;
+  border:1.5px solid var(--gray-200);border-radius:var(--radius);
+  font-size:.8rem;font-family:inherit;outline:none;transition:var(--transition);
+  background:var(--gray-50);
+}
+.search-bar input:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 3px rgba(227,37,38,.08)}
+.search-bar svg{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--gray-400)}
+
+/* ===== Responsive ===== */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:none}
+  .sidebar-overlay.open{display:block}
+  .main-content{margin-left:0}
+  .hamburger{display:flex}
+  .content-area{padding:1rem}
+  .detail-grid{grid-template-columns:1fr;gap:.2rem}
+  .detail-grid dd{margin-bottom:.4rem}
+  .docs-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+  .top-bar{padding:.75rem 1rem}
+  .search-bar{max-width:100%;flex:1}
+  .top-bar-right{flex-wrap:wrap}
+}
+@media(max-width:480px){
+  .docs-grid{grid-template-columns:repeat(3,1fr)}
+  .runt-strip{flex-direction:column;align-items:flex-start;gap:.35rem}
+  .runt-strip-sep{display:none}
 }
 </style>
 </head>
@@ -138,6 +420,7 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 <!-- Login overlay -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
+    <div class="login-logo">CC</div>
     <h2><span class="red">Capital</span> Cargo Colombia</h2>
     <p>Panel de Administracion</p>
     <div class="login-error" id="loginError">Contrasena incorrecta</div>
@@ -146,31 +429,94 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
   </div>
 </div>
 
+<!-- App -->
 <div id="appContent" style="display:none">
+<div class="app-layout">
 
-<header>
-  <h1><span class="red">Capital</span> Cargo Colombia</h1>
-  <p>Panel de Administracion</p>
-</header>
+  <!-- Sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <h1><span class="red">Capital</span> Cargo</h1>
+      <p>Panel de Administracion</p>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="nav-item active" data-tab="conductores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Conductores
+        <span class="nav-count" id="count-conductores">-</span>
+      </div>
+      <div class="nav-item" data-tab="propietarios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Propietarios
+        <span class="nav-count" id="count-propietarios">-</span>
+      </div>
+      <div class="nav-item" data-tab="vehiculos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Vehiculos
+        <span class="nav-count" id="count-vehiculos">-</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver al inicio
+      </a>
+    </div>
+  </aside>
 
-<div class="top-bar">
-  <a href="index.html">&larr; Volver</a>
-  <span style="font-size:.78rem;color:var(--gray-400)">Admin</span>
+  <!-- Main -->
+  <main class="main-content">
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <button class="hamburger" onclick="toggleSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h2 id="pageTitle">Conductores</h2>
+      </div>
+      <div class="top-bar-right">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Buscar..." oninput="filterCards()">
+        </div>
+        <button class="toggle-btn" id="groupToggle" onclick="toggleGroupByPlaca()" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Agrupar
+        </button>
+        <button class="btn btn-outline" onclick="refreshTab()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Actualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="content-area" id="content">
+      <div class="spinner-wrap"><div class="spinner"></div></div>
+    </div>
+  </main>
+
+</div><!-- /app-layout -->
+</div><!-- /appContent -->
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">&#10005;</button>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-label" id="lightboxLabel"></div>
 </div>
 
-<div class="tabs-wrap">
-  <div class="tabs" id="tabs">
-    <button class="tab-btn active" data-tab="conductores">Conductores <span class="tab-count" id="count-conductores">-</span></button>
-    <button class="tab-btn" data-tab="propietarios">Propietarios <span class="tab-count" id="count-propietarios">-</span></button>
-    <button class="tab-btn" data-tab="vehiculos">Vehiculos <span class="tab-count" id="count-vehiculos">-</span></button>
+<!-- History Modal -->
+<div class="modal-overlay" id="historyModal" onclick="closeHistoryModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="historyTitle">Historial RUNT</h3>
+      <button class="modal-close" onclick="closeHistoryModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="historyBody"></div>
   </div>
 </div>
-
-<div class="content" id="content">
-  <div class="spinner-wrap"><div class="spinner"></div></div>
-</div>
-
-</div><!-- /appContent -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -184,18 +530,25 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 let activeTab = 'conductores';
 let cache = {};
-let runtLicCache = {};  // keyed by cedula
-let runtVehCache = {};  // keyed by placa
+let runtLicAll = [];   // ALL runt_licencias records
+let runtLicCache = {}; // latest per cedula
+let runtVehAll = [];   // ALL runt_vehiculos records
+let runtVehCache = {}; // latest per placa
 let groupByPlaca = false;
+let searchQuery = '';
 
-// ========== Auth gate ==========
+// ===== Auth gate =====
 function checkLogin() {
   const v = document.getElementById('loginPass').value;
   if (v === PASSWORD) {
     sessionStorage.setItem('cc_admin', '1');
     showApp();
   } else {
-    document.getElementById('loginError').style.display = 'block';
+    const err = document.getElementById('loginError');
+    err.style.display = 'block';
+    err.style.animation = 'none';
+    err.offsetHeight; // reflow
+    err.style.animation = 'shake .4s ease';
   }
 }
 document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') checkLogin(); });
@@ -206,13 +559,41 @@ function showApp() {
   loadAllData();
 }
 
-if (sessionStorage.getItem('cc_admin') === '1') {
-  showApp();
+if (sessionStorage.getItem('cc_admin') === '1') showApp();
+
+// ===== Sidebar (mobile) =====
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
-// ========== Load all data including RUNT ==========
+// ===== Tabs via sidebar nav =====
+document.getElementById('sidebarNav').addEventListener('click', e => {
+  const item = e.target.closest('.nav-item');
+  if (!item) return;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  item.classList.add('active');
+  activeTab = item.dataset.tab;
+  document.getElementById('pageTitle').textContent = {conductores:'Conductores',propietarios:'Propietarios',vehiculos:'Vehiculos'}[activeTab];
+  document.getElementById('searchInput').value = '';
+  searchQuery = '';
+  updateGroupToggle();
+  loadTab(activeTab);
+  closeSidebar();
+});
+
+function updateGroupToggle() {
+  const btn = document.getElementById('groupToggle');
+  btn.style.display = (activeTab === 'propietarios') ? 'none' : '';
+  btn.classList.toggle('active', groupByPlaca);
+}
+
+// ===== Data loading =====
 async function loadAllData() {
-  // Load RUNT data into caches first, then load active tab
   await Promise.all([loadRuntLicencias(), loadRuntVehiculos()]);
   loadTab(activeTab);
   loadAllCounts();
@@ -220,95 +601,86 @@ async function loadAllData() {
 
 async function loadRuntLicencias() {
   const { data } = await sb.from('runt_licencias').select('*');
+  runtLicAll = data || [];
   runtLicCache = {};
-  if (data) {
-    data.forEach(r => {
-      // Keep latest per cedula
-      if (!runtLicCache[r.cedula] || new Date(r.fecha_consulta) > new Date(runtLicCache[r.cedula].fecha_consulta)) {
-        runtLicCache[r.cedula] = r;
-      }
-    });
-  }
+  runtLicAll.forEach(r => {
+    if (!runtLicCache[r.cedula] || new Date(r.fecha_consulta) > new Date(runtLicCache[r.cedula].fecha_consulta)) {
+      runtLicCache[r.cedula] = r;
+    }
+  });
 }
 
 async function loadRuntVehiculos() {
   const { data } = await sb.from('runt_vehiculos').select('*');
+  runtVehAll = data || [];
   runtVehCache = {};
-  if (data) {
-    data.forEach(r => {
-      if (!runtVehCache[r.placa] || new Date(r.fecha_consulta) > new Date(runtVehCache[r.placa].fecha_consulta)) {
-        runtVehCache[r.placa] = r;
-      }
-    });
-  }
+  runtVehAll.forEach(r => {
+    if (!runtVehCache[r.placa] || new Date(r.fecha_consulta) > new Date(runtVehCache[r.placa].fecha_consulta)) {
+      runtVehCache[r.placa] = r;
+    }
+  });
 }
 
-// ========== Tabs ==========
-document.getElementById('tabs').addEventListener('click', e => {
-  const btn = e.target.closest('.tab-btn');
-  if (!btn) return;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activeTab = btn.dataset.tab;
-  loadTab(activeTab);
-});
-
-// ========== Data loading ==========
 async function loadTab(table, force) {
   const content = document.getElementById('content');
   if (cache[table] && !force) { renderTab(table, cache[table]); return; }
   content.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
   const { data, error } = await sb.from(table).select('*').order('created_at', { ascending: false });
-  if (error) {
-    content.innerHTML = '<div class="empty-msg">Error: ' + error.message + '</div>';
-    return;
-  }
+  if (error) { content.innerHTML = '<div class="empty-msg">Error: ' + error.message + '</div>'; return; }
   cache[table] = data || [];
   document.getElementById('count-' + table).textContent = (data || []).length;
+  updateGroupToggle();
   renderTab(table, data || []);
 }
 
 function refreshTab() {
   delete cache[activeTab];
-  // Also refresh RUNT caches
-  Promise.all([loadRuntLicencias(), loadRuntVehiculos()]).then(() => {
-    loadTab(activeTab, true);
-  });
+  Promise.all([loadRuntLicencias(), loadRuntVehiculos()]).then(() => loadTab(activeTab, true));
 }
 
-// ========== Rendering ==========
+// ===== Search / Filter =====
+function filterCards() {
+  searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
+}
+
+function matchesSearch(r) {
+  if (!searchQuery) return true;
+  const searchable = [
+    r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido,
+    r.cedula, r.vehiculo_placa, r.placa, r.tipo, r.ciudad, r.telefono, r.estado
+  ].filter(Boolean).join(' ').toLowerCase();
+  return searchable.includes(searchQuery);
+}
+
+// ===== Rendering =====
 function renderTab(table, rows) {
   const content = document.getElementById('content');
-  const tname = { conductores: 'Conductores', propietarios: 'Propietarios', vehiculos: 'Vehiculos' }[table];
+  const filtered = rows.filter(matchesSearch);
 
-  let html = '<div class="toolbar"><h2>' + tname + ' (' + rows.length + ')</h2>';
-  html += '<div class="toolbar-right">';
-  if (table !== 'propietarios') {
-    html += '<button class="toggle-btn' + (groupByPlaca ? ' active' : '') + '" onclick="toggleGroupByPlaca()">Agrupar por placa</button>';
+  if (!filtered.length) {
+    content.innerHTML = '<div class="empty-msg">' + (rows.length ? 'No hay resultados para la busqueda' : 'No hay registros') + '</div>';
+    return;
   }
-  html += '<button class="refresh-btn" onclick="refreshTab()">Actualizar</button>';
-  html += '</div></div>';
-
-  if (!rows.length) { html += '<div class="empty-msg">No hay registros</div>'; content.innerHTML = html; return; }
 
   if (groupByPlaca && table !== 'propietarios') {
-    html += renderGroupedByPlaca(table, rows);
+    content.innerHTML = renderGroupedByPlaca(table, filtered);
   } else {
-    html += '<div class="cards">';
-    rows.forEach(r => { html += renderCard(table, r); });
+    let html = '<div class="cards">';
+    filtered.forEach((r, i) => { html += renderCard(table, r, i); });
     html += '</div>';
+    content.innerHTML = html;
   }
-  content.innerHTML = html;
 }
 
 function toggleGroupByPlaca() {
   groupByPlaca = !groupByPlaca;
+  updateGroupToggle();
   renderTab(activeTab, cache[activeTab] || []);
 }
 
-// ========== Group by placa view ==========
+// ===== Group by placa =====
 function renderGroupedByPlaca(table, rows) {
-  // Collect all placas
   const placas = {};
   rows.forEach(r => {
     const p = (table === 'vehiculos') ? r.placa : r.vehiculo_placa;
@@ -317,7 +689,6 @@ function renderGroupedByPlaca(table, rows) {
     placas[p][table].push(r);
   });
 
-  // Also pull from other cached tables
   const otherTables = ['conductores', 'propietarios', 'vehiculos'].filter(t => t !== table);
   otherTables.forEach(t => {
     (cache[t] || []).forEach(r => {
@@ -327,7 +698,6 @@ function renderGroupedByPlaca(table, rows) {
     });
   });
 
-  // Handle rows with no placa
   const noPlaca = rows.filter(r => {
     const p = (table === 'vehiculos') ? r.placa : r.vehiculo_placa;
     return !p;
@@ -339,189 +709,264 @@ function renderGroupedByPlaca(table, rows) {
     const runtVeh = runtVehCache[placa];
     html += '<div class="group-section">';
     html += '<div class="group-header" onclick="this.parentElement.classList.toggle(\'open\')">';
-    html += '<h3>Placa ' + esc(placa);
-    if (runtVeh && runtVeh.marca) html += ' &middot; ' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo);
+    html += '<h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> ' + esc(placa);
+    if (runtVeh && runtVeh.marca) html += ' <span style="font-weight:400;color:var(--gray-500);font-size:.82rem">' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo) + '</span>';
     html += '</h3>';
     html += '<span class="expand-arrow">&#8250;</span>';
-    html += '</div>';
-    html += '<div class="group-body">';
+    html += '</div><div class="group-body">';
 
     if (g.conductores.length) {
       html += '<div class="group-sub-title">Conductores</div>';
       g.conductores.forEach(r => {
-        const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
-        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub">CC ' + esc(r.cedula) + ' &middot; ' + estadoBadge(r.estado) + '</div></div>';
+        const name = fullName(r);
+        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub" style="margin-top:.25rem">CC ' + esc(r.cedula) + ' ' + estadoBadge(r.estado) + '</div></div>';
       });
     }
     if (g.propietarios.length) {
       html += '<div class="group-sub-title">Propietarios</div>';
       g.propietarios.forEach(r => {
-        const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
-        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub">CC ' + esc(r.cedula) + ' &middot; ' + estadoBadge(r.estado) + '</div></div>';
+        const name = fullName(r);
+        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub" style="margin-top:.25rem">CC ' + esc(r.cedula) + ' ' + estadoBadge(r.estado) + '</div></div>';
       });
     }
     if (g.vehiculos.length) {
       html += '<div class="group-sub-title">Vehiculos</div>';
       g.vehiculos.forEach(r => {
-        html += '<div class="group-card"><div class="card-title">Placa ' + esc(r.placa) + '</div><div class="card-sub">Tipo: ' + esc(r.tipo) + ' &middot; ' + estadoBadge(r.estado) + '</div></div>';
+        html += '<div class="group-card"><div class="card-title">Placa ' + esc(r.placa) + '</div><div class="card-sub" style="margin-top:.25rem">Tipo: ' + esc(r.tipo) + ' ' + estadoBadge(r.estado) + '</div></div>';
       });
     }
-    if (runtVeh) {
+    if (runtVeh && runtVeh.success) {
       html += '<div class="group-sub-title">RUNT Vehiculo</div>';
       html += '<div class="group-card"><div class="card-sub">' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo) + ' &middot; ' + esc(runtVeh.color) + ' &middot; SOAT: ' + esc(runtVeh.soat_estado) + '</div></div>';
     }
-
     html += '</div></div>';
   });
 
   if (noPlaca.length) {
     html += '<div class="group-section"><div class="group-header" onclick="this.parentElement.classList.toggle(\'open\')"><h3>Sin placa</h3><span class="expand-arrow">&#8250;</span></div>';
     html += '<div class="group-body"><div class="cards">';
-    noPlaca.forEach(r => { html += renderCard(table, r); });
+    noPlaca.forEach((r, i) => { html += renderCard(table, r, i); });
     html += '</div></div></div>';
   }
-
   return html;
 }
 
-// ========== Card renderers ==========
-function renderCard(table, r) {
+// ===== Card renderers =====
+function renderCard(table, r, idx) {
   const renderers = { conductores: cardConductor, propietarios: cardPropietario, vehiculos: cardVehiculo };
-  return renderers[table](r);
+  return renderers[table](r, idx);
 }
 
-function cardConductor(r) {
-  const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+function cardConductor(r, idx) {
+  const name = fullName(r);
   const uid = 'cond-' + r.id;
-  let detail = '<dl class="detail-grid" id="fields-' + uid + '">';
+  const runt = runtLicCache[r.cedula];
+  const initials = getInitials(r);
+  const avatarHtml = r.foto_rostro
+    ? '<img src="' + STORAGE_BASE + r.foto_rostro + '" alt="' + escAttr(name) + '" loading="lazy">'
+    : initials;
+
+  // RUNT strip (always visible)
+  let strip = '';
+  if (runt && runt.success) {
+    const expired = isExpired(runt.fecha_vencimiento_cat);
+    strip += '<div class="runt-strip">';
+    strip += '<div class="runt-strip-item"><strong>Cat.</strong> ' + esc(runt.categoria) + '</div>';
+    strip += '<div class="runt-strip-sep"></div>';
+    strip += '<div class="runt-strip-item"><strong>Lic.</strong> ' + (runt.estado_licencia ? estadoRuntBadge(runt.estado_licencia) : '-') + '</div>';
+    strip += '<div class="runt-strip-sep"></div>';
+    strip += '<div class="runt-strip-item"><strong>Vence</strong> ' + fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') + '</div>';
+    strip += '</div>';
+  } else if (!runt) {
+    strip += '<div class="runt-strip"><div class="runt-strip-item"><span class="badge badge-pending-runt">RUNT pendiente</span></div></div>';
+  }
+
+  // Detail content
+  let detail = '';
+
+  // Personal info section
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Informacion Personal</div>';
+  detail += '<dl class="detail-grid" id="fields-' + uid + '">';
   detail += dtEditable(uid, 'primer_nombre', 'Primer nombre', r.primer_nombre);
   detail += dtEditable(uid, 'segundo_nombre', 'Segundo nombre', r.segundo_nombre);
   detail += dtEditable(uid, 'primer_apellido', 'Primer apellido', r.primer_apellido);
   detail += dtEditable(uid, 'segundo_apellido', 'Segundo apellido', r.segundo_apellido);
-  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at));
   detail += dtEditable(uid, 'cedula', 'Cedula', r.cedula);
   detail += dtEditable(uid, 'direccion', 'Direccion', r.direccion);
   detail += dtEditable(uid, 'ciudad', 'Ciudad', r.ciudad);
   detail += dtEditable(uid, 'telefono', 'Telefono', r.telefono);
+  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
+  detail += dt('Creado', fmtDate(r.created_at));
+  detail += '</dl>';
+
+  // Banking section
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Informacion Bancaria</div>';
+  detail += '<dl class="detail-grid">';
   detail += dtEditable(uid, 'banco', 'Banco', r.banco);
   detail += dtEditable(uid, 'tipo_cuenta', 'Tipo cuenta', r.tipo_cuenta);
   detail += dtEditable(uid, 'numero_cuenta', 'Num. cuenta', r.numero_cuenta);
-  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
+  detail += '</dl>';
+
+  // References
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg> Referencias</div>';
+  detail += '<dl class="detail-grid">';
   detail += dt('Ref. familiar', (r.ref_familiar_nombre || '-') + ' / ' + (r.ref_familiar_telefono || '-'));
   detail += dt('Ref. empresa', (r.ref_empresa_nombre || '-') + ' / ' + (r.ref_empresa_telefono || '-'));
-  detail += dt('Autoriza datos', esc(r.autoriza_datos)) + dt('Autoriza sensibles', esc(r.autoriza_sensibles));
+  detail += dt('Autoriza datos', r.autoriza_datos);
+  detail += dt('Autoriza sensibles', r.autoriza_sensibles);
   detail += '</dl>';
-  detail += '<div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;font-size:.78rem">';
-  detail += fileIndicator(r.foto_rostro, 'Foto rostro') + ' ';
-  detail += fileIndicator(r.seguridad_social, 'Seg. social') + ' ';
-  detail += fileIndicator(r.cedula_frente, 'Cedula frente') + ' ';
-  detail += fileIndicator(r.cedula_reverso, 'Cedula reverso') + ' ';
-  detail += fileIndicator(r.pase_frente, 'Pase frente') + ' ';
-  detail += fileIndicator(r.pase_reverso, 'Pase reverso') + ' ';
-  detail += fileIndicator(r.cert_bancaria, 'Cert. bancaria');
+
+  // Documents
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentos</div>';
+  detail += '<div class="docs-grid">';
+  detail += docThumb(r.foto_rostro, 'Foto Rostro');
+  detail += docThumb(r.cedula_frente, 'Cedula Frente');
+  detail += docThumb(r.cedula_reverso, 'Cedula Reverso');
+  detail += docThumb(r.pase_frente, 'Pase Frente');
+  detail += docThumb(r.pase_reverso, 'Pase Reverso');
+  detail += docThumb(r.seguridad_social, 'Seg. Social');
+  detail += docThumb(r.cert_bancaria, 'Cert. Bancaria');
   detail += '</div>';
 
-  // RUNT Licencia section
+  // RUNT License section
   detail += renderRuntLicSection(r);
 
-  // Action buttons
+  // Actions
   detail += renderActions('conductores', r, uid);
 
-  return cardWrap(name, 'CC ' + esc(r.cedula) + ' &middot; Placa ' + esc(r.vehiculo_placa), r.estado, detail, uid);
+  return cardWrap(name, 'CC ' + esc(r.cedula), r.estado, detail, uid, avatarHtml, strip, idx);
 }
 
-function cardPropietario(r) {
-  const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+function cardPropietario(r, idx) {
+  const name = fullName(r);
   const uid = 'prop-' + r.id;
-  let detail = '<dl class="detail-grid" id="fields-' + uid + '">';
+  const initials = getInitials(r);
+
+  let detail = '';
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Informacion Personal</div>';
+  detail += '<dl class="detail-grid" id="fields-' + uid + '">';
   detail += dtEditable(uid, 'primer_nombre', 'Primer nombre', r.primer_nombre);
   detail += dtEditable(uid, 'segundo_nombre', 'Segundo nombre', r.segundo_nombre);
   detail += dtEditable(uid, 'primer_apellido', 'Primer apellido', r.primer_apellido);
   detail += dtEditable(uid, 'segundo_apellido', 'Segundo apellido', r.segundo_apellido);
-  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at));
   detail += dtEditable(uid, 'cedula', 'Cedula', r.cedula);
   detail += dtEditable(uid, 'direccion', 'Direccion', r.direccion);
   detail += dtEditable(uid, 'ciudad', 'Ciudad', r.ciudad);
   detail += dtEditable(uid, 'telefono', 'Telefono', r.telefono);
+  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
+  detail += dt('Creado', fmtDate(r.created_at));
+  detail += '</dl>';
+
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Informacion Bancaria</div>';
+  detail += '<dl class="detail-grid">';
   detail += dtEditable(uid, 'banco', 'Banco', r.banco);
   detail += dtEditable(uid, 'tipo_cuenta', 'Tipo cuenta', r.tipo_cuenta);
   detail += dtEditable(uid, 'numero_cuenta', 'Num. cuenta', r.numero_cuenta);
-  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
-  detail += dt('Factura electronica', esc(r.factura_electronica)) + dt('Autoriza sensibles', esc(r.autoriza_sensibles));
+  detail += dt('Factura electronica', esc(r.factura_electronica));
+  detail += dt('Autoriza sensibles', r.autoriza_sensibles);
   detail += '</dl>';
-  detail += '<div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;font-size:.78rem">';
-  detail += fileIndicator(r.cedula_frente, 'Cedula frente') + ' ';
-  detail += fileIndicator(r.cedula_reverso, 'Cedula reverso') + ' ';
-  detail += fileIndicator(r.rut, 'RUT') + ' ';
-  detail += fileIndicator(r.cert_bancaria, 'Cert. bancaria');
+
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentos</div>';
+  detail += '<div class="docs-grid">';
+  detail += docThumb(r.cedula_frente, 'Cedula Frente');
+  detail += docThumb(r.cedula_reverso, 'Cedula Reverso');
+  detail += docThumb(r.rut, 'RUT');
+  detail += docThumb(r.cert_bancaria, 'Cert. Bancaria');
   detail += '</div>';
 
-  // Action buttons
   detail += renderActions('propietarios', r, uid);
 
-  return cardWrap(name, 'CC ' + esc(r.cedula) + ' &middot; Placa ' + esc(r.vehiculo_placa), r.estado, detail, uid);
+  return cardWrap(name, 'CC ' + esc(r.cedula), r.estado, detail, uid, initials, '', idx);
 }
 
-function cardVehiculo(r) {
+function cardVehiculo(r, idx) {
   const uid = 'veh-' + r.id;
-  let detail = '<dl class="detail-grid" id="fields-' + uid + '">';
-  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at));
+  const runt = runtVehCache[r.placa];
+
+  // RUNT strip
+  let strip = '';
+  if (runt && runt.success) {
+    strip += '<div class="runt-strip">';
+    strip += '<div class="runt-strip-item"><strong>' + esc(runt.marca) + '</strong> ' + esc(runt.linea) + ' ' + esc(runt.modelo) + '</div>';
+    strip += '<div class="runt-strip-sep"></div>';
+    strip += '<div class="runt-strip-item"><strong>Color</strong> ' + esc(runt.color) + '</div>';
+    strip += '<div class="runt-strip-sep"></div>';
+    const soatExpired = isExpired(runt.soat_vencimiento);
+    strip += '<div class="runt-strip-item"><strong>SOAT</strong> ' + fmtDateShort(runt.soat_vencimiento) + (soatExpired ? ' <span class="badge badge-expired">Vencido</span>' : '') + '</div>';
+    strip += '</div>';
+  } else if (!runt) {
+    strip += '<div class="runt-strip"><div class="runt-strip-item"><span class="badge badge-pending-runt">RUNT pendiente</span></div></div>';
+  }
+
+  let detail = '';
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Datos del Vehiculo</div>';
+  detail += '<dl class="detail-grid" id="fields-' + uid + '">';
   detail += dtEditable(uid, 'placa', 'Placa', r.placa);
   detail += dtEditable(uid, 'tipo', 'Tipo', r.tipo);
   detail += dtEditable(uid, 'satelital', 'Satelital', r.satelital);
-  detail += dtEditable(uid, 'satelital_usuario', 'Usuario', r.satelital_usuario);
-  detail += dtEditable(uid, 'satelital_password', 'Password', r.satelital_password);
+  detail += dtEditable(uid, 'satelital_usuario', 'Usuario sat.', r.satelital_usuario);
+  detail += dtEditable(uid, 'satelital_password', 'Password sat.', r.satelital_password);
+  detail += dt('Creado', fmtDate(r.created_at));
   detail += '</dl>';
-  detail += '<div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;font-size:.78rem">';
-  detail += fileIndicator(r.tarjeta_frente, 'Tarjeta frente') + ' ';
-  detail += fileIndicator(r.tarjeta_reverso, 'Tarjeta reverso') + ' ';
-  detail += fileIndicator(r.tecnomecanica, 'Tecnomecanica') + ' ';
-  detail += fileIndicator(r.soat, 'SOAT') + ' ';
+
+  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentos</div>';
+  detail += '<div class="docs-grid">';
+  detail += docThumb(r.tarjeta_frente, 'Tarjeta Frente');
+  detail += docThumb(r.tarjeta_reverso, 'Tarjeta Reverso');
+  detail += docThumb(r.tecnomecanica, 'Tecnomecanica');
+  detail += docThumb(r.soat, 'SOAT');
   if (r.fotos && Array.isArray(r.fotos)) {
-    r.fotos.forEach((f, i) => { detail += fileIndicator(f, 'Foto ' + (i + 1)) + ' '; });
+    r.fotos.forEach((f, i) => { detail += docThumb(f, 'Foto ' + (i + 1)); });
   }
   detail += '</div>';
 
   // RUNT Vehiculo section
   detail += renderRuntVehSection(r);
 
-  // Action buttons
   detail += renderActions('vehiculos', r, uid);
 
-  return cardWrap('Placa ' + esc(r.placa), 'Tipo: ' + esc(r.tipo), r.estado, detail, uid);
+  const avatarHtml = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
+  return cardWrap('Placa ' + esc(r.placa), 'Tipo: ' + esc(r.tipo), r.estado, detail, uid, avatarHtml, strip, idx);
 }
 
-// ========== RUNT sections embedded in cards ==========
+// ===== RUNT sections =====
 function renderRuntLicSection(conductor) {
   const runt = runtLicCache[conductor.cedula];
   let html = '<div class="runt-section" id="runt-lic-' + conductor.id + '">';
-  html += '<h4>Licencia RUNT ';
+  html += '<h4>';
+  html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="10"/></svg> ';
+  html += 'Licencia RUNT ';
 
   if (!runt) {
     html += '<span class="badge badge-pending-runt">Pendiente</span></h4>';
-    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.5rem">No se ha consultado la licencia en RUNT.</p>';
-    html += '<button class="btn btn-runt" onclick="consultarRuntLic(' + conductor.id + ', \'' + esc(conductor.cedula) + '\', \'' + esc(conductor.primer_apellido) + '\')">Consultar RUNT</button>';
+    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.65rem">No se ha consultado la licencia en RUNT.</p>';
+    html += '<div class="runt-actions">';
+    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntLic(\'' + conductor.id + '\', \'' + escAttr(conductor.cedula) + '\', \'' + escAttr(conductor.primer_apellido) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+    html += '</div>';
   } else {
     const expired = isExpired(runt.fecha_vencimiento_cat);
     if (runt.success) {
       html += '<span class="badge badge-success">OK</span>';
-      if (expired) html += ' <span class="badge badge-expired">VENCIDA</span>';
+      if (expired) html += ' <span class="badge badge-expired">Vencida</span>';
     } else {
-      html += '<span class="badge badge-fail">FALLO</span>';
+      html += '<span class="badge badge-fail">Fallo</span>';
     }
     html += '</h4>';
     html += '<dl class="detail-grid">';
     html += dt('Estado conductor', runt.estado_conductor);
     html += dt('Estado licencia', runt.estado_licencia);
     html += dt('Categoria', runt.categoria);
-    html += dt('Vencimiento', runt.fecha_vencimiento_cat ? runt.fecha_vencimiento_cat + (expired ? ' <span class="badge badge-expired">VENCIDA</span>' : '') : '-');
+    html += dt('Vencimiento', runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') : '-');
     html += dt('Restricciones', runt.restricciones || 'Ninguna');
     html += dt('Num. licencia', runt.numero_licencia);
     html += dt('Organismo transito', runt.organismo_transito);
-    html += dt('Consulta', fmtDate(runt.fecha_consulta));
-    if (runt.error) html += dt('Error', runt.error);
+    html += dt('Ultima consulta', fmtDate(runt.fecha_consulta));
+    if (runt.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(runt.error) + '</span>');
     html += '</dl>';
-    html += '<div style="margin-top:.5rem"><button class="btn btn-runt" onclick="consultarRuntLic(' + conductor.id + ', \'' + esc(conductor.cedula) + '\', \'' + esc(conductor.primer_apellido) + '\')">Consultar RUNT</button></div>';
+    html += '<div class="runt-actions">';
+    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntLic(\'' + conductor.id + '\', \'' + escAttr(conductor.cedula) + '\', \'' + escAttr(conductor.primer_apellido) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+    html += '<button class="btn btn-outline btn-sm" onclick="showLicHistory(\'' + escAttr(conductor.cedula) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial</button>';
+    html += '</div>';
   }
   html += '</div>';
   return html;
@@ -530,17 +975,21 @@ function renderRuntLicSection(conductor) {
 function renderRuntVehSection(vehiculo) {
   const runt = runtVehCache[vehiculo.placa];
   let html = '<div class="runt-section" id="runt-veh-' + vehiculo.id + '">';
-  html += '<h4>RUNT Vehiculo ';
+  html += '<h4>';
+  html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> ';
+  html += 'RUNT Vehiculo ';
 
   if (!runt) {
     html += '<span class="badge badge-pending-runt">Pendiente</span></h4>';
-    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.5rem">No se ha consultado el vehiculo en RUNT.</p>';
-    html += '<button class="btn btn-runt" onclick="consultarRuntVeh(' + vehiculo.id + ', \'' + esc(vehiculo.placa) + '\')">Consultar RUNT</button>';
+    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.65rem">No se ha consultado el vehiculo en RUNT.</p>';
+    html += '<div class="runt-actions">';
+    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntVeh(\'' + vehiculo.id + '\', \'' + escAttr(vehiculo.placa) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+    html += '</div>';
   } else {
     if (runt.success) {
       html += '<span class="badge badge-success">OK</span>';
     } else {
-      html += '<span class="badge badge-fail">FALLO</span>';
+      html += '<span class="badge badge-fail">Fallo</span>';
     }
     html += '</h4>';
     html += '<dl class="detail-grid">';
@@ -554,31 +1003,33 @@ function renderRuntVehSection(vehiculo) {
     html += dt('Cilindraje', runt.cilindraje);
     html += dt('SOAT poliza', runt.soat_poliza);
     html += dt('SOAT aseguradora', runt.soat_aseguradora);
-    html += dt('SOAT vencimiento', runt.soat_vencimiento);
+    const soatExpired = isExpired(runt.soat_vencimiento);
+    html += dt('SOAT vencimiento', runt.soat_vencimiento ? fmtDateShort(runt.soat_vencimiento) + (soatExpired ? ' <span class="badge badge-expired">Vencido</span>' : '') : '-');
     html += dt('SOAT estado', runt.soat_estado);
-    html += dt('Consulta', fmtDate(runt.fecha_consulta));
-    if (runt.error) html += dt('Error', runt.error);
+    html += dt('Ultima consulta', fmtDate(runt.fecha_consulta));
+    if (runt.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(runt.error) + '</span>');
     html += '</dl>';
-    html += '<div style="margin-top:.5rem"><button class="btn btn-runt" onclick="consultarRuntVeh(' + vehiculo.id + ', \'' + esc(vehiculo.placa) + '\')">Consultar RUNT</button></div>';
+    html += '<div class="runt-actions">';
+    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntVeh(\'' + vehiculo.id + '\', \'' + escAttr(vehiculo.placa) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+    html += '<button class="btn btn-outline btn-sm" onclick="showVehHistory(\'' + escAttr(vehiculo.placa) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial</button>';
+    html += '</div>';
   }
   html += '</div>';
   return html;
 }
 
-// ========== RUNT API calls ==========
+// ===== RUNT API calls =====
 async function consultarRuntLic(condId, cedula, primerApellido) {
   const section = document.getElementById('runt-lic-' + condId);
   if (!section) return;
-  section.innerHTML = '<h4>Licencia RUNT <span class="spinner-sm"></span> Consultando...</h4>';
+  section.innerHTML = '<h4><span class="spinner-sm"></span> Consultando RUNT...</h4>';
 
   try {
-    const resp = await fetch(ENRICH_URL, {
+    await fetch(ENRICH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
-      body: JSON.stringify({ tabla: 'conductores', datos: { cedula: cedula, primer_apellido: primerApellido } })
+      body: JSON.stringify({ tabla: 'conductores', datos: { cedula, primer_apellido: primerApellido } })
     });
-    const result = await resp.json();
-    // Refresh RUNT cache and re-render
     await loadRuntLicencias();
     delete cache[activeTab];
     loadTab(activeTab, true);
@@ -590,15 +1041,14 @@ async function consultarRuntLic(condId, cedula, primerApellido) {
 async function consultarRuntVeh(vehId, placa) {
   const section = document.getElementById('runt-veh-' + vehId);
   if (!section) return;
-  section.innerHTML = '<h4>RUNT Vehiculo <span class="spinner-sm"></span> Consultando...</h4>';
+  section.innerHTML = '<h4><span class="spinner-sm"></span> Consultando RUNT...</h4>';
 
   try {
-    const resp = await fetch(ENRICH_URL, {
+    await fetch(ENRICH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
-      body: JSON.stringify({ tabla: 'vehiculos', datos: { placa: placa } })
+      body: JSON.stringify({ tabla: 'vehiculos', datos: { placa } })
     });
-    const result = await resp.json();
     await loadRuntVehiculos();
     delete cache[activeTab];
     loadTab(activeTab, true);
@@ -607,12 +1057,112 @@ async function consultarRuntVeh(vehId, placa) {
   }
 }
 
-// ========== Edit / Delete / Actions ==========
+// ===== History modals =====
+function showLicHistory(cedula) {
+  const records = runtLicAll
+    .filter(r => r.cedula === cedula)
+    .sort((a, b) => new Date(b.fecha_consulta) - new Date(a.fecha_consulta));
+
+  document.getElementById('historyTitle').textContent = 'Historial RUNT Licencia — CC ' + cedula;
+  const body = document.getElementById('historyBody');
+
+  if (!records.length) {
+    body.innerHTML = '<div class="empty-msg">No hay registros de consulta.</div>';
+  } else {
+    let html = '';
+    records.forEach(r => {
+      const expired = isExpired(r.fecha_vencimiento_cat);
+      html += '<div class="history-entry">';
+      html += '<div class="history-date">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
+      html += fmtDate(r.fecha_consulta) + ' ';
+      html += r.success ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-fail">Fallo</span>';
+      if (expired) html += ' <span class="badge badge-expired">Vencida</span>';
+      html += '</div>';
+      html += '<dl class="detail-grid">';
+      html += dt('Estado conductor', r.estado_conductor);
+      html += dt('Estado licencia', r.estado_licencia);
+      html += dt('Categoria', r.categoria);
+      html += dt('Vencimiento', fmtDateShort(r.fecha_vencimiento_cat));
+      html += dt('Restricciones', r.restricciones || 'Ninguna');
+      html += dt('Num. licencia', r.numero_licencia);
+      if (r.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(r.error) + '</span>');
+      html += '</dl></div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('historyModal').classList.add('active');
+}
+
+function showVehHistory(placa) {
+  const records = runtVehAll
+    .filter(r => r.placa === placa)
+    .sort((a, b) => new Date(b.fecha_consulta) - new Date(a.fecha_consulta));
+
+  document.getElementById('historyTitle').textContent = 'Historial RUNT Vehiculo — ' + placa;
+  const body = document.getElementById('historyBody');
+
+  if (!records.length) {
+    body.innerHTML = '<div class="empty-msg">No hay registros de consulta.</div>';
+  } else {
+    let html = '';
+    records.forEach(r => {
+      html += '<div class="history-entry">';
+      html += '<div class="history-date">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
+      html += fmtDate(r.fecha_consulta) + ' ';
+      html += r.success ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-fail">Fallo</span>';
+      html += '</div>';
+      html += '<dl class="detail-grid">';
+      html += dt('Estado', r.estado);
+      html += dt('Marca', r.marca);
+      html += dt('Linea', r.linea);
+      html += dt('Modelo', r.modelo);
+      html += dt('Color', r.color);
+      html += dt('SOAT estado', r.soat_estado);
+      html += dt('SOAT vencimiento', fmtDateShort(r.soat_vencimiento));
+      if (r.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(r.error) + '</span>');
+      html += '</dl></div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('historyModal').classList.add('active');
+}
+
+function closeHistoryModal(e) {
+  if (e && e.target !== document.getElementById('historyModal')) return;
+  document.getElementById('historyModal').classList.remove('active');
+}
+
+// ===== Lightbox =====
+function openLightbox(url, label) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxLabel').textContent = label;
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target.tagName === 'IMG') return;
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    closeHistoryModal();
+  }
+});
+
+// ===== Edit / Delete =====
 function renderActions(table, r, uid) {
   let html = '<div class="card-actions" id="actions-' + uid + '">';
-  html += '<button class="btn btn-edit" onclick="startEdit(\'' + table + '\', ' + r.id + ', \'' + uid + '\')">Editar</button>';
-  html += '<button class="btn btn-delete" onclick="deleteRecord(\'' + table + '\', ' + r.id + ', \'' + uid + '\')">Eliminar</button>';
-  html += '</div>';
+  html += '<button class="btn btn-outline" onclick="startEdit(\'' + table + '\', \'' + r.id + '\', \'' + uid + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>';
+  html += '<div class="card-actions-right">';
+  html += '<button class="btn btn-danger btn-sm" onclick="deleteRecord(\'' + table + '\', \'' + r.id + '\', \'' + uid + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Eliminar</button>';
+  html += '</div></div>';
   return html;
 }
 
@@ -620,14 +1170,12 @@ function startEdit(table, id, uid) {
   const card = document.getElementById('card-' + uid);
   if (!card) return;
 
-  // Convert display values to inputs
   card.querySelectorAll('[data-edit-uid="' + uid + '"]').forEach(dd => {
     const field = dd.dataset.field;
     const val = dd.dataset.value || '';
     dd.innerHTML = '<input class="edit-input" data-field="' + field + '" value="' + escAttr(val) + '">';
   });
 
-  // Add estado dropdown
   const estadoEl = card.querySelector('[data-estado-uid="' + uid + '"]');
   if (estadoEl) {
     const current = estadoEl.dataset.value || 'pendiente';
@@ -637,10 +1185,9 @@ function startEdit(table, id, uid) {
       ).join('') + '</select>';
   }
 
-  // Replace action buttons
   const actions = document.getElementById('actions-' + uid);
-  actions.innerHTML = '<button class="btn btn-save" onclick="saveEdit(\'' + table + '\', ' + id + ', \'' + uid + '\')">Guardar</button>' +
-    '<button class="btn btn-cancel" onclick="cancelEdit(\'' + table + '\')">Cancelar</button>';
+  actions.innerHTML = '<button class="btn btn-primary" onclick="saveEdit(\'' + table + '\', \'' + id + '\', \'' + uid + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg> Guardar</button>' +
+    '<button class="btn btn-outline" onclick="cancelEdit(\'' + table + '\')">Cancelar</button>';
 }
 
 async function saveEdit(table, id, uid) {
@@ -648,32 +1195,25 @@ async function saveEdit(table, id, uid) {
   if (!card) return;
 
   const changes = {};
-
-  // Collect input values
   card.querySelectorAll('.edit-input').forEach(input => {
     changes[input.dataset.field] = input.value || null;
   });
-
-  // Collect select values
   card.querySelectorAll('.edit-select').forEach(select => {
     changes[select.dataset.field] = select.value;
   });
 
   if (Object.keys(changes).length === 0) { cancelEdit(table); return; }
 
-  const { error } = await sb.from(table).update(changes).eq('id', id);
-  if (error) {
-    alert('Error guardando: ' + error.message);
-    return;
-  }
+  const saveBtn = card.querySelector('.btn-primary');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner-sm"></span> Guardando...'; }
 
-  // Update cache
+  const { error } = await sb.from(table).update(changes).eq('id', id);
+  if (error) { alert('Error guardando: ' + error.message); return; }
+
   if (cache[table]) {
     const idx = cache[table].findIndex(r => r.id === id);
     if (idx >= 0) Object.assign(cache[table][idx], changes);
   }
-
-  // Re-render
   delete cache[table];
   loadTab(table, true);
 }
@@ -684,27 +1224,35 @@ function cancelEdit(table) {
 }
 
 async function deleteRecord(table, id, uid) {
-  if (!confirm('Eliminar este registro?')) return;
+  if (!confirm('Eliminar este registro? Esta accion no se puede deshacer.')) return;
 
   const { error } = await sb.from(table).delete().eq('id', id);
-  if (error) {
-    alert('Error eliminando: ' + error.message);
-    return;
-  }
+  if (error) { alert('Error eliminando: ' + error.message); return; }
 
-  // Remove from cache
   if (cache[table]) {
     cache[table] = cache[table].filter(r => r.id !== id);
     document.getElementById('count-' + table).textContent = cache[table].length;
   }
-
-  // Remove card from DOM
   const card = document.getElementById('card-' + uid);
-  if (card) card.remove();
+  if (card) {
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(-20px)';
+    card.style.transition = 'all .3s ease';
+    setTimeout(() => card.remove(), 300);
+  }
 }
 
-// ========== Helpers ==========
+// ===== Helpers =====
+function fullName(r) {
+  return [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+}
+
+function getInitials(r) {
+  return ((r.primer_nombre || '').charAt(0) + (r.primer_apellido || '').charAt(0)).toUpperCase() || '?';
+}
+
 function dt(label, val) {
+  if (typeof val === 'boolean') val = val ? 'Si' : 'No';
   return '<dt>' + label + '</dt><dd>' + (val != null && val !== '' ? val : '-') + '</dd>';
 }
 
@@ -714,19 +1262,23 @@ function dtEditable(uid, field, label, val) {
 
 function fmtDate(d) {
   if (!d) return '-';
-  const dt = new Date(d);
-  return dt.toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return new Date(d).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function fmtDateShort(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function esc(v) {
   if (v == null) return '-';
   if (typeof v === 'boolean') return v ? 'Si' : 'No';
-  return String(v);
+  return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function escAttr(v) {
   if (v == null) return '';
-  return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;');
 }
 
 function isExpired(dateStr) {
@@ -736,33 +1288,53 @@ function isExpired(dateStr) {
 
 function estadoBadge(v) {
   if (!v) return '';
-  const cls = { pendiente: 'badge-pendiente', revisado: 'badge-revisado', aprobado: 'badge-aprobado', rechazado: 'badge-rechazado' }[v.toLowerCase()] || 'badge-pendiente';
-  return '<span class="badge ' + cls + '">' + v + '</span>';
+  const cls = { pendiente:'badge-pendiente', revisado:'badge-revisado', aprobado:'badge-aprobado', rechazado:'badge-rechazado' }[v.toLowerCase()] || 'badge-pendiente';
+  return '<span class="badge ' + cls + '">' + esc(v) + '</span>';
 }
 
-function fileIndicator(val, label) {
-  if (!val) return '<span class="file-missing" title="No subido">&#10007; ' + label + '</span>';
+function estadoRuntBadge(v) {
+  if (!v) return '-';
+  const lower = v.toLowerCase();
+  let cls = 'badge-pendiente';
+  if (lower.includes('vigente') || lower.includes('activ')) cls = 'badge-vigente';
+  else if (lower.includes('vencid') || lower.includes('cancel') || lower.includes('suspend')) cls = 'badge-vencida';
+  return '<span class="badge ' + cls + '">' + esc(v) + '</span>';
+}
+
+function docThumb(val, label) {
+  if (!val) {
+    return '<div class="doc-missing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' + label + '</div>';
+  }
   const url = STORAGE_BASE + val;
-  return '<a class="file-link" href="' + url + '" target="_blank" rel="noopener">&#10003; ' + label + '</a>';
+  return '<div class="doc-thumb" onclick="openLightbox(\'' + escAttr(url) + '\', \'' + escAttr(label) + '\')"><img src="' + escAttr(url) + '" alt="' + escAttr(label) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=padding:1rem;text-align:center;font-size:.65rem;color:var(--gray-500)>No se pudo cargar</div>\'"><div class="doc-thumb-label">' + label + '</div></div>';
 }
 
 function toggleCard(el) {
   el.closest('.card').classList.toggle('open');
 }
 
-function cardWrap(title, sub, estado, detail, uid) {
+function cardWrap(title, sub, estado, detail, uid, avatarContent, stripHtml, idx) {
   const estadoHtml = estado ? '<span data-estado-uid="' + uid + '" data-value="' + escAttr(estado) + '">' + estadoBadge(estado) + '</span>' : '';
-  return '<div class="card" id="card-' + uid + '"><div class="card-header" onclick="toggleCard(this)"><div><div class="card-title">' + title + '</div><div class="card-sub">' + sub + '</div></div><div class="card-right">' + estadoHtml + ' <span class="expand-arrow">&#8250;</span></div></div><div class="card-detail">' + detail + '</div></div>';
+  const delay = Math.min((idx || 0) * 0.04, 0.4);
+  let html = '<div class="card" id="card-' + uid + '" style="animation-delay:' + delay + 's">';
+  html += '<div class="card-header" onclick="toggleCard(this)">';
+  html += '<div class="card-header-left">';
+  html += '<div class="card-avatar">' + (avatarContent || '?') + '</div>';
+  html += '<div><div class="card-title">' + title + '</div><div class="card-sub">' + sub + '</div></div>';
+  html += '</div>';
+  html += '<div class="card-right">' + estadoHtml + ' <span class="expand-arrow">&#8250;</span></div>';
+  html += '</div>';
+  if (stripHtml) html += stripHtml;
+  html += '<div class="card-detail"><div class="card-detail-inner"><div class="card-detail-content">' + detail + '</div></div></div>';
+  html += '</div>';
+  return html;
 }
 
 // Load counts
 async function loadAllCounts() {
-  const tables = ['conductores', 'propietarios', 'vehiculos'];
-  for (const t of tables) {
+  for (const t of ['conductores', 'propietarios', 'vehiculos']) {
     const { count, error } = await sb.from(t).select('*', { count: 'exact', head: true });
-    if (!error && count != null) {
-      document.getElementById('count-' + t).textContent = count;
-    }
+    if (!error && count != null) document.getElementById('count-' + t).textContent = count;
   }
 }
 </script>
