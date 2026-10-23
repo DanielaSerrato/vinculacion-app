@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinculacion — Capital Cargo Colombia</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1A1A1A;--gold:#E32526;--white:#FFFFFF;--gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;--gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1)}
+html{font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--gray-50);color:var(--gray-700);line-height:1.6;min-height:100vh}
+header{background:var(--white);color:var(--navy);padding:1.5rem 1rem;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.1);border-bottom:3px solid var(--gold)}
+header h1{font-size:1.35rem;letter-spacing:.12em;font-weight:800;margin-bottom:.15rem}
+header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
+.gold{color:var(--gold)}
+.container{max-width:640px;margin:0 auto;padding:1.5rem 1rem}
+.intro{background:var(--white);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem;text-align:center}
+.intro h2{color:var(--navy);font-size:1.1rem;margin-bottom:.5rem}
+.intro p{color:var(--gray-600);font-size:.88rem;line-height:1.6}
+.cards{display:flex;flex-direction:column;gap:1rem}
+.card{background:var(--white);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:1.25rem;text-decoration:none;color:inherit;transition:all .2s;border-left:4px solid var(--gold);-webkit-tap-highlight-color:transparent}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translateY(-1px)}
+.card:active{transform:translateY(0)}
+.card .icon{width:56px;height:56px;background:rgba(227,37,38,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.card .info h3{font-size:1rem;color:var(--navy);margin-bottom:.2rem}
+.card .info p{font-size:.8rem;color:var(--gray-500);line-height:1.4}
+.card .arrow{margin-left:auto;color:var(--gold);font-size:1.3rem;font-weight:700;flex-shrink:0}
+.note{background:#FFF3CD;border:1px solid #FFECB5;border-radius:var(--radius);padding:1rem;margin-top:1.5rem;font-size:.82rem;color:#856404;line-height:1.5;text-align:center}
+footer{text-align:center;padding:2rem 1rem;font-size:.72rem;color:var(--gray-400)}
+footer a{color:var(--gold)}
+@media(max-width:480px){
+  .container{padding:1rem .75rem}
+  .card{padding:1.25rem 1rem;gap:1rem}
+  .card .icon{width:48px;height:48px;font-size:1.4rem}
+  header h1{font-size:1.15rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="gold">Capital</span> Cargo Colombia</h1>
+  <p>Solicitud de Vinculacion</p>
+</header>
+
+<div class="container">
+
+  <div class="intro">
+    <h2>Bienvenido al proceso de vinculacion</h2>
+    <p>Para continuar, necesitamos que diligencies los formularios correspondientes. Cada formulario se identifica por la <strong>placa del vehiculo</strong>.</p>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="conductor.html">
+      <div class="icon">&#128100;</div>
+      <div class="info">
+        <h3>Datos del Conductor</h3>
+        <p>Informacion personal, documentos, pase de conduccion y referencias.</p>
+      </div>
+      <div class="arrow">&#8250;</div>
+    </a>
+
+    <a class="card" href="propietario.html">
+      <div class="icon">&#128188;</div>
+      <div class="info">
+        <h3>Datos del Propietario</h3>
+        <p>Informacion del propietario del vehiculo, cedula, RUT y certificacion bancaria.</p>
+      </div>
+      <div class="arrow">&#8250;</div>
+    </a>
+
+    <a class="card" href="vehiculo.html">
+      <div class="icon">&#128666;</div>
+      <div class="info">
+        <h3>Datos del Vehiculo</h3>
+        <p>Placa, tarjeta de propiedad, fotos, SOAT, tecnomecanica y sistema satelital.</p>
+      </div>
+      <div class="arrow">&#8250;</div>
+    </a>
+
+    <a class="card" href="trailer.html">
+      <div class="icon">&#128674;</div>
+      <div class="info">
+        <h3>Datos del Trailer</h3>
+        <p>Solo para vehiculos tipo Mula. Tarjeta de propiedad y fotos del trailer.</p>
+      </div>
+      <div class="arrow">&#8250;</div>
+    </a>
+  </div>
+
+  <div class="note">
+    <strong>Importante:</strong> Usa la misma placa en todos los formularios para que podamos vincular tu informacion correctamente.
+  </div>
+
+</div>
+
+<footer>
+  Capital Cargo Colombia &middot; NIT 900491068-0 &middot; <a href="mailto:gerencia@capitalcargocolombia.com">gerencia@capitalcargocolombia.com</a>
+</footer>
+
+</body>
+</html>

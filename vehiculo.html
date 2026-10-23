@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehículo — Capital Cargo Colombia</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1A1A1A;--gold:#E32526;--white:#FFFFFF;--gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;--gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;--red:#DC3545;--green:#28A745;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1)}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--gray-50);color:var(--gray-700);line-height:1.6;min-height:100vh}
+header{background:var(--white);color:var(--navy);padding:1.25rem 1rem;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.1);border-bottom:3px solid var(--gold)}
+header h1{font-size:1.35rem;letter-spacing:.12em;font-weight:800;margin-bottom:.15rem}
+header p{font-size:.8rem;color:var(--gray-500);letter-spacing:.04em}
+.gold{color:var(--gold)}
+.container{max-width:640px;margin:0 auto;padding:1rem}
+/* Form card */
+.form-card{background:var(--white);border-radius:var(--radius);padding:1.5rem 1.25rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.form-card h2{color:var(--navy);font-size:1.15rem;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+.form-card .section-desc{color:var(--gray-500);font-size:.8rem;margin-bottom:1.25rem}
+/* Fields */
+.field{margin-bottom:1.15rem}
+.field label{display:block;font-weight:600;font-size:.88rem;margin-bottom:.35rem;color:var(--gray-700)}
+.field label .req{color:var(--red);margin-left:2px}
+.field .hint{font-size:.75rem;color:var(--gray-500);margin-top:2px;font-style:italic}
+.field input[type="text"],.field select{width:100%;padding:.75rem .85rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:1rem;background:var(--white);transition:border-color .2s;appearance:none;-webkit-appearance:none}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(227,37,38,.15)}
+.field input.error,.field select.error{border-color:var(--red)}
+.field .error-msg{color:var(--red);font-size:.75rem;margin-top:3px;display:none}
+.field input.error~.error-msg,.field select.error~.error-msg,.field.has-error .error-msg{display:block}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23495057' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2.5rem}
+/* Radio groups */
+.radio-group{display:flex;gap:.75rem;flex-wrap:wrap}
+.radio-group label{display:flex;align-items:center;gap:.5rem;font-weight:400;padding:.6rem 1rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);cursor:pointer;transition:all .2s;min-width:80px;justify-content:center;-webkit-tap-highlight-color:transparent}
+.radio-group label:has(input:checked){border-color:var(--gold);background:rgba(227,37,38,.06);font-weight:600}
+.radio-group input[type="radio"]{accent-color:var(--gold);width:18px;height:18px}
+/* Conditional fields */
+.conditional{display:none;margin-top:.75rem}
+.conditional.visible{display:block}
+/* File upload */
+.file-drop{border:2px dashed var(--gray-300);border-radius:var(--radius);padding:1.25rem .75rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray-50);position:relative;-webkit-tap-highlight-color:transparent}
+.file-drop:hover,.file-drop.dragover{border-color:var(--gold);background:rgba(227,37,38,.04)}
+.file-drop .icon{font-size:1.8rem;margin-bottom:.25rem;color:var(--gray-400)}
+.file-drop .text{font-size:.82rem;color:var(--gray-500)}
+.file-drop .text strong{color:var(--gold)}
+.file-drop input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-preview{margin-top:.5rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.file-preview .file-item{display:flex;align-items:center;gap:.5rem;background:var(--gray-100);padding:.4rem .65rem;border-radius:6px;font-size:.78rem;max-width:100%;position:relative}
+.file-preview .file-item img{width:40px;height:40px;object-fit:cover;border-radius:4px}
+.file-preview .file-item .fname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
+.file-preview .file-item .remove-file{background:var(--red);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.file-count{font-size:.75rem;color:var(--gray-500);margin-top:.25rem}
+/* Buttons */
+.btn{width:100%;padding:.85rem 1.5rem;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;-webkit-tap-highlight-color:transparent;min-height:52px;margin-top:1.5rem}
+.btn-primary{background:var(--gold);color:var(--white)}
+.btn-primary:hover{background:#c91f20}
+.btn-primary:disabled{background:var(--gray-300);color:var(--gray-500);cursor:not-allowed}
+/* Overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.overlay-card{background:var(--white);border-radius:var(--radius);padding:2rem 1.5rem;text-align:center;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.overlay-card .spinner{width:48px;height:48px;border:4px solid var(--gray-200);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay-card .progress-text{font-size:.85rem;color:var(--gray-500);margin-top:.5rem}
+.overlay-card .progress-bar-bg{width:100%;height:6px;background:var(--gray-200);border-radius:3px;margin-top:.75rem;overflow:hidden}
+.overlay-card .progress-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .3s;width:0%}
+/* Success */
+.success-view{display:none;text-align:center;padding:3rem 1.5rem}
+.success-view.active{display:block}
+.success-view .check{width:72px;height:72px;border-radius:50%;background:var(--green);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.25rem}
+.success-view h2{color:var(--navy);font-size:1.25rem;margin-bottom:.5rem}
+.success-view p{color:var(--gray-500);font-size:.9rem}
+/* Footer */
+footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72rem;line-height:1.6}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="gold">Capital</span> Cargo Colombia</h1>
+  <p>Datos del Vehículo</p>
+</header>
+
+<main class="container">
+  <!-- FORM -->
+  <form id="vehiculoForm" novalidate>
+    <div class="form-card">
+      <h2>Información del Vehículo</h2>
+      <p class="section-desc">Todos los campos marcados con * son obligatorios.</p>
+
+      <!-- Placa -->
+      <div class="field">
+        <label for="placa">Placa<span class="req">*</span></label>
+        <input type="text" id="placa" name="placa" required maxlength="6" pattern="[A-Za-z]{3}[0-9]{2}[A-Za-z0-9]{1}" autocomplete="off" placeholder="ABC123" style="text-transform:uppercase">
+        <div class="hint">Formato: ABC123 o ABC12D</div>
+        <div class="error-msg">Ingresa una placa válida (ej. ABC123 o ABC12D).</div>
+      </div>
+
+      <!-- Tipo de vehículo -->
+      <div class="field">
+        <label for="tipo">Tipo de vehículo<span class="req">*</span></label>
+        <select id="tipo" name="tipo" required>
+          <option value="">Selecciona…</option>
+          <option value="Mula">Mula</option>
+          <option value="Patineta">Patineta</option>
+          <option value="Dobletroque">Dobletroque</option>
+          <option value="Sencillo">Sencillo</option>
+          <option value="NPR">NPR</option>
+          <option value="NHR">NHR</option>
+          <option value="Turbo">Turbo</option>
+          <option value="Camioneta">Camioneta</option>
+        </select>
+        <div class="error-msg">Selecciona el tipo de vehículo.</div>
+      </div>
+
+      <!-- Sistema satelital -->
+      <div class="field">
+        <label>¿Sistema satelital?<span class="req">*</span></label>
+        <div class="radio-group" id="satelitalGroup">
+          <label><input type="radio" name="satelital" value="si" required> Sí</label>
+          <label><input type="radio" name="satelital" value="no" required> No</label>
+        </div>
+        <div class="error-msg">Selecciona una opción.</div>
+      </div>
+
+      <!-- Conditional: satelital user/pass -->
+      <div class="conditional" id="satelitalFields">
+        <div class="field">
+          <label for="satelital_usuario">Usuario satelital</label>
+          <input type="text" id="satelital_usuario" name="satelital_usuario" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="satelital_password">Contraseña satelital</label>
+          <input type="text" id="satelital_password" name="satelital_password" autocomplete="off">
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="form-card">
+      <h2>Documentos del Vehículo</h2>
+      <p class="section-desc">Sube los documentos requeridos. Máx. 10 MB por archivo.</p>
+
+      <!-- Tarjeta de propiedad frente -->
+      <div class="field" data-upload="tarjeta_frente" data-max="1" data-required="true">
+        <label>Tarjeta de propiedad (frente)<span class="req">*</span></label>
+        <div class="file-drop">
+          <div class="icon">&#128206;</div>
+          <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es obligatorio.</div>
+      </div>
+
+      <!-- Tarjeta de propiedad reverso -->
+      <div class="field" data-upload="tarjeta_reverso" data-max="1" data-required="true">
+        <label>Tarjeta de propiedad (reverso)<span class="req">*</span></label>
+        <div class="file-drop">
+          <div class="icon">&#128206;</div>
+          <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es obligatorio.</div>
+      </div>
+
+      <!-- Fotos del vehiculo -->
+      <div class="field" data-upload="fotos" data-max="6" data-required="true">
+        <label>Fotos del vehículo (frente, lados, trasera, placas visibles)<span class="req">*</span></label>
+        <div class="file-drop">
+          <div class="icon">&#128247;</div>
+          <div class="text">Arrastra o <strong>selecciona archivos</strong> (hasta 6)</div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" multiple>
+        </div>
+        <div class="file-preview"></div>
+        <div class="file-count"></div>
+        <div class="error-msg">Sube al menos una foto del vehículo.</div>
+      </div>
+
+      <!-- Tecnomecánica -->
+      <div class="field" data-upload="tecnomecanica" data-max="1" data-required="true">
+        <label>Tecnomecánica vigente<span class="req">*</span></label>
+        <div class="file-drop">
+          <div class="icon">&#128206;</div>
+          <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es obligatorio.</div>
+      </div>
+
+      <!-- SOAT -->
+      <div class="field" data-upload="soat" data-max="1" data-required="true">
+        <label>SOAT vigente<span class="req">*</span></label>
+        <div class="file-drop">
+          <div class="icon">&#128206;</div>
+          <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es obligatorio.</div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitBtn">Enviar datos del vehículo</button>
+  </form>
+
+  <!-- Upload overlay -->
+  <div class="overlay" id="uploadOverlay">
+    <div class="overlay-card">
+      <div class="spinner"></div>
+      <p style="font-weight:700;color:var(--navy)">Subiendo archivos…</p>
+      <p class="progress-text" id="progressText">0 de 0</p>
+      <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-view" id="successView">
+    <div class="check">&#10003;</div>
+    <h2>¡Datos del vehículo enviados!</h2>
+    <p>Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
+  </div>
+</main>
+
+<footer>Capital Cargo Colombia · NIT 900491068-0 · gerencia@capitalcargocolombia.com</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+'use strict';
+
+const SUPABASE_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZHZyanBlbGN5anJ2b25waW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDc0ODcsImV4cCI6MjEwODE4MzQ4N30.Wz7ceDsvmBZtSnad1cHV972pnOXXaE00VoGkt0bqF-g';
+const BUCKET = 'vinculacion-docs';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// DOM refs
+const form = document.getElementById('vehiculoForm');
+const placaInput = document.getElementById('placa');
+const tipoSelect = document.getElementById('tipo');
+const satelitalGroup = document.getElementById('satelitalGroup');
+const satelitalFields = document.getElementById('satelitalFields');
+const submitBtn = document.getElementById('submitBtn');
+const overlay = document.getElementById('uploadOverlay');
+const progressText = document.getElementById('progressText');
+const progressFill = document.getElementById('progressFill');
+const successView = document.getElementById('successView');
+
+// File storage: { fieldName: File[] }
+const fileStore = {};
+
+// --- Placa auto-uppercase ---
+placaInput.addEventListener('input', function(){
+  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+});
+
+// --- Satelital toggle ---
+document.querySelectorAll('input[name="satelital"]').forEach(function(r){
+  r.addEventListener('change', function(){
+    satelitalFields.classList.toggle('visible', this.value === 'si');
+  });
+});
+
+// --- File uploads ---
+document.querySelectorAll('.field[data-upload]').forEach(function(field){
+  const name = field.dataset.upload;
+  const max = parseInt(field.dataset.max, 10);
+  const drop = field.querySelector('.file-drop');
+  const input = drop.querySelector('input[type="file"]');
+  const preview = field.querySelector('.file-preview');
+  const countEl = field.querySelector('.file-count');
+  fileStore[name] = [];
+
+  function addFiles(files){
+    var list = Array.from(files);
+    for(var i = 0; i < list.length; i++){
+      if(fileStore[name].length >= max) break;
+      if(list[i].size > 10 * 1024 * 1024){
+        alert('El archivo "' + list[i].name + '" supera los 10 MB.');
+        continue;
+      }
+      fileStore[name].push(list[i]);
+    }
+    renderPreview();
+    field.classList.remove('has-error');
+  }
+
+  function renderPreview(){
+    preview.innerHTML = '';
+    fileStore[name].forEach(function(f, idx){
+      var item = document.createElement('div');
+      item.className = 'file-item';
+      if(f.type && f.type.startsWith('image/')){
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        item.appendChild(img);
+      }
+      var fname = document.createElement('span');
+      fname.className = 'fname';
+      fname.textContent = f.name;
+      item.appendChild(fname);
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'remove-file';
+      rm.textContent = '✕';
+      rm.addEventListener('click', function(){
+        fileStore[name].splice(idx, 1);
+        renderPreview();
+      });
+      item.appendChild(rm);
+      preview.appendChild(item);
+    });
+    // Update count for multi
+    if(countEl){
+      countEl.textContent = fileStore[name].length > 0
+        ? fileStore[name].length + ' de ' + max + ' archivo(s)'
+        : '';
+    }
+    // Toggle drop zone visibility
+    if(fileStore[name].length >= max){
+      drop.style.display = 'none';
+    } else {
+      drop.style.display = '';
+    }
+  }
+
+  input.addEventListener('change', function(){
+    addFiles(this.files);
+    this.value = '';
+  });
+
+  drop.addEventListener('dragover', function(e){
+    e.preventDefault();
+    drop.classList.add('dragover');
+  });
+  drop.addEventListener('dragleave', function(){
+    drop.classList.remove('dragover');
+  });
+  drop.addEventListener('drop', function(e){
+    e.preventDefault();
+    drop.classList.remove('dragover');
+    addFiles(e.dataTransfer.files);
+  });
+});
+
+// --- Validation ---
+function validate(){
+  var valid = true;
+
+  // Placa
+  var placa = placaInput.value.trim();
+  if(!placa || !/^[A-Z]{3}[0-9]{2}[A-Z0-9]{1}$/.test(placa)){
+    placaInput.classList.add('error');
+    valid = false;
+  } else {
+    placaInput.classList.remove('error');
+  }
+
+  // Tipo
+  if(!tipoSelect.value){
+    tipoSelect.classList.add('error');
+    valid = false;
+  } else {
+    tipoSelect.classList.remove('error');
+  }
+
+  // Satelital radio
+  var satField = satelitalGroup.closest('.field');
+  var satVal = document.querySelector('input[name="satelital"]:checked');
+  if(!satVal){
+    satField.classList.add('has-error');
+    valid = false;
+  } else {
+    satField.classList.remove('has-error');
+  }
+
+  // File fields
+  document.querySelectorAll('.field[data-upload][data-required="true"]').forEach(function(f){
+    var name = f.dataset.upload;
+    if(!fileStore[name] || fileStore[name].length === 0){
+      f.classList.add('has-error');
+      valid = false;
+    } else {
+      f.classList.remove('has-error');
+    }
+  });
+
+  return valid;
+}
+
+// --- Upload file to Supabase Storage ---
+async function uploadFile(file, placa, fieldName){
+  var ext = file.name.split('.').pop().toLowerCase();
+  var ts = Date.now();
+  var path = 'veh_' + placa + '/' + fieldName + '_' + ts + '.' + ext;
+  var { error } = await sb.storage.from(BUCKET).upload(path, file, {
+    cacheControl: '3600',
+    upsert: false
+  });
+  if(error) throw new Error('Error subiendo ' + file.name + ': ' + error.message);
+  return path;
+}
+
+// --- Submit ---
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!validate()) return;
+
+  submitBtn.disabled = true;
+  var placa = placaInput.value.trim().toUpperCase();
+  var satVal = document.querySelector('input[name="satelital"]:checked').value;
+  var isSat = satVal === 'si';
+
+  // Count total files
+  var totalFiles = 0;
+  var uploadFields = ['tarjeta_frente','tarjeta_reverso','fotos','tecnomecanica','soat'];
+  uploadFields.forEach(function(n){ totalFiles += fileStore[n].length; });
+
+  var uploaded = 0;
+  function updateProgress(){
+    uploaded++;
+    progressText.textContent = uploaded + ' de ' + totalFiles;
+    progressFill.style.width = Math.round((uploaded / totalFiles) * 100) + '%';
+  }
+
+  overlay.classList.add('active');
+  progressText.textContent = '0 de ' + totalFiles;
+  progressFill.style.width = '0%';
+
+  try {
+    // Upload all files
+    var tarjetaFrentePath = await uploadFile(fileStore['tarjeta_frente'][0], placa, 'tarjeta_frente');
+    updateProgress();
+
+    var tarjetaReversoPath = await uploadFile(fileStore['tarjeta_reverso'][0], placa, 'tarjeta_reverso');
+    updateProgress();
+
+    var fotosPaths = [];
+    for(var i = 0; i < fileStore['fotos'].length; i++){
+      var p = await uploadFile(fileStore['fotos'][i], placa, 'fotos_' + (i + 1));
+      fotosPaths.push(p);
+      updateProgress();
+    }
+
+    var tecnomecanicaPath = await uploadFile(fileStore['tecnomecanica'][0], placa, 'tecnomecanica');
+    updateProgress();
+
+    var soatPath = await uploadFile(fileStore['soat'][0], placa, 'soat');
+    updateProgress();
+
+    // Insert row
+    var row = {
+      placa: placa,
+      satelital: isSat,
+      satelital_usuario: isSat ? (document.getElementById('satelital_usuario').value.trim() || null) : null,
+      satelital_password: isSat ? (document.getElementById('satelital_password').value.trim() || null) : null,
+      tarjeta_frente: tarjetaFrentePath,
+      tarjeta_reverso: tarjetaReversoPath,
+      fotos: fotosPaths,
+      tecnomecanica: tecnomecanicaPath,
+      soat: soatPath,
+      tipo: tipoSelect.value
+    };
+
+    var { error } = await sb.from('vehiculos').insert([row]);
+    if(error) throw new Error('Error guardando datos: ' + error.message);
+
+    overlay.classList.remove('active');
+    form.style.display = 'none';
+    successView.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch(err){
+    overlay.classList.remove('active');
+    submitBtn.disabled = false;
+    alert(err.message || 'Ocurrió un error. Intenta de nuevo.');
+  }
+});
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conductor — Capital Cargo Colombia</title>
+<style>
+:root{--navy:#1A1A1A;--gold:#E32526;--white:#FFFFFF;--gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;--gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;--red:#DC3545;--green:#28A745;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-50);color:var(--navy);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--white);border-bottom:3px solid var(--gold);padding:1rem 1.25rem;text-align:center}
+header h1{font-size:1.5rem;font-weight:700}
+header h1 .gold{color:var(--gold)}
+header p{font-size:.95rem;color:var(--gray-600);margin-top:.15rem}
+main{flex:1;width:100%;max-width:640px;margin:0 auto;padding:1.25rem 1rem 2rem}
+.section-title{display:flex;align-items:center;gap:.5rem;margin:1.75rem 0 1rem;font-size:1.05rem;font-weight:700;color:var(--navy)}
+.section-title .badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--white);font-size:.85rem;font-weight:700;flex-shrink:0}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.3rem;color:var(--gray-700)}
+.hint{font-size:.8rem;color:var(--gray-500);margin-bottom:.35rem;font-weight:400}
+.required::after{content:' *';color:var(--red)}
+input[type=text],input[type=tel]{width:100%;padding:.75rem .85rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:1rem;background:var(--white);transition:border .2s,box-shadow .2s;-webkit-appearance:none}
+input[type=text]:focus,input[type=tel]:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(227,37,38,.15)}
+.field{margin-bottom:1.1rem}
+.radio-group{display:flex;gap:.75rem;margin-bottom:.25rem}
+.radio-option{flex:1}
+.radio-option input{position:absolute;opacity:0;pointer-events:none}
+.radio-option label{display:flex;align-items:center;justify-content:center;padding:.7rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);cursor:pointer;font-weight:600;font-size:.95rem;transition:border .2s,background .2s;text-align:center;user-select:none}
+.radio-option input:checked+label{border-color:var(--gold);background:rgba(227,37,38,.06);color:var(--gold)}
+.radio-option input:focus-visible+label{box-shadow:0 0 0 3px rgba(227,37,38,.15)}
+.blocked-msg{background:#fff3f3;border:1px solid var(--red);border-radius:var(--radius);padding:.85rem 1rem;color:var(--red);font-weight:600;font-size:.9rem;margin:.75rem 0;display:none}
+.blocked-msg.visible{display:block}
+.upload-area{border:2px dashed var(--gray-300);border-radius:var(--radius);padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:border .2s,background .2s;position:relative;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.upload-area:hover,.upload-area.dragover{border-color:var(--gold);background:rgba(227,37,38,.03)}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-area .upload-icon{font-size:1.8rem;color:var(--gray-400);margin-bottom:.25rem}
+.upload-area .upload-text{font-size:.85rem;color:var(--gray-500)}
+.upload-area .upload-text strong{color:var(--gray-700)}
+.preview-container{display:none;align-items:center;gap:.75rem;padding:.6rem;border:1.5px solid var(--gray-200);border-radius:var(--radius);background:var(--white);margin-top:.5rem}
+.preview-container.visible{display:flex}
+.preview-container img{width:56px;height:56px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.preview-container .file-icon{width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:var(--gray-100);border-radius:4px;flex-shrink:0;font-size:.7rem;font-weight:700;color:var(--gray-500);text-transform:uppercase}
+.preview-container .file-info{flex:1;min-width:0}
+.preview-container .file-name{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-container .file-size{font-size:.75rem;color:var(--gray-500)}
+.preview-container .remove-btn{background:none;border:none;color:var(--red);font-size:1.3rem;cursor:pointer;padding:.25rem;line-height:1;flex-shrink:0}
+.error-text{color:var(--red);font-size:.8rem;margin-top:.25rem;display:none}
+.error-text.visible{display:block}
+input.invalid,textarea.invalid{border-color:var(--red)}
+.privacy-section{margin:1.75rem 0}
+.privacy-toggle{width:100%;background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:.85rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:.9rem;color:var(--gray-700);transition:background .2s}
+.privacy-toggle:hover{background:var(--gray-50)}
+.privacy-toggle .arrow{transition:transform .3s;font-size:.75rem}
+.privacy-toggle .arrow.open{transform:rotate(180deg)}
+.privacy-body{background:var(--white);border:1.5px solid var(--gray-200);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:1rem;font-size:.82rem;color:var(--gray-600);line-height:1.7;max-height:600px;overflow:hidden;transition:max-height .4s ease,padding .4s ease}
+.privacy-body.collapsed{max-height:0;padding-top:0;padding-bottom:0}
+.btn-submit{display:block;width:100%;padding:.9rem;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-size:1.05rem;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:1rem}
+.btn-submit:hover{opacity:.9}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:1rem}
+.overlay.visible{display:flex}
+.overlay-card{background:var(--white);border-radius:12px;padding:2rem 1.5rem;text-align:center;max-width:380px;width:100%;box-shadow:var(--shadow)}
+.overlay-card .spinner{width:40px;height:40px;border:4px solid var(--gray-200);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay-card p{font-size:1rem;color:var(--gray-700);font-weight:600}
+.overlay-card .progress-text{font-size:.85rem;color:var(--gray-500);margin-top:.5rem}
+.success-card{text-align:center;padding:3rem 1.5rem}
+.success-card .check{width:64px;height:64px;border-radius:50%;background:var(--green);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.25rem}
+.success-card h2{font-size:1.25rem;margin-bottom:.5rem;color:var(--navy)}
+.success-card p{color:var(--gray-600);font-size:.95rem}
+footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-500);border-top:1px solid var(--gray-200);background:var(--white)}
+.hidden{display:none!important}
+@media(max-width:400px){main{padding:1rem .75rem}header h1{font-size:1.3rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="gold">Capital</span> Cargo Colombia</h1>
+  <p>Datos del Conductor</p>
+</header>
+
+<main>
+<a href="index.html" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gray-600);font-size:.9rem;text-decoration:none;margin-bottom:.75rem;font-weight:600">&larr; Volver</a>
+<form id="conductorForm" novalidate>
+
+  <!-- Placa -->
+  <div class="section-title"><span class="badge">1</span> Vehículo</div>
+  <div class="field">
+    <label for="vehiculo_placa" class="required">Placa del vehículo</label>
+    <div class="hint">Ingresa la placa del vehículo que conduces</div>
+    <input type="text" id="vehiculo_placa" name="vehiculo_placa" maxlength="6" pattern="[A-Za-z]{3}[0-9]{2}[A-Za-z0-9]{1}" required autocomplete="off" style="text-transform:uppercase">
+    <div class="error-text" id="err_vehiculo_placa">Formato inválido. Ejemplo: ABC123 o ABC12D</div>
+  </div>
+
+  <!-- Autorización tratamiento datos -->
+  <div class="section-title"><span class="badge">2</span> Autorización</div>
+  <div class="field">
+    <label class="required">Autorización tratamiento de datos personales</label>
+    <div class="radio-group">
+      <div class="radio-option">
+        <input type="radio" id="autoriza_si" name="autoriza_datos" value="si" required>
+        <label for="autoriza_si">Sí</label>
+      </div>
+      <div class="radio-option">
+        <input type="radio" id="autoriza_no" name="autoriza_datos" value="no" required>
+        <label for="autoriza_no">No</label>
+      </div>
+    </div>
+    <div class="error-text" id="err_autoriza_datos">Debes seleccionar una opción</div>
+    <div class="blocked-msg" id="blockedMsg">No es posible continuar sin autorizar el tratamiento de datos.</div>
+  </div>
+
+  <div id="restOfForm">
+
+  <!-- Datos personales -->
+  <div class="section-title"><span class="badge">3</span> Datos personales</div>
+  <div class="field">
+    <label for="primer_nombre" class="required">Primer nombre</label>
+    <input type="text" id="primer_nombre" name="primer_nombre" required>
+    <div class="error-text" id="err_primer_nombre">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="segundo_nombre">Segundo nombre</label>
+    <input type="text" id="segundo_nombre" name="segundo_nombre">
+  </div>
+  <div class="field">
+    <label for="primer_apellido" class="required">Primer apellido</label>
+    <input type="text" id="primer_apellido" name="primer_apellido" required>
+    <div class="error-text" id="err_primer_apellido">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="segundo_apellido">Segundo apellido</label>
+    <input type="text" id="segundo_apellido" name="segundo_apellido">
+  </div>
+  <div class="field">
+    <label for="cedula" class="required">Número de cédula</label>
+    <input type="text" id="cedula" name="cedula" inputmode="numeric" pattern="[0-9]{5,12}" required>
+    <div class="error-text" id="err_cedula">Ingresa entre 5 y 12 dígitos</div>
+  </div>
+  <div class="field">
+    <label for="direccion" class="required">Dirección</label>
+    <input type="text" id="direccion" name="direccion" required>
+    <div class="error-text" id="err_direccion">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="ciudad" class="required">Ciudad de residencia</label>
+    <input type="text" id="ciudad" name="ciudad" required>
+    <div class="error-text" id="err_ciudad">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="telefono" class="required">Teléfono</label>
+    <input type="text" id="telefono" name="telefono" inputmode="tel" pattern="[0-9]{7,15}" required>
+    <div class="error-text" id="err_telefono">Ingresa entre 7 y 15 dígitos</div>
+  </div>
+
+  <!-- Documentos -->
+  <div class="section-title"><span class="badge">4</span> Documentos</div>
+  <div class="field">
+    <label class="required">Cédula frente</label>
+    <div class="upload-area" id="drop_cedula_frente">
+      <input type="file" id="file_cedula_frente" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_cedula_frente"></div>
+    <div class="error-text" id="err_cedula_frente">Este documento es requerido</div>
+  </div>
+  <div class="field">
+    <label class="required">Cédula reverso</label>
+    <div class="upload-area" id="drop_cedula_reverso">
+      <input type="file" id="file_cedula_reverso" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_cedula_reverso"></div>
+    <div class="error-text" id="err_cedula_reverso">Este documento es requerido</div>
+  </div>
+  <div class="field">
+    <label class="required">Pase de conducción frente</label>
+    <div class="upload-area" id="drop_pase_frente">
+      <input type="file" id="file_pase_frente" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_pase_frente"></div>
+    <div class="error-text" id="err_pase_frente">Este documento es requerido</div>
+  </div>
+  <div class="field">
+    <label class="required">Pase de conducción reverso</label>
+    <div class="upload-area" id="drop_pase_reverso">
+      <input type="file" id="file_pase_reverso" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_pase_reverso"></div>
+    <div class="error-text" id="err_pase_reverso">Este documento es requerido</div>
+  </div>
+  <div class="field">
+    <label for="numero_cuenta" class="required">Número de cuenta</label>
+    <input type="text" id="numero_cuenta" name="numero_cuenta" inputmode="numeric" required>
+    <div class="error-text" id="err_numero_cuenta">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="banco" class="required">Banco</label>
+    <input type="text" id="banco" name="banco" required>
+    <div class="error-text" id="err_banco">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label class="required">Tipo de cuenta</label>
+    <div class="radio-group">
+      <div class="radio-option">
+        <input type="radio" id="tipo_ahorros" name="tipo_cuenta" value="Ahorros" required>
+        <label for="tipo_ahorros">Ahorros</label>
+      </div>
+      <div class="radio-option">
+        <input type="radio" id="tipo_corriente" name="tipo_cuenta" value="Corriente" required>
+        <label for="tipo_corriente">Corriente</label>
+      </div>
+    </div>
+    <div class="error-text" id="err_tipo_cuenta">Debes seleccionar un tipo de cuenta</div>
+  </div>
+  <div class="field">
+    <label class="required">Certificación bancaria (anticipo)</label>
+    <div class="hint">Cuenta del conductor destinada al pago del anticipo.</div>
+    <div class="upload-area" id="drop_cert_bancaria">
+      <input type="file" id="file_cert_bancaria" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_cert_bancaria"></div>
+    <div class="error-text" id="err_cert_bancaria">Este documento es requerido</div>
+  </div>
+  <div class="field">
+    <label>Foto del rostro (cuello a medio cuerpo)</label>
+    <div class="hint">Dato biométrico sensible. Su entrega es facultativa.</div>
+    <div class="upload-area" id="drop_foto_rostro">
+      <input type="file" id="file_foto_rostro" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+      <div class="upload-icon">&#128247;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_foto_rostro"></div>
+    <div class="error-text" id="err_foto_rostro">Archivo muy grande (máx 10 MB)</div>
+  </div>
+  <div class="field">
+    <label>Seguridad social (EPS, pensión, ARL)</label>
+    <div class="hint">Dato potencialmente sensible. Su entrega es facultativa.</div>
+    <div class="upload-area" id="drop_seguridad_social">
+      <input type="file" id="file_seguridad_social" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+    </div>
+    <div class="preview-container" id="preview_seguridad_social"></div>
+    <div class="error-text" id="err_seguridad_social">Archivo muy grande (máx 10 MB)</div>
+  </div>
+
+  <!-- Referencias -->
+  <div class="section-title"><span class="badge">5</span> Referencias</div>
+  <div class="field">
+    <label for="ref_familiar_nombre" class="required">Nombre referencia familiar</label>
+    <input type="text" id="ref_familiar_nombre" name="ref_familiar_nombre" required>
+    <div class="error-text" id="err_ref_familiar_nombre">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="ref_familiar_telefono" class="required">Teléfono referencia familiar</label>
+    <input type="text" id="ref_familiar_telefono" name="ref_familiar_telefono" inputmode="tel" required>
+    <div class="error-text" id="err_ref_familiar_telefono">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="ref_empresa_nombre" class="required">Nombre empresa de referencia</label>
+    <input type="text" id="ref_empresa_nombre" name="ref_empresa_nombre" required>
+    <div class="error-text" id="err_ref_empresa_nombre">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="ref_empresa_telefono" class="required">Teléfono empresa de referencia</label>
+    <input type="text" id="ref_empresa_telefono" name="ref_empresa_telefono" inputmode="tel" required>
+    <div class="error-text" id="err_ref_empresa_telefono">Campo requerido</div>
+  </div>
+
+  <!-- Consentimiento manejo de datos -->
+  <div class="section-title"><span class="badge">6</span> Consentimiento</div>
+  <div class="field">
+    <label class="required">¿Autoriza el manejo de sus datos?</label>
+    <div class="radio-group">
+      <div class="radio-option">
+        <input type="radio" id="sensibles_si" name="autoriza_sensibles" value="si" required>
+        <label for="sensibles_si">Sí, autorizo</label>
+      </div>
+      <div class="radio-option">
+        <input type="radio" id="sensibles_no" name="autoriza_sensibles" value="no" required>
+        <label for="sensibles_no">No autorizo</label>
+      </div>
+    </div>
+    <div class="error-text" id="err_autoriza_sensibles">Debes seleccionar una opción</div>
+  </div>
+
+  </div><!-- /restOfForm -->
+
+  <!-- Privacy notice -->
+  <div class="privacy-section">
+    <button type="button" class="privacy-toggle" id="privacyToggle">
+      Aviso de Privacidad
+      <span class="arrow open" id="privacyArrow">&#9660;</span>
+    </button>
+    <div class="privacy-body" id="privacyBody">
+      AVISO DE PRIVACIDAD. Capital Cargo Colombia, NIT 900491068-0, con domicilio en Avenida Calle 26 # 85D-55, Oficina 310 D, módulo 2, Centro Empresarial Dorado Plaza, Bogotá D. C., celular 311 259 6841 y correo gerencia@capitalcargocolombia.com, es responsable del tratamiento de los datos suministrados. La información se utilizará para gestionar la vinculación; crear y actualizar hojas de vida y registros en Systram; verificar identidad, documentos y requisitos operativos; validar referencias; coordinar la operación y el seguimiento satelital cuando aplique; administrar anticipos, saldos, pagos y facturación; prevenir fraude y suplantación; contactar al titular; y cumplir obligaciones legales, contractuales, contables y tributarias. Puedes conocer, actualizar, rectificar y suprimir tus datos; solicitar prueba de la autorización; conocer su uso; revocar la autorización cuando proceda; acceder gratuitamente a tu información; y presentar quejas ante la SIC después de agotar el trámite interno. La fotografía del rostro y los documentos de seguridad social pueden contener datos sensibles: su entrega es facultativa y requiere autorización explícita. La política completa puede solicitarse en gerencia@capitalcargocolombia.com. Al suministrar datos de referencias, declaras que les informaste que Capital Cargo Colombia podrá contactarlas para validar este proceso y que cuentas con autorización para comunicar sus datos cuando sea exigible.
+    </div>
+  </div>
+
+  <button type="submit" class="btn-submit" id="btnSubmit">Enviar datos</button>
+  <a href="index.html" style="display:flex;align-items:center;justify-content:center;gap:.35rem;color:var(--gray-600);font-size:.9rem;text-decoration:none;margin-top:1rem;font-weight:600">&larr; Volver</a>
+</form>
+
+<div class="success-card hidden" id="successCard">
+  <div class="check">&#10003;</div>
+  <h2>¡Datos del conductor enviados!</h2>
+  <p>Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
+</div>
+</main>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay">
+  <div class="overlay-card">
+    <div class="spinner"></div>
+    <p>Enviando información...</p>
+    <div class="progress-text" id="progressText">Subiendo documentos...</div>
+  </div>
+</div>
+
+<footer>Capital Cargo Colombia &middot; NIT 900491068-0 &middot; gerencia@capitalcargocolombia.com</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  const SUPABASE_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZHZyanBlbGN5anJ2b25waW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDc0ODcsImV4cCI6MjEwODE4MzQ4N30.Wz7ceDsvmBZtSnad1cHV972pnOXXaE00VoGkt0bqF-g';
+  const BUCKET = 'vinculacion-docs';
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+  /* --- File state --- */
+  const fileState = {};
+  const fileFields = [
+    'foto_rostro','seguridad_social',
+    'cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'
+  ];
+  const requiredFileFields = ['cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
+
+  /* --- DOM helpers --- */
+  const $ = id => document.getElementById(id);
+  const form = $('conductorForm');
+  const overlay = $('overlay');
+  const progressText = $('progressText');
+  const successCard = $('successCard');
+  const blockedMsg = $('blockedMsg');
+  const restOfForm = $('restOfForm');
+
+  /* --- Placa auto-uppercase --- */
+  $('vehiculo_placa').addEventListener('input', function(){
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  });
+
+  /* --- Autorización tratamiento datos --- */
+  document.querySelectorAll('input[name="autoriza_datos"]').forEach(r => {
+    r.addEventListener('change', function(){
+      if(this.value === 'no'){
+        blockedMsg.classList.add('visible');
+        restOfForm.querySelectorAll('input,button[type=submit]').forEach(el => el.disabled = true);
+        $('btnSubmit').disabled = true;
+      } else {
+        blockedMsg.classList.remove('visible');
+        restOfForm.querySelectorAll('input,button[type=submit]').forEach(el => el.disabled = false);
+        $('btnSubmit').disabled = false;
+      }
+    });
+  });
+
+  /* --- Privacy toggle --- */
+  $('privacyToggle').addEventListener('click', function(){
+    const body = $('privacyBody');
+    const arrow = $('privacyArrow');
+    body.classList.toggle('collapsed');
+    arrow.classList.toggle('open');
+  });
+
+  /* --- File upload handling --- */
+  fileFields.forEach(field => {
+    const dropArea = $('drop_' + field);
+    const fileInput = $('file_' + field);
+    const previewEl = $('preview_' + field);
+
+    if(!dropArea || !fileInput) return;
+
+    ['dragenter','dragover'].forEach(ev => {
+      dropArea.addEventListener(ev, e => { e.preventDefault(); dropArea.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(ev => {
+      dropArea.addEventListener(ev, e => { e.preventDefault(); dropArea.classList.remove('dragover'); });
+    });
+    dropArea.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      if(files.length) handleFile(field, files[0]);
+    });
+    fileInput.addEventListener('change', function(){
+      if(this.files.length) handleFile(field, this.files[0]);
+    });
+  });
+
+  function handleFile(field, file){
+    const errEl = $('err_' + field);
+    const previewEl = $('preview_' + field);
+
+    if(file.size > MAX_FILE_SIZE){
+      errEl.classList.add('visible');
+      return;
+    }
+    errEl.classList.remove('visible');
+    fileState[field] = file;
+
+    // Build preview
+    const isImage = file.type.startsWith('image/');
+    const ext = file.name.split('.').pop().toUpperCase();
+    const sizeStr = file.size < 1024*1024
+      ? (file.size/1024).toFixed(0) + ' KB'
+      : (file.size/(1024*1024)).toFixed(1) + ' MB';
+
+    previewEl.innerHTML = '';
+    if(isImage){
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      previewEl.appendChild(img);
+    } else {
+      const icon = document.createElement('div');
+      icon.className = 'file-icon';
+      icon.textContent = ext;
+      previewEl.appendChild(icon);
+    }
+    const info = document.createElement('div');
+    info.className = 'file-info';
+    info.innerHTML = '<div class="file-name">' + escHtml(file.name) + '</div><div class="file-size">' + sizeStr + '</div>';
+    previewEl.appendChild(info);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.innerHTML = '&times;';
+    removeBtn.addEventListener('click', function(){
+      fileState[field] = null;
+      previewEl.classList.remove('visible');
+      previewEl.innerHTML = '';
+      const fileInput = $('file_' + field);
+      if(fileInput) fileInput.value = '';
+    });
+    previewEl.appendChild(removeBtn);
+    previewEl.classList.add('visible');
+  }
+
+  function escHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  /* --- Validation --- */
+  function clearErrors(){
+    document.querySelectorAll('.error-text').forEach(el => el.classList.remove('visible'));
+    document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  }
+
+  function showError(fieldId, msg){
+    const errEl = $('err_' + fieldId);
+    const input = $(fieldId);
+    if(errEl) errEl.classList.add('visible');
+    if(input) input.classList.add('invalid');
+  }
+
+  function validate(){
+    clearErrors();
+    let ok = true;
+    let firstErr = null;
+
+    function fail(id){
+      ok = false;
+      showError(id);
+      if(!firstErr) firstErr = $(id) || $('err_' + id);
+    }
+
+    // Placa
+    const placa = $('vehiculo_placa').value.trim();
+    if(!placa || !/^[A-Z]{3}[0-9]{2}[A-Z0-9]$/.test(placa)) fail('vehiculo_placa');
+
+    // Autorización datos
+    const autDatos = document.querySelector('input[name="autoriza_datos"]:checked');
+    if(!autDatos){ fail('autoriza_datos'); }
+    else if(autDatos.value === 'no'){ fail('autoriza_datos'); }
+
+    // If blocked, no need to validate rest
+    if(autDatos && autDatos.value === 'no'){
+      if(firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+      return false;
+    }
+
+    // Text fields
+    const textReq = ['primer_nombre','primer_apellido','cedula','direccion','ciudad','telefono',
+                     'numero_cuenta','banco',
+                     'ref_familiar_nombre','ref_familiar_telefono','ref_empresa_nombre','ref_empresa_telefono'];
+    textReq.forEach(id => {
+      const v = $(id).value.trim();
+      if(!v) fail(id);
+    });
+
+    // Cedula pattern
+    const ced = $('cedula').value.trim();
+    if(ced && !/^[0-9]{5,12}$/.test(ced)) fail('cedula');
+
+    // Telefono pattern
+    const tel = $('telefono').value.trim();
+    if(tel && !/^[0-9]{7,15}$/.test(tel)) fail('telefono');
+
+    // Tipo de cuenta
+    const tipoCuenta = document.querySelector('input[name="tipo_cuenta"]:checked');
+    if(!tipoCuenta) fail('tipo_cuenta');
+
+    // Autorización sensibles
+    const autSensibles = document.querySelector('input[name="autoriza_sensibles"]:checked');
+    if(!autSensibles) fail('autoriza_sensibles');
+
+    // Required file fields
+    requiredFileFields.forEach(field => {
+      if(!fileState[field]) fail(field);
+    });
+
+    if(firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+    return ok;
+  }
+
+  /* --- Upload file to storage --- */
+  async function uploadFile(cedula, fieldName, file){
+    const ts = Date.now();
+    const ext = file.name.split('.').pop();
+    const path = cedula + '/' + fieldName + '_' + ts + '.' + ext;
+    const { data, error } = await sb.storage.from(BUCKET).upload(path, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+    if(error) throw new Error('Error subiendo ' + fieldName + ': ' + error.message);
+    return path;
+  }
+
+  /* --- Submit --- */
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validate()) return;
+
+    overlay.classList.add('visible');
+    progressText.textContent = 'Subiendo documentos...';
+
+    try {
+      const cedula = $('cedula').value.trim();
+
+      const paths = {};
+      const uploadQueue = [];
+
+      // Required files
+      requiredFileFields.forEach(f => {
+        if(fileState[f]) uploadQueue.push({field: f, file: fileState[f]});
+      });
+
+      // Optional files
+      ['foto_rostro','seguridad_social'].forEach(f => {
+        if(fileState[f]) uploadQueue.push({field: f, file: fileState[f]});
+      });
+
+      let uploaded = 0;
+      for(const item of uploadQueue){
+        progressText.textContent = 'Subiendo ' + (uploaded+1) + ' de ' + uploadQueue.length + '...';
+        paths[item.field] = await uploadFile(cedula, item.field, item.file);
+        uploaded++;
+      }
+
+      progressText.textContent = 'Guardando datos...';
+
+      const row = {
+        vehiculo_placa: $('vehiculo_placa').value.trim().toUpperCase(),
+        autoriza_datos: true,
+        autoriza_sensibles: (document.querySelector('input[name="autoriza_sensibles"]:checked') || {}).value === 'si',
+        primer_nombre: $('primer_nombre').value.trim(),
+        segundo_nombre: $('segundo_nombre').value.trim() || null,
+        primer_apellido: $('primer_apellido').value.trim(),
+        segundo_apellido: $('segundo_apellido').value.trim() || null,
+        cedula: cedula,
+        direccion: $('direccion').value.trim(),
+        ciudad: $('ciudad').value.trim(),
+        telefono: $('telefono').value.trim(),
+        numero_cuenta: $('numero_cuenta').value.trim(),
+        banco: $('banco').value.trim(),
+        tipo_cuenta: (document.querySelector('input[name="tipo_cuenta"]:checked') || {}).value || null,
+        foto_rostro: paths.foto_rostro || null,
+        seguridad_social: paths.seguridad_social || null,
+        cedula_frente: paths.cedula_frente,
+        cedula_reverso: paths.cedula_reverso,
+        pase_frente: paths.pase_frente,
+        pase_reverso: paths.pase_reverso,
+        cert_bancaria: paths.cert_bancaria,
+        ref_familiar_nombre: $('ref_familiar_nombre').value.trim(),
+        ref_familiar_telefono: $('ref_familiar_telefono').value.trim(),
+        ref_empresa_nombre: $('ref_empresa_nombre').value.trim(),
+        ref_empresa_telefono: $('ref_empresa_telefono').value.trim()
+      };
+
+      const { error } = await sb.from('conductores').insert([row]);
+      if(error) throw new Error('Error guardando datos: ' + error.message);
+
+      overlay.classList.remove('visible');
+      form.classList.add('hidden');
+      successCard.classList.remove('hidden');
+      successCard.scrollIntoView({behavior:'smooth',block:'center'});
+
+    } catch(err){
+      overlay.classList.remove('visible');
+      alert('Ocurrió un error: ' + err.message);
+      console.error(err);
+    }
+  });
+
+})();
+</script>
+</body>
+</html>

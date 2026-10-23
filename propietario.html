@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propietario — Capital Cargo Colombia</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1A1A1A;--gold:#E32526;--white:#FFFFFF;--gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;--gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;--red:#DC3545;--green:#28A745;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1)}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--gray-50);color:var(--gray-700);line-height:1.6;min-height:100vh}
+header{background:var(--white);color:var(--navy);padding:1.25rem 1rem;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.1);border-bottom:3px solid var(--gold)}
+header h1{font-size:1.35rem;letter-spacing:.12em;font-weight:800;margin-bottom:.15rem}
+header p{font-size:.8rem;color:var(--gray-500);letter-spacing:.04em}
+.gold{color:var(--gold)}
+.container{max-width:640px;margin:0 auto;padding:1rem}
+/* Privacy */
+.privacy-box{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:1.5rem;box-shadow:var(--shadow)}
+.privacy-header{display:flex;align-items:center;justify-content:space-between;padding:1rem;cursor:pointer;font-weight:700;color:var(--gray-700);font-size:.95rem;user-select:none;-webkit-tap-highlight-color:transparent}
+.privacy-header .chevron{transition:transform .3s;font-size:1.2rem}
+.privacy-header.collapsed .chevron{transform:rotate(-90deg)}
+.privacy-body{padding:0 1rem 1rem;font-size:.82rem;color:var(--gray-600);line-height:1.7}
+.privacy-body.hidden{display:none}
+/* Form card */
+.form-card{background:var(--white);border-radius:var(--radius);padding:1.5rem 1.25rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+.form-card h2{color:var(--navy);font-size:1.15rem;margin-bottom:.25rem}
+.form-card .section-desc{color:var(--gray-500);font-size:.8rem;margin-bottom:1.25rem}
+/* Fields */
+.field{margin-bottom:1.15rem}
+.field label{display:block;font-weight:600;font-size:.88rem;margin-bottom:.35rem;color:var(--gray-700)}
+.field label .req{color:var(--red);margin-left:2px}
+.field .hint{font-size:.75rem;color:var(--gray-500);margin-top:2px;font-style:italic}
+.field input[type="text"]{width:100%;padding:.75rem .85rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:1rem;background:var(--white);transition:border-color .2s;appearance:none;-webkit-appearance:none}
+.field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(227,37,38,.15)}
+.field input.error{border-color:var(--red)}
+.field .error-msg{color:var(--red);font-size:.75rem;margin-top:3px;display:none}
+.field input.error~.error-msg{display:block}
+/* Radio groups */
+.radio-group{display:flex;gap:.75rem;flex-wrap:wrap}
+.radio-group label{display:flex;align-items:center;gap:.5rem;font-weight:400;padding:.6rem 1rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);cursor:pointer;transition:all .2s;min-width:80px;justify-content:center;-webkit-tap-highlight-color:transparent}
+.radio-group label:has(input:checked){border-color:var(--gold);background:rgba(227,37,38,.06);font-weight:600}
+.radio-group input[type="radio"]{accent-color:var(--gold);width:18px;height:18px}
+/* File upload */
+.file-drop{border:2px dashed var(--gray-300);border-radius:var(--radius);padding:1.25rem .75rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray-50);position:relative;-webkit-tap-highlight-color:transparent}
+.file-drop:hover,.file-drop.dragover{border-color:var(--gold);background:rgba(227,37,38,.04)}
+.file-drop .icon{font-size:1.8rem;margin-bottom:.25rem;color:var(--gray-400)}
+.file-drop .text{font-size:.82rem;color:var(--gray-500)}
+.file-drop .text strong{color:var(--gold)}
+.file-drop input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-preview{margin-top:.5rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.file-preview .file-item{display:flex;align-items:center;gap:.5rem;background:var(--gray-100);padding:.4rem .65rem;border-radius:6px;font-size:.78rem;max-width:100%;position:relative}
+.file-preview .file-item img{width:40px;height:40px;object-fit:cover;border-radius:4px}
+.file-preview .file-item .fname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
+.file-preview .file-item .remove-file{background:var(--red);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Buttons */
+.btn{padding:.85rem 1.5rem;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;-webkit-tap-highlight-color:transparent;min-height:52px;margin-top:1.5rem}
+.btn-primary{background:var(--gold);color:var(--white)}
+.btn-primary:hover{background:#c91f20}
+.btn-primary:disabled{background:var(--gray-300);color:var(--gray-500);cursor:not-allowed}
+/* Spinner */
+.spinner{width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Success */
+.success-screen{text-align:center;padding:3rem 1.5rem}
+.success-screen .checkmark{width:80px;height:80px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.5rem;color:#fff}
+.success-screen h2{color:var(--navy);margin-bottom:.75rem;font-size:1.3rem}
+.success-screen p{color:var(--gray-600);font-size:.95rem;line-height:1.6}
+/* Overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
+.overlay.visible{display:flex}
+.overlay-card{background:var(--white);border-radius:12px;padding:2rem;text-align:center;max-width:320px;margin:1rem}
+.overlay-card .spinner{display:inline-block;width:40px;height:40px;margin-bottom:1rem;border-width:4px}
+.overlay-card p{font-weight:600;color:var(--navy)}
+.overlay-card .sub{font-weight:400;font-size:.85rem;color:var(--gray-500);margin-top:.35rem}
+/* Footer */
+footer{text-align:center;padding:2rem 1rem;font-size:.72rem;color:var(--gray-400)}
+footer a{color:var(--gold)}
+@media(max-width:480px){
+  .container{padding:.75rem}
+  .form-card{padding:1.25rem 1rem}
+  .btn{padding:.75rem 1rem;font-size:.92rem}
+  header h1{font-size:1.15rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="gold">Capital</span> Cargo Colombia</h1>
+  <p>Datos del Propietario</p>
+</header>
+
+<div class="container" id="app">
+
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gray-600);font-size:.9rem;text-decoration:none;margin-bottom:.75rem;font-weight:600">&larr; Volver</a>
+
+  <!-- Form -->
+  <form id="propForm" novalidate>
+    <div class="form-card" id="formCard">
+      <h2>Informaci&oacute;n del propietario</h2>
+      <p class="section-desc">Completa todos los campos y adjunta los documentos solicitados.</p>
+
+      <div class="field">
+        <label for="vehiculo_placa">Placa del veh&iacute;culo <span class="req">*</span></label>
+        <input type="text" id="vehiculo_placa" name="vehiculo_placa" required maxlength="6" style="text-transform:uppercase" pattern="[A-Za-z]{3}[0-9]{2}[A-Za-z0-9]{1}">
+        <p class="hint">Ingresa la placa del veh&iacute;culo del cual eres propietario</p>
+        <div class="error-msg">Ingresa una placa colombiana v&aacute;lida (ej. ABC123 o ABC12D).</div>
+      </div>
+
+      <div class="field">
+        <label for="primer_nombre">Primer nombre <span class="req">*</span></label>
+        <input type="text" id="primer_nombre" name="primer_nombre" required autocomplete="given-name">
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="segundo_nombre">Segundo nombre</label>
+        <input type="text" id="segundo_nombre" name="segundo_nombre" autocomplete="additional-name">
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="primer_apellido">Primer apellido <span class="req">*</span></label>
+        <input type="text" id="primer_apellido" name="primer_apellido" required autocomplete="family-name">
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="segundo_apellido">Segundo apellido</label>
+        <input type="text" id="segundo_apellido" name="segundo_apellido">
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="cedula">N&uacute;mero de c&eacute;dula <span class="req">*</span></label>
+        <input type="text" id="cedula" name="cedula" required inputmode="numeric" pattern="[0-9]{5,12}">
+        <div class="error-msg">Ingresa un n&uacute;mero de c&eacute;dula v&aacute;lido (5 a 12 d&iacute;gitos).</div>
+      </div>
+
+      <div class="field">
+        <label for="direccion">Direcci&oacute;n <span class="req">*</span></label>
+        <input type="text" id="direccion" name="direccion" required>
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="ciudad">Ciudad <span class="req">*</span></label>
+        <input type="text" id="ciudad" name="ciudad" required>
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="telefono">Tel&eacute;fono <span class="req">*</span></label>
+        <input type="text" id="telefono" name="telefono" required inputmode="tel" pattern="[0-9]{7,15}">
+        <div class="error-msg">Ingresa un tel&eacute;fono v&aacute;lido (m&iacute;nimo 7 d&iacute;gitos).</div>
+      </div>
+
+      <div class="field">
+        <label>&iquest;Factura electr&oacute;nicamente? <span class="req">*</span></label>
+        <div class="radio-group" id="radioFactura">
+          <label><input type="radio" name="factura_electronica" value="Si" required> S&iacute;</label>
+          <label><input type="radio" name="factura_electronica" value="No" required> No</label>
+        </div>
+        <div class="error-msg">Debes seleccionar una opci&oacute;n.</div>
+      </div>
+
+      <!-- File uploads -->
+      <div class="field" data-upload="cedula_frente">
+        <label>C&eacute;dula frente <span class="req">*</span></label>
+        <div class="file-drop" data-field="cedula_frente" data-required="true">
+          <div class="icon">&#128179;</div>
+          <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es requerido.</div>
+      </div>
+
+      <div class="field" data-upload="cedula_reverso">
+        <label>C&eacute;dula reverso <span class="req">*</span></label>
+        <div class="file-drop" data-field="cedula_reverso" data-required="true">
+          <div class="icon">&#128179;</div>
+          <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es requerido.</div>
+      </div>
+
+      <div class="field" data-upload="rut">
+        <label>RUT <span class="req">*</span></label>
+        <div class="file-drop" data-field="rut" data-required="true">
+          <div class="icon">&#128196;</div>
+          <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="numero_cuenta">N&uacute;mero de cuenta <span class="req">*</span></label>
+        <input type="text" id="numero_cuenta" name="numero_cuenta" required inputmode="numeric">
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label for="banco">Banco <span class="req">*</span></label>
+        <input type="text" id="banco" name="banco" required>
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+
+      <div class="field">
+        <label>Tipo de cuenta <span class="req">*</span></label>
+        <div class="radio-group" id="radioTipoCuenta">
+          <label><input type="radio" name="tipo_cuenta" value="Ahorros" required> Ahorros</label>
+          <label><input type="radio" name="tipo_cuenta" value="Corriente" required> Corriente</label>
+        </div>
+        <div class="error-msg">Debes seleccionar una opci&oacute;n.</div>
+      </div>
+
+      <div class="field" data-upload="cert_bancaria">
+        <label>Certificaci&oacute;n bancaria (saldo) <span class="req">*</span></label>
+        <p class="hint">El saldo se consignar&aacute; &uacute;nicamente al propietario del veh&iacute;culo. Si debe pagarse a otra persona, el propietario deber&aacute; enviar autorizaci&oacute;n escrita a gerencia@capitalcargocolombia.com.</p>
+        <div class="file-drop" data-field="cert_bancaria" data-required="true">
+          <div class="icon">&#127974;</div>
+          <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
+          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <div class="file-preview"></div>
+        <div class="error-msg">Este documento es requerido.</div>
+      </div>
+
+      <div class="field">
+        <label>¿Autoriza el manejo de sus datos? <span class="req">*</span></label>
+        <div class="radio-group" id="radioSensibles">
+          <label><input type="radio" name="autoriza_sensibles" value="si" required> Sí, autorizo</label>
+          <label><input type="radio" name="autoriza_sensibles" value="no" required> No autorizo</label>
+        </div>
+        <div class="error-msg">Debes seleccionar una opci&oacute;n.</div>
+      </div>
+
+      <!-- Privacy notice -->
+      <div class="privacy-box" id="privacyBox" style="margin-top:1.5rem">
+        <div class="privacy-header" id="privacyToggle" onclick="togglePrivacy()">
+          <span>AVISO DE PRIVACIDAD</span>
+          <span class="chevron">&#9660;</span>
+        </div>
+        <div class="privacy-body hidden" id="privacyBody">
+          Capital Cargo Colombia, NIT 900491068-0, con domicilio en Avenida Calle 26 # 85D-55, Oficina 310 D, m&oacute;dulo 2, Centro Empresarial Dorado Plaza, Bogot&aacute; D.&nbsp;C., celular 311 259 6841 y correo gerencia@capitalcargocolombia.com, es responsable del tratamiento de los datos suministrados. La informaci&oacute;n se utilizar&aacute; para gestionar la vinculaci&oacute;n; crear y actualizar hojas de vida y registros en Systram; verificar identidad, documentos y requisitos operativos; validar referencias; coordinar la operaci&oacute;n y el seguimiento satelital cuando aplique; administrar anticipos, saldos, pagos y facturaci&oacute;n; prevenir fraude y suplantaci&oacute;n; contactar al titular; y cumplir obligaciones legales, contractuales, contables y tributarias.
+          <br><br>
+          Puedes conocer, actualizar, rectificar y suprimir tus datos; solicitar prueba de la autorizaci&oacute;n; conocer su uso; revocar la autorizaci&oacute;n cuando proceda; acceder gratuitamente a tu informaci&oacute;n; y presentar quejas ante la SIC despu&eacute;s de agotar el tr&aacute;mite interno. La pol&iacute;tica completa puede solicitarse en gerencia@capitalcargocolombia.com.
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
+        <span class="spinner" id="btnSpinner"></span>
+        Enviar datos del propietario
+      </button>
+
+      <a href="index.html" style="display:flex;align-items:center;justify-content:center;gap:.35rem;color:var(--gray-600);font-size:.9rem;text-decoration:none;margin-top:1rem;font-weight:600">&larr; Volver</a>
+    </div>
+  </form>
+
+  <!-- Success -->
+  <div id="successScreen" class="form-card" style="display:none">
+    <div class="success-screen">
+      <div class="checkmark">&#10003;</div>
+      <h2>&iexcl;Datos del propietario enviados!</h2>
+      <p>Tu informaci&oacute;n fue recibida. Nos comunicaremos contigo pronto.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay">
+  <div class="overlay-card">
+    <div class="spinner" style="display:inline-block;width:40px;height:40px;border-width:4px"></div>
+    <p>Enviando informaci&oacute;n...</p>
+    <p class="sub" id="overlayStatus">Subiendo documentos</p>
+  </div>
+</div>
+
+<footer>
+  Capital Cargo Colombia &middot; NIT 900491068-0 &middot;
+  <a href="mailto:gerencia@capitalcargocolombia.com">gerencia@capitalcargocolombia.com</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  'use strict';
+
+  /* ── Supabase ── */
+  const SUPABASE_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZHZyanBlbGN5anJ2b25waW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDc0ODcsImV4cCI6MjEwODE4MzQ4N30.Wz7ceDsvmBZtSnad1cHV972pnOXXaE00VoGkt0bqF-g';
+  const BUCKET = 'vinculacion-docs';
+  const TABLE = 'propietarios';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const fileStore = {}; // fieldName -> File[]
+
+  /* ── Privacy toggle ── */
+  window.togglePrivacy = function(){
+    const body = document.getElementById('privacyBody');
+    const hdr = document.getElementById('privacyToggle');
+    const hidden = body.classList.toggle('hidden');
+    hdr.classList.toggle('collapsed', hidden);
+  };
+
+  /* ── Placa uppercase + filter ── */
+  document.getElementById('vehiculo_placa').addEventListener('input', function(){
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  });
+
+  /* ── Numeric-only fields ── */
+  document.querySelectorAll('input[pattern="[0-9]{7,15}"], input[pattern="[0-9]{5,12}"]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+  });
+
+  /* ── File upload handling ── */
+  document.querySelectorAll('.file-drop').forEach(function(drop){
+    var fieldName = drop.dataset.field;
+    var input = drop.querySelector('input[type="file"]');
+    var previewContainer = drop.parentElement.querySelector('.file-preview');
+
+    if (!fileStore[fieldName]) fileStore[fieldName] = [];
+
+    // Drag events
+    ['dragenter','dragover'].forEach(function(ev){
+      drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(function(ev){
+      drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('dragover'); });
+    });
+
+    drop.addEventListener('drop', function(e){
+      handleFiles(Array.from(e.dataTransfer.files), fieldName, previewContainer);
+    });
+
+    input.addEventListener('change', function(){
+      handleFiles(Array.from(this.files), fieldName, previewContainer);
+      this.value = '';
+    });
+  });
+
+  function handleFiles(files, fieldName, previewContainer){
+    for (var i = 0; i < files.length; i++){
+      var file = files[i];
+      if (file.size > MAX_FILE_SIZE){
+        alert('El archivo "' + file.name + '" excede 10 MB. Por favor sube un archivo mas pequeno.');
+        continue;
+      }
+      fileStore[fieldName] = [file]; // single file per field
+    }
+    renderPreviews(fieldName, previewContainer);
+  }
+
+  function renderPreviews(fieldName, container){
+    container.innerHTML = '';
+    fileStore[fieldName].forEach(function(file, idx){
+      var item = document.createElement('div');
+      item.className = 'file-item';
+
+      if (file.type.startsWith('image/')){
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        item.appendChild(img);
+      }
+
+      var fname = document.createElement('span');
+      fname.className = 'fname';
+      fname.textContent = file.name;
+      item.appendChild(fname);
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'remove-file';
+      btn.innerHTML = '&times;';
+      btn.onclick = (function(i){
+        return function(){
+          fileStore[fieldName].splice(i, 1);
+          renderPreviews(fieldName, container);
+        };
+      })(idx);
+      item.appendChild(btn);
+
+      container.appendChild(item);
+    });
+  }
+
+  /* ── Validation ── */
+  function validate(){
+    var valid = true;
+    var form = document.getElementById('formCard');
+
+    // Text inputs
+    form.querySelectorAll('input[type="text"][required]').forEach(function(inp){
+      var ok = inp.value.trim() !== '' && (!inp.pattern || new RegExp('^' + inp.pattern + '$').test(inp.value.trim()));
+      inp.classList.toggle('error', !ok);
+      if (!ok) valid = false;
+    });
+
+    // Radio group — factura_electronica
+    var radioGroup = document.getElementById('radioFactura');
+    var checked = document.querySelector('input[name="factura_electronica"]:checked');
+    var errMsg = radioGroup.parentElement.querySelector('.error-msg');
+    if (!checked){
+      errMsg.style.display = 'block';
+      valid = false;
+    } else {
+      errMsg.style.display = '';
+    }
+
+    // Radio group — tipo_cuenta
+    var radioTipoCuenta = document.getElementById('radioTipoCuenta');
+    var checkedTipo = document.querySelector('input[name="tipo_cuenta"]:checked');
+    var errTipo = radioTipoCuenta.parentElement.querySelector('.error-msg');
+    if (!checkedTipo){
+      errTipo.style.display = 'block';
+      valid = false;
+    } else {
+      errTipo.style.display = '';
+    }
+
+    // Radio group — autoriza_sensibles
+    var radioSensibles = document.getElementById('radioSensibles');
+    var checkedSensibles = document.querySelector('input[name="autoriza_sensibles"]:checked');
+    var errSensibles = radioSensibles.parentElement.querySelector('.error-msg');
+    if (!checkedSensibles){
+      errSensibles.style.display = 'block';
+      valid = false;
+    } else {
+      errSensibles.style.display = '';
+    }
+
+    // Required file uploads
+    form.querySelectorAll('.file-drop[data-required="true"]').forEach(function(drop){
+      var fieldName = drop.dataset.field;
+      var files = fileStore[fieldName] || [];
+      var err = drop.parentElement.querySelector('.error-msg');
+      if (files.length === 0){
+        if (err) err.style.display = 'block';
+        drop.style.borderColor = 'var(--red)';
+        valid = false;
+      } else {
+        if (err) err.style.display = '';
+        drop.style.borderColor = '';
+      }
+    });
+
+    if (!valid){
+      var firstErr = form.querySelector('.error, .error-msg[style*="block"]');
+      if (firstErr) firstErr.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    return valid;
+  }
+
+  /* ── Submit ── */
+  var submitting = false;
+
+  window.submitForm = async function(){
+    if (submitting) return;
+    if (!validate()) return;
+
+    submitting = true;
+    var overlay = document.getElementById('overlay');
+    var statusEl = document.getElementById('overlayStatus');
+    var btnSubmit = document.getElementById('btnSubmit');
+    var btnSpinner = document.getElementById('btnSpinner');
+
+    overlay.classList.add('visible');
+    btnSubmit.disabled = true;
+    btnSpinner.style.display = 'inline-block';
+
+    try {
+      var cedula = document.getElementById('cedula').value.trim();
+      var ts = Date.now();
+      var uploadedPaths = {};
+
+      // Collect all files to upload
+      var uploadQueue = [];
+      for (var fieldName in fileStore){
+        var files = fileStore[fieldName];
+        if (!files || files.length === 0) continue;
+        files.forEach(function(file){
+          var ext = file.name.split('.').pop() || 'bin';
+          var path = 'prop_' + cedula + '/' + fieldName + '_' + ts + '.' + ext;
+          uploadQueue.push({fieldName: fieldName, file: file, path: path});
+        });
+      }
+
+      // Upload files
+      var totalUploads = uploadQueue.length;
+
+      for (var i = 0; i < uploadQueue.length; i++){
+        statusEl.textContent = 'Subiendo ' + (i + 1) + ' de ' + totalUploads + '...';
+
+        var item = uploadQueue[i];
+        var result = await supabase.storage
+          .from(BUCKET)
+          .upload(item.path, item.file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (result.error) throw new Error('Error subiendo ' + item.file.name + ': ' + result.error.message);
+
+        uploadedPaths[item.fieldName] = item.path;
+      }
+
+      // Build row
+      statusEl.textContent = 'Guardando informaci\u00F3n...';
+
+      var factura = document.querySelector('input[name="factura_electronica"]:checked');
+
+      var row = {
+        vehiculo_placa: document.getElementById('vehiculo_placa').value.trim().toUpperCase(),
+        primer_nombre: document.getElementById('primer_nombre').value.trim(),
+        segundo_nombre: document.getElementById('segundo_nombre').value.trim() || null,
+        primer_apellido: document.getElementById('primer_apellido').value.trim(),
+        segundo_apellido: document.getElementById('segundo_apellido').value.trim() || null,
+        cedula: cedula,
+        direccion: document.getElementById('direccion').value.trim(),
+        ciudad: document.getElementById('ciudad').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        numero_cuenta: document.getElementById('numero_cuenta').value.trim(),
+        banco: document.getElementById('banco').value.trim(),
+        tipo_cuenta: (document.querySelector('input[name="tipo_cuenta"]:checked') || {}).value || null,
+        factura_electronica: factura ? factura.value === 'Si' : false,
+        cedula_frente: uploadedPaths['cedula_frente'] || null,
+        cedula_reverso: uploadedPaths['cedula_reverso'] || null,
+        rut: uploadedPaths['rut'] || null,
+        cert_bancaria: uploadedPaths['cert_bancaria'] || null,
+        autoriza_sensibles: (document.querySelector('input[name="autoriza_sensibles"]:checked') || {}).value === 'si'
+      };
+
+      var insertResult = await supabase.from(TABLE).insert([row]);
+      if (insertResult.error) throw new Error('Error guardando datos: ' + insertResult.error.message);
+
+      // Success
+      overlay.classList.remove('visible');
+      document.getElementById('propForm').style.display = 'none';
+      document.getElementById('privacyBox').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+
+    } catch(err){
+      overlay.classList.remove('visible');
+      alert('Ocurri\u00F3 un error: ' + err.message + '\n\nPor favor intenta de nuevo.');
+      console.error(err);
+    } finally {
+      submitting = false;
+      btnSubmit.disabled = false;
+      btnSpinner.style.display = 'none';
+    }
+  };
+
+})();
+</script>
+</body>
+</html>
