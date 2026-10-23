@@ -4,293 +4,398 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Capital Cargo Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1A1A1A;--red:#E32526;--red-dark:#C41E1F;--white:#FFFFFF;
-  --gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#DEE2E6;--gray-300:#CED4DA;
-  --gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;
-  --radius:10px;--radius-lg:14px;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
-  --shadow:0 2px 12px rgba(0,0,0,.08);
-  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
-  --transition:all .25s cubic-bezier(.4,0,.2,1);
+  --red:#E32526;--red-dark:#C41E1F;--white:#FFFFFF;
+  --bg:#F8F9FB;
+  --gray-50:#F8F9FB;--gray-100:#F1F3F5;--gray-200:#E2E5E9;--gray-300:#CED4DA;
+  --gray-400:#ADB5BD;--gray-500:#868E96;--gray-600:#495057;--gray-700:#343A40;--gray-800:#212529;
+  --radius:8px;--radius-lg:12px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 24px rgba(0,0,0,.12);
+  --transition:all .2s cubic-bezier(.4,0,.2,1);
 }
 html{font-size:16px;scroll-behavior:smooth}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-50);color:var(--gray-700);line-height:1.6;min-height:100vh}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--gray-700);line-height:1.5;min-height:100vh}
 
-/* ===== Sidebar layout ===== */
-.app-layout{display:flex;min-height:100vh}
-.sidebar{
-  width:260px;background:var(--navy);color:var(--white);
-  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;
-  z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1);
-}
-.sidebar-brand{padding:1.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.sidebar-brand h1{font-size:1rem;font-weight:800;letter-spacing:.1em;line-height:1.3}
-.sidebar-brand .red{color:var(--red)}
-.sidebar-brand p{font-size:.7rem;color:rgba(255,255,255,.45);letter-spacing:.06em;margin-top:.15rem}
-.sidebar-nav{flex:1;padding:1rem 0}
-.nav-item{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.7rem 1.25rem;font-size:.82rem;font-weight:600;
-  color:rgba(255,255,255,.55);cursor:pointer;transition:var(--transition);
-  border-left:3px solid transparent;
-}
-.nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04)}
-.nav-item.active{color:var(--white);background:rgba(255,255,255,.07);border-left-color:var(--red)}
-.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
-.nav-item.active svg{opacity:1}
-.nav-count{
-  margin-left:auto;background:rgba(255,255,255,.1);
-  padding:.1rem .5rem;border-radius:10px;font-size:.68rem;font-weight:700;
-  min-width:28px;text-align:center;
-}
-.nav-item.active .nav-count{background:var(--red)}
-.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,.08)}
-.sidebar-footer a{color:rgba(255,255,255,.45);text-decoration:none;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.5rem;transition:var(--transition)}
-.sidebar-footer a:hover{color:var(--white)}
-.sidebar-footer a svg{width:16px;height:16px}
-
-/* Main content */
-.main-content{margin-left:260px;flex:1;min-height:100vh;display:flex;flex-direction:column}
-.top-bar{
+/* ===== Layout ===== */
+.app-shell{display:flex;flex-direction:column;min-height:100vh}
+.top-nav{
   background:var(--white);border-bottom:1px solid var(--gray-200);
-  padding:.85rem 1.75rem;display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:100;
 }
-.top-bar-left{display:flex;align-items:center;gap:.75rem}
-.top-bar h2{font-size:1.05rem;font-weight:700;color:var(--navy)}
-.hamburger{display:none;background:none;border:none;cursor:pointer;padding:.25rem;color:var(--navy)}
-.hamburger svg{width:24px;height:24px}
-.top-bar-right{display:flex;align-items:center;gap:.5rem}
+.top-nav-inner{
+  max-width:1320px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;height:56px;gap:32px;
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.brand-icon{
+  width:32px;height:32px;background:var(--gray-800);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:.7rem;font-weight:900;letter-spacing:.02em;
+}
+.brand-text{font-size:.9rem;font-weight:800;color:var(--gray-800);letter-spacing:-.01em}
+.brand-text .accent{color:var(--red)}
 
-.content-area{flex:1;padding:1.5rem 1.75rem;max-width:1200px;width:100%}
+.nav-tabs{display:flex;gap:4px;margin-left:16px}
+.nav-tab{
+  padding:8px 16px;font-size:.8rem;font-weight:600;color:var(--gray-500);
+  border:none;background:none;cursor:pointer;border-radius:var(--radius);
+  transition:var(--transition);white-space:nowrap;
+  position:relative;
+}
+.nav-tab:hover{color:var(--gray-700);background:var(--gray-50)}
+.nav-tab.active{color:var(--red);background:rgba(227,37,38,.06)}
+.nav-tab .tab-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:18px;padding:0 5px;border-radius:9px;
+  font-size:.65rem;font-weight:700;margin-left:6px;
+  background:var(--gray-100);color:var(--gray-500);
+}
+.nav-tab.active .tab-count{background:rgba(227,37,38,.1);color:var(--red)}
+
+.nav-spacer{flex:1}
+.nav-actions{display:flex;align-items:center;gap:8px}
+
+/* Mobile hamburger */
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--gray-700)}
+.hamburger svg{width:22px;height:22px}
+.mobile-nav{display:none;background:var(--white);border-bottom:1px solid var(--gray-200);padding:8px 16px;gap:4px;overflow-x:auto}
+
+/* ===== Main content ===== */
+.main-content{max-width:1320px;margin:0 auto;padding:24px;width:100%}
+
+/* ===== KPI Bar ===== */
+.kpi-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);
+  padding:16px 20px;display:flex;flex-direction:column;gap:4px;
+  transition:var(--transition);
+}
+.kpi-card:hover{box-shadow:var(--shadow)}
+.kpi-label{font-size:.72rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em}
+.kpi-value{font-size:1.5rem;font-weight:800;color:var(--gray-800);line-height:1.2}
+.kpi-card.kpi-warn .kpi-value{color:#B45309}
+.kpi-card.kpi-danger .kpi-value{color:var(--red)}
+
+/* ===== Toolbar ===== */
+.toolbar{
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;
+}
+.search-box{
+  position:relative;flex:1;max-width:360px;min-width:180px;
+}
+.search-box input{
+  width:100%;padding:8px 12px 8px 36px;
+  border:1px solid var(--gray-200);border-radius:var(--radius);
+  font-size:.82rem;font-family:inherit;outline:none;transition:var(--transition);
+  background:var(--white);color:var(--gray-700);
+}
+.search-box input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.08)}
+.search-box input::placeholder{color:var(--gray-400)}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--gray-400);pointer-events:none}
+
+.filter-select{
+  padding:8px 32px 8px 12px;border:1px solid var(--gray-200);border-radius:var(--radius);
+  font-size:.82rem;font-family:inherit;background:var(--white);color:var(--gray-700);
+  outline:none;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23868E96' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  transition:var(--transition);
+}
+.filter-select:focus{border-color:var(--red)}
+
+.toolbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
 
 /* ===== Buttons ===== */
 .btn{
-  display:inline-flex;align-items:center;gap:.4rem;
-  padding:.45rem .85rem;border-radius:var(--radius);font-size:.78rem;font-weight:600;
-  cursor:pointer;border:1.5px solid transparent;transition:var(--transition);
-  line-height:1.4;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--radius);font-size:.8rem;font-weight:600;
+  cursor:pointer;border:1px solid transparent;transition:var(--transition);
+  white-space:nowrap;font-family:inherit;line-height:1.4;
 }
-.btn svg{width:14px;height:14px}
+.btn svg{width:15px;height:15px;flex-shrink:0}
 .btn-primary{background:var(--red);color:var(--white);border-color:var(--red)}
-.btn-primary:hover{background:var(--red-dark);border-color:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(227,37,38,.25)}
+.btn-primary:hover{background:var(--red-dark);border-color:var(--red-dark);box-shadow:0 2px 8px rgba(227,37,38,.25)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
 .btn-outline{background:var(--white);color:var(--gray-600);border-color:var(--gray-200)}
-.btn-outline:hover{border-color:var(--red);color:var(--red);transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:var(--gray-500);border-color:transparent;padding:.35rem .6rem}
-.btn-ghost:hover{color:var(--red);background:rgba(227,37,38,.05)}
-.btn-dark{background:var(--navy);color:var(--white);border-color:var(--navy)}
-.btn-dark:hover{opacity:.88;transform:translateY(-1px)}
-.btn-danger{background:var(--white);color:#C92A2A;border-color:#FFE3E3}
-.btn-danger:hover{background:#FFF5F5;border-color:#C92A2A}
-.btn-sm{padding:.3rem .6rem;font-size:.72rem}
-.btn-icon{padding:.4rem;border-radius:8px}
+.btn-outline:hover{border-color:var(--gray-300);background:var(--gray-50)}
+.btn-ghost{background:transparent;color:var(--gray-500);border:none;padding:8px}
+.btn-ghost:hover{color:var(--gray-700);background:var(--gray-100)}
+.btn-danger-subtle{background:var(--white);color:#C92A2A;border-color:#FECDD3}
+.btn-danger-subtle:hover{background:#FFF1F2;border-color:#C92A2A}
+.btn-sm{padding:6px 10px;font-size:.75rem}
+.btn-sm svg{width:13px;height:13px}
 
-.toggle-btn{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:.45rem .85rem;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--gray-600);transition:var(--transition)}
-.toggle-btn:hover{border-color:var(--red);color:var(--red)}
-.toggle-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
-
-/* ===== Spinner ===== */
-.spinner-wrap{display:flex;justify-content:center;padding:4rem 0}
-.spinner{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
-.spinner-sm{width:16px;height:16px;border:2px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ===== Badge ===== */
+/* ===== Badges ===== */
 .badge{
-  display:inline-flex;align-items:center;gap:.25rem;
-  padding:.2rem .6rem;border-radius:20px;font-size:.68rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.04em;
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;
+  text-transform:capitalize;letter-spacing:.02em;
 }
-.badge-pendiente{background:#FFF3CD;color:#856404}
-.badge-revisado{background:#D0EBFF;color:#1864AB}
-.badge-aprobado{background:#D3F9D8;color:#2B8A3E}
-.badge-rechazado{background:#FFE3E3;color:#C92A2A}
-.badge-success{background:#D3F9D8;color:#2B8A3E}
-.badge-fail{background:#FFE3E3;color:#C92A2A}
-.badge-expired{background:#FFE3E3;color:#C92A2A}
-.badge-pending-runt{background:#FFF3CD;color:#856404}
-.badge-activo{background:#D3F9D8;color:#2B8A3E}
-.badge-vigente{background:#D3F9D8;color:#2B8A3E}
-.badge-vencida{background:#FFE3E3;color:#C92A2A}
+.badge-pendiente{background:#FEF3C7;color:#92400E}
+.badge-revisado{background:#DBEAFE;color:#1E40AF}
+.badge-aprobado{background:#D1FAE5;color:#065F46}
+.badge-rechazado{background:#FEE2E2;color:#991B1B}
+.badge-vigente{background:#D1FAE5;color:#065F46}
+.badge-vencida{background:#FEE2E2;color:#991B1B}
+.badge-sin-consultar{background:var(--gray-100);color:var(--gray-500)}
+.badge-ok{background:#D1FAE5;color:#065F46}
+.badge-fail{background:#FEE2E2;color:#991B1B}
+.runt-cat-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;
+  background:var(--gray-100);color:var(--gray-700);
+}
+.runt-cat-badge.expired{background:#FEE2E2;color:#991B1B}
 
-/* ===== Card ===== */
-.cards{display:flex;flex-direction:column;gap:.85rem}
-.card{
-  background:var(--white);border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);
-  overflow:hidden;transition:var(--transition);
-  animation:cardIn .35s cubic-bezier(.4,0,.2,1) both;
-}
-.card:hover{box-shadow:var(--shadow)}
-@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.doc-fraction{font-size:.75rem;font-weight:700}
+.doc-fraction.complete{color:#065F46}
+.doc-fraction.partial{color:#92400E}
 
-.card-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 1.25rem;cursor:pointer;gap:.75rem;
-  -webkit-tap-highlight-color:transparent;transition:background .15s;
+/* ===== Data Table ===== */
+.table-container{
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);
+  overflow:hidden;box-shadow:var(--shadow-sm);
 }
-.card-header:hover{background:var(--gray-50)}
-.card-header-left{display:flex;align-items:center;gap:.85rem;min-width:0}
-.card-avatar{
-  width:40px;height:40px;border-radius:10px;
-  background:linear-gradient(135deg,var(--navy),#333);
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.data-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.data-table thead{background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+.data-table th{
+  padding:10px 16px;text-align:left;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--gray-500);
+  cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s;
+}
+.data-table th:hover{color:var(--gray-800)}
+.data-table th .sort-icon{display:inline-block;margin-left:4px;opacity:.3;font-size:.6rem;vertical-align:middle}
+.data-table th.sorted{color:var(--gray-800)}
+.data-table th.sorted .sort-icon{opacity:1;color:var(--red)}
+.data-table td{
+  padding:10px 16px;border-top:1px solid var(--gray-100);color:var(--gray-700);
+  white-space:nowrap;vertical-align:middle;
+}
+.data-table tbody tr{transition:background .1s;cursor:pointer}
+.data-table tbody tr:nth-child(even){background:var(--gray-50)}
+.data-table tbody tr:hover{background:#FEF2F2}
+.data-table .cell-name{font-weight:600;color:var(--gray-800)}
+.table-empty{padding:48px 24px;text-align:center;color:var(--gray-400);font-size:.88rem}
+
+/* ===== Detail Panel (slide-in) ===== */
+.panel-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:500;
+  opacity:0;visibility:hidden;transition:all .25s;backdrop-filter:blur(2px);
+}
+.panel-overlay.active{opacity:1;visibility:visible}
+.detail-panel{
+  position:fixed;top:0;right:0;bottom:0;width:560px;max-width:100%;
+  background:var(--white);z-index:501;box-shadow:-4px 0 24px rgba(0,0,0,.12);
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.panel-overlay.active+.detail-panel,.detail-panel.active{transform:translateX(0)}
+
+.panel-header{
+  display:flex;align-items:center;gap:12px;padding:16px 24px;
+  border-bottom:1px solid var(--gray-200);flex-shrink:0;
+}
+.panel-avatar{
+  width:44px;height:44px;border-radius:10px;background:var(--gray-800);
   display:flex;align-items:center;justify-content:center;
-  color:var(--white);font-size:.82rem;font-weight:800;flex-shrink:0;
-  overflow:hidden;
+  color:var(--white);font-size:.85rem;font-weight:800;flex-shrink:0;overflow:hidden;
 }
-.card-avatar img{width:100%;height:100%;object-fit:cover}
-.card-title{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.3}
-.card-sub{font-size:.75rem;color:var(--gray-500);margin-top:.1rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
-.card-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
-.expand-arrow{
-  color:var(--gray-400);font-size:.85rem;transition:transform .25s cubic-bezier(.4,0,.2,1);
-  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
-  border-radius:6px;
+.panel-avatar img{width:100%;height:100%;object-fit:cover}
+.panel-header-info{flex:1;min-width:0}
+.panel-header-info h3{font-size:1rem;font-weight:700;color:var(--gray-800);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.panel-header-info p{font-size:.78rem;color:var(--gray-500)}
+.panel-close{
+  background:none;border:none;cursor:pointer;color:var(--gray-400);
+  width:36px;height:36px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0;
 }
-.card.open .expand-arrow{transform:rotate(90deg)}
+.panel-close:hover{background:var(--gray-100);color:var(--gray-700)}
 
-/* Card detail */
-.card-detail{
-  display:grid;grid-template-rows:0fr;
-  transition:grid-template-rows .3s cubic-bezier(.4,0,.2,1);
+.panel-tabs{
+  display:flex;gap:0;border-bottom:1px solid var(--gray-200);padding:0 24px;flex-shrink:0;
 }
-.card.open .card-detail{grid-template-rows:1fr}
-.card-detail-inner{overflow:hidden}
-.card-detail-content{padding:0 1.25rem 1.25rem;border-top:1px solid var(--gray-100)}
-
-/* RUNT summary strip (shown in card header area, always visible) */
-.runt-strip{
-  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
-  padding:.65rem 1.25rem;background:var(--gray-50);border-top:1px solid var(--gray-100);
-  font-size:.78rem;
+.panel-tab{
+  padding:10px 16px;font-size:.78rem;font-weight:600;color:var(--gray-500);
+  border:none;background:none;cursor:pointer;position:relative;transition:color .15s;
 }
-.runt-strip-item{display:flex;align-items:center;gap:.3rem;color:var(--gray-600)}
-.runt-strip-item strong{color:var(--navy);font-weight:700}
-.runt-strip-item .badge{margin-left:.15rem}
-.runt-strip-sep{width:1px;height:16px;background:var(--gray-300)}
+.panel-tab:hover{color:var(--gray-700)}
+.panel-tab.active{color:var(--red)}
+.panel-tab.active::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;
+  background:var(--red);border-radius:1px;
+}
 
-/* Detail grid */
-.section-title{
-  font-size:.75rem;font-weight:700;color:var(--gray-500);
+.panel-body{flex:1;overflow-y:auto;padding:24px}
+
+/* Panel sections */
+.section{margin-bottom:24px}
+.section:last-child{margin-bottom:0}
+.section-heading{
+  font-size:.72rem;font-weight:700;color:var(--gray-500);
   text-transform:uppercase;letter-spacing:.06em;
-  margin:1.25rem 0 .65rem;padding-bottom:.4rem;border-bottom:1px solid var(--gray-100);
-  display:flex;align-items:center;gap:.5rem;
+  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gray-100);
 }
-.section-title:first-child{margin-top:.75rem}
-.section-title svg{width:14px;height:14px;opacity:.5}
-
-.detail-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:.4rem .85rem;font-size:.8rem;
-}
-.detail-grid dt{color:var(--gray-500);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;padding-top:.15rem}
-.detail-grid dd{color:var(--navy);word-break:break-word;font-weight:500}
-
-/* Document thumbnails */
-.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.65rem;margin-top:.5rem}
-.doc-thumb{
-  position:relative;border-radius:var(--radius);overflow:hidden;
-  border:1.5px solid var(--gray-200);cursor:pointer;
-  aspect-ratio:4/3;background:var(--gray-100);
-  transition:var(--transition);display:flex;flex-direction:column;
-}
-.doc-thumb:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:var(--shadow)}
-.doc-thumb img{width:100%;height:100%;object-fit:cover;flex:1}
-.doc-thumb-label{
-  padding:.3rem .4rem;font-size:.62rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.03em;color:var(--gray-600);background:var(--white);
-  text-align:center;border-top:1px solid var(--gray-100);
-}
-.doc-missing{
-  border-radius:var(--radius);border:1.5px dashed var(--gray-300);
-  aspect-ratio:4/3;background:var(--gray-50);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  color:var(--gray-400);font-size:.62rem;font-weight:600;text-transform:uppercase;
-  letter-spacing:.03em;gap:.25rem;
-}
-.doc-missing svg{width:20px;height:20px;opacity:.4}
-
-/* RUNT section */
-.runt-section{
-  margin-top:1rem;padding:1rem;background:var(--gray-50);
-  border-radius:var(--radius);border:1px solid var(--gray-200);
-}
-.runt-section h4{
-  font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:.6rem;
-  display:flex;align-items:center;gap:.5rem;
-}
-.runt-section .detail-grid{margin-top:.35rem}
-.runt-actions{display:flex;gap:.5rem;margin-top:.75rem;align-items:center}
-
-/* Card actions */
-.card-actions{
-  display:flex;gap:.5rem;margin-top:1.25rem;padding-top:.85rem;
-  border-top:1px solid var(--gray-100);flex-wrap:wrap;align-items:center;
-}
-.card-actions-right{margin-left:auto;display:flex;gap:.5rem}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.field{display:flex;flex-direction:column;gap:2px}
+.field-label{font-size:.7rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.03em}
+.field-value{font-size:.85rem;font-weight:500;color:var(--gray-800);word-break:break-word}
+.field-value.empty{color:var(--gray-400);font-style:italic}
+.field-full{grid-column:1/-1}
 
 /* Edit mode */
 .edit-input{
-  width:100%;padding:.35rem .55rem;border:1.5px solid var(--gray-300);
-  border-radius:8px;font-size:.8rem;font-family:inherit;transition:var(--transition);
-  background:var(--white);
+  width:100%;padding:6px 10px;border:1px solid var(--gray-300);
+  border-radius:6px;font-size:.82rem;font-family:inherit;transition:var(--transition);
+  background:var(--white);color:var(--gray-800);
 }
-.edit-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.1)}
+.edit-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.08)}
 .edit-select{
-  padding:.35rem .55rem;border:1.5px solid var(--gray-300);
-  border-radius:8px;font-size:.8rem;font-family:inherit;
-  background:var(--white);transition:var(--transition);
+  padding:6px 10px;border:1px solid var(--gray-300);
+  border-radius:6px;font-size:.82rem;font-family:inherit;
+  background:var(--white);color:var(--gray-800);transition:var(--transition);
 }
-.edit-select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.1)}
+.edit-select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.08)}
 
-/* Group by placa */
-.group-section{
-  background:var(--white);border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);
-  margin-bottom:.85rem;overflow:hidden;
-  animation:cardIn .35s cubic-bezier(.4,0,.2,1) both;
+.panel-footer{
+  padding:16px 24px;border-top:1px solid var(--gray-200);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
 }
-.group-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 1.25rem;cursor:pointer;transition:background .15s;
+.panel-footer-right{margin-left:auto}
+
+/* ===== Document thumbnails ===== */
+.doc-group{margin-bottom:16px}
+.doc-group:last-child{margin-bottom:0}
+.doc-group-label{font-size:.7rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.doc-thumb{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--gray-200);cursor:pointer;
+  aspect-ratio:4/3;background:var(--gray-100);
+  transition:var(--transition);display:flex;flex-direction:column;
 }
-.group-header:hover{background:var(--gray-50)}
-.group-header h3{font-size:.9rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:.5rem}
-.group-header .badge{margin-left:.25rem}
-.group-body{display:none;padding:.85rem 1.25rem}
-.group-section.open .group-body{display:block}
-.group-sub-title{
-  font-size:.7rem;font-weight:700;color:var(--gray-500);
-  text-transform:uppercase;letter-spacing:.06em;
-  margin:1rem 0 .4rem;padding-bottom:.3rem;border-bottom:1px solid var(--gray-100);
+.doc-thumb:hover{border-color:var(--red);box-shadow:var(--shadow)}
+.doc-thumb img{width:100%;height:100%;object-fit:cover;flex:1}
+.doc-thumb-label{
+  padding:4px 6px;font-size:.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.03em;color:var(--gray-600);background:var(--white);
+  text-align:center;border-top:1px solid var(--gray-100);
 }
-.group-sub-title:first-child{margin-top:0}
-.group-card{
-  background:var(--gray-50);border-radius:var(--radius);
-  padding:.85rem;margin-bottom:.5rem;border:1px solid var(--gray-200);
-  transition:var(--transition);
+.doc-thumb .doc-check{
+  position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;
+  background:#059669;color:var(--white);display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;
 }
-.group-card:hover{border-color:var(--gray-300)}
-.group-card .card-title{font-size:.82rem}
+.doc-missing{
+  border-radius:var(--radius);border:2px dashed var(--gray-200);
+  aspect-ratio:4/3;background:var(--gray-50);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--gray-400);font-size:.62rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.03em;gap:4px;
+}
+.doc-missing svg{width:20px;height:20px;opacity:.4}
+
+/* ===== RUNT section ===== */
+.runt-card{
+  background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);
+  padding:16px;margin-bottom:12px;
+}
+.runt-card:last-child{margin-bottom:0}
+.runt-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.runt-card-header h4{font-size:.82rem;font-weight:700;color:var(--gray-800);display:flex;align-items:center;gap:8px}
+
+.runt-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
+.runt-cat-item{
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);
+  padding:12px;
+}
+.runt-cat-item .cat-name{font-size:.85rem;font-weight:800;color:var(--gray-800)}
+.runt-cat-item .cat-meta{font-size:.72rem;color:var(--gray-500);margin-top:4px}
+.runt-cat-item .cat-meta strong{color:var(--gray-700)}
+
+/* History list */
+.history-entry{
+  padding:16px;border:1px solid var(--gray-200);border-radius:var(--radius);
+  margin-bottom:8px;background:var(--white);
+}
+.history-entry:last-child{margin-bottom:0}
+.history-date{font-size:.72rem;font-weight:600;color:var(--gray-500);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+
+/* ===== Expedientes ===== */
+.expediente-card{
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);
+  overflow:hidden;margin-bottom:12px;transition:var(--transition);
+}
+.expediente-card:hover{box-shadow:var(--shadow)}
+.expediente-header{
+  display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;
+  transition:background .1s;
+}
+.expediente-header:hover{background:var(--gray-50)}
+.expediente-placa{
+  font-size:1.1rem;font-weight:900;color:var(--gray-800);
+  background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius);
+  padding:4px 12px;letter-spacing:.05em;flex-shrink:0;
+}
+.expediente-info{flex:1;display:flex;flex-direction:column;gap:4px}
+.expediente-vehicle{font-size:.78rem;color:var(--gray-500)}
+.expediente-entities{display:flex;gap:16px;flex-wrap:wrap}
+.expediente-entity{font-size:.78rem;color:var(--gray-600);display:flex;align-items:center;gap:6px}
+.expediente-entity .badge{font-size:.6rem}
+.expediente-statuses{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.expediente-status-dot{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.68rem;font-weight:600;color:var(--gray-500);
+}
+.expediente-status-dot .dot{width:8px;height:8px;border-radius:50%}
+.dot-green{background:#059669}
+.dot-amber{background:#D97706}
+.dot-red{background:#DC2626}
+.dot-gray{background:var(--gray-400)}
+.expediente-arrow{color:var(--gray-400);transition:transform .2s;font-size:.85rem}
+.expediente-card.open .expediente-arrow{transform:rotate(90deg)}
+.expediente-body{
+  display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease;
+}
+.expediente-card.open .expediente-body{grid-template-rows:1fr}
+.expediente-body-inner{overflow:hidden}
+.expediente-body-content{padding:0 20px 20px;border-top:1px solid var(--gray-100)}
+.expediente-sub{
+  font-size:.7rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;
+  letter-spacing:.06em;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--gray-100);
+}
+.expediente-sub:first-child{margin-top:12px}
+.expediente-entity-card{
+  background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);
+  padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;transition:var(--transition);
+}
+.expediente-entity-card:hover{border-color:var(--gray-300);background:var(--gray-100)}
+.entity-card-name{font-size:.82rem;font-weight:600;color:var(--gray-800)}
+.entity-card-sub{font-size:.72rem;color:var(--gray-500);margin-top:2px}
 
 /* ===== Lightbox ===== */
 .lightbox{
   position:fixed;inset:0;background:rgba(0,0,0,.88);
   z-index:2000;display:flex;align-items:center;justify-content:center;
-  opacity:0;visibility:hidden;transition:all .25s cubic-bezier(.4,0,.2,1);
-  backdrop-filter:blur(4px);
+  opacity:0;visibility:hidden;transition:all .25s;backdrop-filter:blur(4px);
 }
 .lightbox.active{opacity:1;visibility:visible}
 .lightbox img{
   max-width:90vw;max-height:85vh;border-radius:var(--radius);
   box-shadow:0 16px 64px rgba(0,0,0,.4);
-  transform:scale(.92);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  transform:scale(.94);transition:transform .3s cubic-bezier(.4,0,.2,1);
 }
 .lightbox.active img{transform:scale(1)}
 .lightbox-close{
-  position:absolute;top:1rem;right:1rem;
+  position:absolute;top:16px;right:16px;
   background:rgba(255,255,255,.12);border:none;color:var(--white);
   width:40px;height:40px;border-radius:50%;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
@@ -298,153 +403,109 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 }
 .lightbox-close:hover{background:rgba(255,255,255,.25)}
 .lightbox-label{
-  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.6);color:var(--white);padding:.4rem 1rem;
+  position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.6);color:var(--white);padding:6px 16px;
   border-radius:20px;font-size:.78rem;font-weight:600;
 }
 
-/* ===== Modal (history) ===== */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);
-  z-index:1500;display:flex;align-items:center;justify-content:center;
-  opacity:0;visibility:hidden;transition:all .25s;backdrop-filter:blur(2px);
-}
-.modal-overlay.active{opacity:1;visibility:visible}
-.modal{
-  background:var(--white);border-radius:var(--radius-lg);
-  width:90%;max-width:640px;max-height:85vh;overflow:hidden;
-  box-shadow:var(--shadow-lg);
-  transform:translateY(12px);transition:transform .3s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;
-}
-.modal-overlay.active .modal{transform:none}
-.modal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);flex-shrink:0;
-}
-.modal-header h3{font-size:.95rem;font-weight:700;color:var(--navy)}
-.modal-body{overflow-y:auto;padding:1rem 1.25rem;flex:1}
-.modal-close{
-  background:none;border:none;cursor:pointer;color:var(--gray-400);
-  width:32px;height:32px;border-radius:8px;
+/* ===== Confirmation Dialog ===== */
+.confirm-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;
   display:flex;align-items:center;justify-content:center;
-  transition:var(--transition);
+  opacity:0;visibility:hidden;transition:all .2s;backdrop-filter:blur(2px);
 }
-.modal-close:hover{background:var(--gray-100);color:var(--navy)}
-.history-entry{
-  padding:.85rem;border-radius:var(--radius);border:1px solid var(--gray-200);
-  margin-bottom:.6rem;font-size:.8rem;
+.confirm-overlay.active{opacity:1;visibility:visible}
+.confirm-dialog{
+  background:var(--white);border-radius:var(--radius-lg);
+  padding:32px;width:90%;max-width:420px;text-align:center;
+  box-shadow:var(--shadow-lg);transform:scale(.95);transition:transform .2s;
 }
-.history-entry:last-child{margin-bottom:0}
-.history-entry .detail-grid{margin-top:.35rem}
-.history-date{font-size:.7rem;color:var(--gray-500);font-weight:600;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.confirm-overlay.active .confirm-dialog{transform:scale(1)}
+.confirm-dialog h3{font-size:1rem;font-weight:700;color:var(--gray-800);margin-bottom:8px}
+.confirm-dialog p{font-size:.85rem;color:var(--gray-500);margin-bottom:24px;line-height:1.5}
+.confirm-actions{display:flex;gap:8px;justify-content:center}
 
-/* ===== Login overlay ===== */
+/* ===== Toast ===== */
+.toast-container{position:fixed;top:72px;right:24px;z-index:3000;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);
+  padding:12px 20px;box-shadow:var(--shadow-lg);font-size:.82rem;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  transform:translateX(120%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  max-width:360px;
+}
+.toast.show{transform:translateX(0)}
+.toast-success{border-left:3px solid #059669;color:#065F46}
+.toast-error{border-left:3px solid #DC2626;color:#991B1B}
+.toast-info{border-left:3px solid #2563EB;color:#1E40AF}
+
+/* ===== Login ===== */
 .login-overlay{
   position:fixed;inset:0;
-  background:linear-gradient(135deg,var(--navy) 0%,#2a2a2a 100%);
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
   display:flex;align-items:center;justify-content:center;z-index:5000;
 }
 .login-box{
-  background:var(--white);border-radius:var(--radius-lg);
-  padding:2.5rem 2rem;width:90%;max-width:380px;text-align:center;
-  box-shadow:0 16px 64px rgba(0,0,0,.3);
+  background:var(--white);border-radius:16px;
+  padding:40px 32px;width:90%;max-width:380px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
 }
 .login-box .login-logo{
-  width:56px;height:56px;border-radius:14px;
-  background:var(--navy);color:var(--white);
+  width:52px;height:52px;border-radius:14px;
+  background:var(--gray-800);color:var(--white);
   display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;font-weight:900;margin:0 auto 1.25rem;
+  font-size:.9rem;font-weight:900;margin:0 auto 20px;letter-spacing:.02em;
 }
-.login-box h2{font-size:1.15rem;color:var(--navy);margin-bottom:.15rem;font-weight:800}
-.login-box p{font-size:.82rem;color:var(--gray-500);margin-bottom:1.5rem}
+.login-box h2{font-size:1.15rem;color:var(--gray-800);margin-bottom:4px;font-weight:800}
+.login-box h2 .accent{color:var(--red)}
+.login-box p{font-size:.82rem;color:var(--gray-500);margin-bottom:24px}
 .login-box input{
-  width:100%;padding:.7rem 1rem;border:1.5px solid var(--gray-300);
-  border-radius:var(--radius);font-size:.88rem;margin-bottom:.85rem;
-  outline:none;transition:var(--transition);
+  width:100%;padding:10px 14px;border:1px solid var(--gray-200);
+  border-radius:var(--radius);font-size:.88rem;margin-bottom:12px;
+  outline:none;transition:var(--transition);font-family:inherit;
 }
-.login-box input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.1)}
-.login-box button{
-  width:100%;padding:.75rem;background:var(--red);color:var(--white);
+.login-box input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,37,38,.08)}
+.login-box .btn-login{
+  width:100%;padding:10px;background:var(--red);color:var(--white);
   border:none;border-radius:var(--radius);font-size:.88rem;font-weight:700;
-  cursor:pointer;transition:var(--transition);
+  cursor:pointer;transition:var(--transition);font-family:inherit;
 }
-.login-box button:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(227,37,38,.3)}
-.login-error{color:var(--red);font-size:.8rem;margin-bottom:.65rem;display:none;font-weight:600}
+.login-box .btn-login:hover{background:var(--red-dark);box-shadow:0 4px 16px rgba(227,37,38,.3)}
+.login-error{color:var(--red);font-size:.78rem;margin-bottom:8px;display:none;font-weight:600}
 
-.empty-msg{text-align:center;padding:3rem;color:var(--gray-500);font-size:.88rem}
+/* ===== Spinner ===== */
+.spinner-wrap{display:flex;justify-content:center;padding:64px 0}
+.spinner{width:32px;height:32px;border:3px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+.spinner-sm{width:14px;height:14px;border:2px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* Overlay for mobile sidebar */
-.sidebar-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
-  z-index:90;backdrop-filter:blur(2px);
-}
-
-/* ===== Search bar ===== */
-.search-bar{
-  position:relative;max-width:320px;
-}
-.search-bar input{
-  width:100%;padding:.45rem .75rem .45rem 2rem;
-  border:1.5px solid var(--gray-200);border-radius:var(--radius);
-  font-size:.8rem;font-family:inherit;outline:none;transition:var(--transition);
-  background:var(--gray-50);
-}
-.search-bar input:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 3px rgba(227,37,38,.08)}
-.search-bar svg{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--gray-400)}
+.empty-msg{text-align:center;padding:64px 24px;color:var(--gray-400);font-size:.88rem}
 
 /* ===== Responsive ===== */
+@media(max-width:1024px){
+  .kpi-bar{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:none}
-  .sidebar-overlay.open{display:block}
-  .main-content{margin-left:0}
+  .nav-tabs{display:none}
+  .mobile-nav{display:flex}
   .hamburger{display:flex}
-  .content-area{padding:1rem}
-  .detail-grid{grid-template-columns:1fr;gap:.2rem}
-  .detail-grid dd{margin-bottom:.4rem}
-  .docs-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
-  .top-bar{padding:.75rem 1rem}
-  .search-bar{max-width:100%;flex:1}
-  .top-bar-right{flex-wrap:wrap}
+  .top-nav-inner{gap:12px}
+  .main-content{padding:16px}
+  .kpi-bar{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .kpi-card{padding:12px 16px}
+  .kpi-value{font-size:1.2rem}
+  .toolbar{gap:8px}
+  .search-box{max-width:100%;min-width:0}
+  .detail-panel{width:100%}
+  .field-grid{grid-template-columns:1fr}
+  .docs-grid{grid-template-columns:repeat(3,1fr)}
+  .nav-actions{display:none}
 }
 @media(max-width:480px){
-  .docs-grid{grid-template-columns:repeat(3,1fr)}
-  .runt-strip{flex-direction:column;align-items:flex-start;gap:.35rem}
-  .runt-strip-sep{display:none}
+  .kpi-bar{grid-template-columns:1fr 1fr}
+  .docs-grid{grid-template-columns:repeat(2,1fr)}
+  .expediente-entities{flex-direction:column;gap:4px}
 }
-
-/* ===== RUNT categories grid ===== */
-.runt-cats-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin-top:.5rem;
-}
-.runt-cat-card{
-  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.6rem .75rem;
-}
-.runt-cat-card .cat-name{font-size:.82rem;font-weight:800;color:var(--navy)}
-.runt-cat-card .cat-dates{font-size:.72rem;color:var(--gray-500);margin-top:.2rem}
-.runt-cat-card .cat-dates strong{color:var(--gray-700)}
-
-/* ===== Table view ===== */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.25rem}
-.data-table{
-  width:100%;border-collapse:collapse;font-size:.8rem;background:var(--white);
-  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);
-}
-.data-table thead{background:var(--navy);color:var(--white)}
-.data-table th{
-  padding:.65rem .75rem;text-align:left;font-size:.72rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.04em;cursor:pointer;white-space:nowrap;
-  user-select:none;position:relative;
-}
-.data-table th:hover{background:rgba(255,255,255,.08)}
-.data-table th .sort-arrow{margin-left:.3rem;opacity:.4;font-size:.65rem}
-.data-table th.sorted .sort-arrow{opacity:1}
-.data-table td{padding:.55rem .75rem;border-bottom:1px solid var(--gray-100);color:var(--gray-700);white-space:nowrap}
-.data-table tbody tr:nth-child(even){background:var(--gray-50)}
-.data-table tbody tr:hover{background:#FFF5F5;cursor:pointer}
-.data-table tbody tr{transition:background .15s}
-.data-table .badge{font-size:.62rem}
 </style>
 </head>
 <body>
@@ -453,90 +514,92 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-logo">CC</div>
-    <h2><span class="red">Capital</span> Cargo Colombia</h2>
+    <h2><span class="accent">Capital</span> Cargo Colombia</h2>
     <p>Panel de Administracion</p>
     <div class="login-error" id="loginError">Contrasena incorrecta</div>
     <input type="password" id="loginPass" placeholder="Contrasena" autocomplete="off">
-    <button onclick="checkLogin()">Ingresar</button>
+    <button class="btn-login" onclick="checkLogin()">Ingresar</button>
   </div>
 </div>
 
 <!-- App -->
-<div id="appContent" style="display:none">
-<div class="app-layout">
+<div class="app-shell" id="appContent" style="display:none">
 
-  <!-- Sidebar -->
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <h1><span class="red">Capital</span> Cargo</h1>
-      <p>Panel de Administracion</p>
+  <!-- Top Nav -->
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div class="brand">
+        <div class="brand-icon">CC</div>
+        <span class="brand-text"><span class="accent">Capital</span> Cargo</span>
+      </div>
+      <nav class="nav-tabs" id="navTabs">
+        <button class="nav-tab active" data-tab="conductores">Conductores<span class="tab-count" id="count-conductores">-</span></button>
+        <button class="nav-tab" data-tab="propietarios">Propietarios<span class="tab-count" id="count-propietarios">-</span></button>
+        <button class="nav-tab" data-tab="vehiculos">Vehiculos<span class="tab-count" id="count-vehiculos">-</span></button>
+        <button class="nav-tab" data-tab="expedientes">Expedientes</button>
+      </nav>
+      <button class="hamburger" onclick="toggleMobileNav()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="nav-spacer"></div>
+      <div class="nav-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()" title="Exportar CSV">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar CSV
+        </button>
+      </div>
     </div>
-    <nav class="sidebar-nav" id="sidebarNav">
-      <div class="nav-item active" data-tab="conductores">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Conductores
-        <span class="nav-count" id="count-conductores">-</span>
-      </div>
-      <div class="nav-item" data-tab="propietarios">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Propietarios
-        <span class="nav-count" id="count-propietarios">-</span>
-      </div>
-      <div class="nav-item" data-tab="vehiculos">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        Vehiculos
-        <span class="nav-count" id="count-vehiculos">-</span>
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <a href="index.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Volver al inicio
-      </a>
+    <!-- Mobile nav -->
+    <div class="mobile-nav" id="mobileNav" style="display:none">
+      <button class="nav-tab active" data-tab="conductores">Conductores</button>
+      <button class="nav-tab" data-tab="propietarios">Propietarios</button>
+      <button class="nav-tab" data-tab="vehiculos">Vehiculos</button>
+      <button class="nav-tab" data-tab="expedientes">Expedientes</button>
     </div>
-  </aside>
+  </header>
 
-  <!-- Main -->
   <main class="main-content">
-    <div class="top-bar">
-      <div class="top-bar-left">
-        <button class="hamburger" onclick="toggleSidebar()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <h2 id="pageTitle">Conductores</h2>
+    <!-- KPI Bar -->
+    <div class="kpi-bar" id="kpiBar">
+      <div class="kpi-card"><div class="kpi-label">Registrados</div><div class="kpi-value" id="kpi-total">-</div></div>
+      <div class="kpi-card"><div class="kpi-label">Pendientes</div><div class="kpi-value" id="kpi-pendientes">-</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Docs incompletos</div><div class="kpi-value" id="kpi-docs">-</div></div>
+      <div class="kpi-card kpi-danger"><div class="kpi-label">RUNT con novedades</div><div class="kpi-value" id="kpi-runt">-</div></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar" id="toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, cedula, placa..." oninput="onSearch()">
       </div>
-      <div class="top-bar-right">
-        <div class="search-bar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Buscar..." oninput="filterCards()">
-        </div>
-        <button class="toggle-btn" id="groupToggle" onclick="toggleGroupByPlaca()" style="display:none">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Agrupar
-        </button>
-        <button class="toggle-btn" id="tableToggle" onclick="toggleTableView()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;vertical-align:middle;margin-right:4px"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          Tabla
-        </button>
-        <button class="btn btn-outline" onclick="exportCSV()" title="Exportar Excel">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar
-        </button>
-        <button class="btn btn-outline" onclick="refreshTab()">
+      <select class="filter-select" id="estadoFilter" onchange="onFilterChange()">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="revisado">Revisado</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="rechazado">Rechazado</option>
+      </select>
+      <div class="toolbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="refreshTab()" title="Actualizar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          Actualizar
         </button>
       </div>
     </div>
 
-    <div class="content-area" id="content">
-      <div class="spinner-wrap"><div class="spinner"></div></div>
-    </div>
+    <!-- Content -->
+    <div id="content"><div class="spinner-wrap"><div class="spinner"></div></div></div>
   </main>
+</div>
 
-</div><!-- /app-layout -->
-</div><!-- /appContent -->
+<!-- Detail Panel -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="panel-header" id="panelHeader"></div>
+  <div class="panel-tabs" id="panelTabs"></div>
+  <div class="panel-body" id="panelBody"></div>
+  <div class="panel-footer" id="panelFooter"></div>
+</div>
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
@@ -545,21 +608,24 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
   <div class="lightbox-label" id="lightboxLabel"></div>
 </div>
 
-<!-- History Modal -->
-<div class="modal-overlay" id="historyModal" onclick="closeHistoryModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3 id="historyTitle">Historial RUNT</h3>
-      <button class="modal-close" onclick="closeHistoryModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<!-- Confirm Dialog -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-dialog">
+    <h3 id="confirmTitle">Confirmar</h3>
+    <p id="confirmMsg"></p>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="closeConfirm(false)">Cancelar</button>
+      <button class="btn btn-danger-subtle" id="confirmBtn" onclick="closeConfirm(true)">Confirmar</button>
     </div>
-    <div class="modal-body" id="historyBody"></div>
   </div>
 </div>
 
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ===== Config =====
 const SUPA_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZHZyanBlbGN5anJ2b25waW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDc0ODcsImV4cCI6MjEwODE4MzQ4N30.Wz7ceDsvmBZtSnad1cHV972pnOXXaE00VoGkt0bqF-g';
 const STORAGE_BASE = SUPA_URL + '/storage/v1/object/public/vinculacion-docs/';
@@ -568,19 +634,52 @@ const PASSWORD = 'capitalcargo2026';
 
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
+// ===== State =====
 let activeTab = 'conductores';
 let cache = {};
-let runtLicAll = [];   // ALL runt_licencias records
-let runtLicCache = {}; // latest per cedula
-let runtVehAll = [];   // ALL runt_vehiculos records
-let runtVehCache = {}; // latest per placa
-let groupByPlaca = false;
-let tableView = false;
+let runtLicAll = [];
+let runtLicCache = {};
+let runtVehAll = [];
+let runtVehCache = {};
 let searchQuery = '';
+let estadoFilter = '';
 let tableSortCol = null;
 let tableSortAsc = true;
+let openPanelRecord = null;
+let openPanelTab = 'datos';
+let openPanelTable = '';
+let editMode = false;
+let confirmResolver = null;
 
-// ===== Auth gate =====
+const DOC_FIELDS = {
+  conductores: ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'],
+  propietarios: ['cedula_frente','cedula_reverso','rut','cert_bancaria'],
+  vehiculos: ['tarjeta_frente','tarjeta_reverso','tecnomecanica','soat']
+};
+
+const DOC_LABELS = {
+  foto_rostro:'Foto Rostro', seguridad_social:'Seg. Social',
+  cedula_frente:'Cedula Frente', cedula_reverso:'Cedula Reverso',
+  pase_frente:'Pase Frente', pase_reverso:'Pase Reverso',
+  cert_bancaria:'Cert. Bancaria', rut:'RUT',
+  tarjeta_frente:'Tarjeta Frente', tarjeta_reverso:'Tarjeta Reverso',
+  tecnomecanica:'Tecnomecanica', soat:'SOAT'
+};
+
+const DOC_GROUPS_CONDUCTOR = {
+  'Identidad': ['cedula_frente','cedula_reverso'],
+  'Licencia': ['pase_frente','pase_reverso'],
+  'Otros': ['foto_rostro','seguridad_social','cert_bancaria']
+};
+const DOC_GROUPS_PROPIETARIO = {
+  'Identidad': ['cedula_frente','cedula_reverso'],
+  'Tributario y Bancario': ['rut','cert_bancaria']
+};
+const DOC_GROUPS_VEHICULO = {
+  'Documentos del vehiculo': ['tarjeta_frente','tarjeta_reverso','tecnomecanica','soat']
+};
+
+// ===== Auth =====
 function checkLogin() {
   const v = document.getElementById('loginPass').value;
   if (v === PASSWORD) {
@@ -589,57 +688,70 @@ function checkLogin() {
   } else {
     const err = document.getElementById('loginError');
     err.style.display = 'block';
-    err.style.animation = 'none';
-    err.offsetHeight; // reflow
-    err.style.animation = 'shake .4s ease';
+    document.getElementById('loginPass').classList.add('shake');
+    setTimeout(() => document.getElementById('loginPass').classList.remove('shake'), 400);
   }
 }
 document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') checkLogin(); });
 
 function showApp() {
   document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('appContent').style.display = 'block';
+  document.getElementById('appContent').style.display = 'flex';
   loadAllData();
 }
-
 if (sessionStorage.getItem('cc_admin') === '1') showApp();
 
-// ===== Sidebar (mobile) =====
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
+// ===== Mobile nav =====
+function toggleMobileNav() {
+  const nav = document.getElementById('mobileNav');
+  nav.style.display = nav.style.display === 'none' ? 'flex' : 'none';
 }
 
-// ===== Tabs via sidebar nav =====
-document.getElementById('sidebarNav').addEventListener('click', e => {
-  const item = e.target.closest('.nav-item');
-  if (!item) return;
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  item.classList.add('active');
-  activeTab = item.dataset.tab;
-  document.getElementById('pageTitle').textContent = {conductores:'Conductores',propietarios:'Propietarios',vehiculos:'Vehiculos'}[activeTab];
-  document.getElementById('searchInput').value = '';
-  searchQuery = '';
-  updateGroupToggle();
-  loadTab(activeTab);
-  closeSidebar();
-});
-
-function updateGroupToggle() {
-  const btn = document.getElementById('groupToggle');
-  btn.style.display = (activeTab === 'propietarios') ? 'none' : '';
-  btn.classList.toggle('active', groupByPlaca);
+// ===== Tab switching =====
+function initTabs() {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const t = tab.dataset.tab;
+      if (!t) return;
+      document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.nav-tab[data-tab="'+t+'"]').forEach(n => n.classList.add('active'));
+      activeTab = t;
+      searchQuery = '';
+      estadoFilter = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('estadoFilter').value = '';
+      tableSortCol = null;
+      tableSortAsc = true;
+      const toolbar = document.getElementById('toolbar');
+      toolbar.style.display = (t === 'expedientes') ? 'none' : '';
+      const kpi = document.getElementById('kpiBar');
+      kpi.style.display = (t === 'expedientes') ? 'none' : '';
+      renderCurrentTab();
+      document.getElementById('mobileNav').style.display = 'none';
+    });
+  });
 }
+initTabs();
 
 // ===== Data loading =====
 async function loadAllData() {
-  await Promise.all([loadRuntLicencias(), loadRuntVehiculos()]);
-  loadTab(activeTab);
-  loadAllCounts();
+  const content = document.getElementById('content');
+  content.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+  await Promise.all([
+    loadTable('conductores'),
+    loadTable('propietarios'),
+    loadTable('vehiculos'),
+    loadRuntLicencias(),
+    loadRuntVehiculos()
+  ]);
+  updateCounts();
+  updateKPIs();
+  renderCurrentTab();
+}
+
+async function loadTable(table) {
+  const { data, error } = await sb.from(table).select('*').order('created_at', { ascending: false });
+  if (!error) cache[table] = data || [];
 }
 
 async function loadRuntLicencias() {
@@ -664,30 +776,63 @@ async function loadRuntVehiculos() {
   });
 }
 
-async function loadTab(table, force) {
-  const content = document.getElementById('content');
-  if (cache[table] && !force) { renderTab(table, cache[table]); return; }
-  content.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
-  const { data, error } = await sb.from(table).select('*').order('created_at', { ascending: false });
-  if (error) { content.innerHTML = '<div class="empty-msg">Error: ' + error.message + '</div>'; return; }
-  cache[table] = data || [];
-  document.getElementById('count-' + table).textContent = (data || []).length;
-  updateGroupToggle();
-  renderTab(table, data || []);
+function updateCounts() {
+  ['conductores','propietarios','vehiculos'].forEach(t => {
+    const el = document.getElementById('count-' + t);
+    if (el && cache[t]) el.textContent = cache[t].length;
+  });
 }
 
-function refreshTab() {
-  delete cache[activeTab];
-  Promise.all([loadRuntLicencias(), loadRuntVehiculos()]).then(() => loadTab(activeTab, true));
+function updateKPIs() {
+  const conds = cache.conductores || [];
+  document.getElementById('kpi-total').textContent = conds.length;
+  document.getElementById('kpi-pendientes').textContent = conds.filter(c => c.estado && c.estado.toLowerCase() === 'pendiente').length;
+
+  const docFields = DOC_FIELDS.conductores;
+  const incomplete = conds.filter(c => docFields.some(f => !c[f])).length;
+  document.getElementById('kpi-docs').textContent = incomplete;
+
+  let runtIssues = 0;
+  conds.forEach(c => {
+    const runt = runtLicCache[c.cedula];
+    if (!runt || !runt.success) return;
+    const cats = getAllLicenseCategories(runt);
+    if (cats.length) {
+      if (cats.some(cat => isExpired(cat.fecha_vencimiento))) runtIssues++;
+    } else if (isExpired(runt.fecha_vencimiento_cat)) {
+      runtIssues++;
+    }
+  });
+  document.getElementById('kpi-runt').textContent = runtIssues;
+}
+
+async function refreshTab() {
+  const content = document.getElementById('content');
+  content.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+  if (activeTab === 'expedientes') {
+    await Promise.all([loadTable('conductores'), loadTable('propietarios'), loadTable('vehiculos'), loadRuntLicencias(), loadRuntVehiculos()]);
+  } else {
+    await Promise.all([loadTable(activeTab), loadRuntLicencias(), loadRuntVehiculos()]);
+  }
+  updateCounts();
+  updateKPIs();
+  renderCurrentTab();
+  showToast('Datos actualizados', 'info');
 }
 
 // ===== Search / Filter =====
-function filterCards() {
+function onSearch() {
   searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-  if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
+  renderCurrentTab();
+}
+function onFilterChange() {
+  estadoFilter = document.getElementById('estadoFilter').value;
+  renderCurrentTab();
 }
 
 function matchesSearch(r) {
+  if (!searchQuery && !estadoFilter) return true;
+  if (estadoFilter && (!r.estado || r.estado.toLowerCase() !== estadoFilter)) return false;
   if (!searchQuery) return true;
   const searchable = [
     r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido,
@@ -697,775 +842,27 @@ function matchesSearch(r) {
 }
 
 // ===== Rendering =====
-function renderTab(table, rows) {
-  const content = document.getElementById('content');
-  const filtered = rows.filter(matchesSearch);
+function renderCurrentTab() {
+  if (activeTab === 'expedientes') {
+    renderExpedientes();
+  } else {
+    renderTableTab(activeTab);
+  }
+}
 
-  if (!filtered.length) {
-    content.innerHTML = '<div class="empty-msg">' + (rows.length ? 'No hay resultados para la busqueda' : 'No hay registros') + '</div>';
+function renderTableTab(table) {
+  const content = document.getElementById('content');
+  const rows = (cache[table] || []).filter(matchesSearch);
+
+  if (!rows.length) {
+    content.innerHTML = '<div class="table-container"><div class="table-empty">' +
+      ((cache[table] || []).length ? 'No hay resultados para la busqueda' : 'No hay registros') + '</div></div>';
     return;
   }
 
-  if (tableView) {
-    content.innerHTML = renderTableView(table, filtered);
-  } else if (groupByPlaca && table !== 'propietarios') {
-    content.innerHTML = renderGroupedByPlaca(table, filtered);
-  } else {
-    let html = '<div class="cards">';
-    filtered.forEach((r, i) => { html += renderCard(table, r, i); });
-    html += '</div>';
-    content.innerHTML = html;
-  }
-}
-
-function toggleGroupByPlaca() {
-  groupByPlaca = !groupByPlaca;
-  updateGroupToggle();
-  renderTab(activeTab, cache[activeTab] || []);
-}
-
-// ===== Group by placa =====
-function renderGroupedByPlaca(table, rows) {
-  const placas = {};
-  rows.forEach(r => {
-    const p = (table === 'vehiculos') ? r.placa : r.vehiculo_placa;
-    if (!p) return;
-    if (!placas[p]) placas[p] = { conductores: [], propietarios: [], vehiculos: [] };
-    placas[p][table].push(r);
-  });
-
-  const otherTables = ['conductores', 'propietarios', 'vehiculos'].filter(t => t !== table);
-  otherTables.forEach(t => {
-    (cache[t] || []).forEach(r => {
-      const p = (t === 'vehiculos') ? r.placa : r.vehiculo_placa;
-      if (!p || !placas[p]) return;
-      placas[p][t].push(r);
-    });
-  });
-
-  const noPlaca = rows.filter(r => {
-    const p = (table === 'vehiculos') ? r.placa : r.vehiculo_placa;
-    return !p;
-  });
-
-  let html = '';
-  Object.keys(placas).sort().forEach(placa => {
-    const g = placas[placa];
-    const runtVeh = runtVehCache[placa];
-    html += '<div class="group-section">';
-    html += '<div class="group-header" onclick="this.parentElement.classList.toggle(\'open\')">';
-    html += '<h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> ' + esc(placa);
-    if (runtVeh && runtVeh.marca) html += ' <span style="font-weight:400;color:var(--gray-500);font-size:.82rem">' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo) + '</span>';
-    html += '</h3>';
-    html += '<span class="expand-arrow">&#8250;</span>';
-    html += '</div><div class="group-body">';
-
-    if (g.conductores.length) {
-      html += '<div class="group-sub-title">Conductores</div>';
-      g.conductores.forEach(r => {
-        const name = fullName(r);
-        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub" style="margin-top:.25rem">CC ' + esc(r.cedula) + ' ' + estadoBadge(r.estado) + '</div></div>';
-      });
-    }
-    if (g.propietarios.length) {
-      html += '<div class="group-sub-title">Propietarios</div>';
-      g.propietarios.forEach(r => {
-        const name = fullName(r);
-        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub" style="margin-top:.25rem">CC ' + esc(r.cedula) + ' ' + estadoBadge(r.estado) + '</div></div>';
-      });
-    }
-    if (g.vehiculos.length) {
-      html += '<div class="group-sub-title">Vehiculos</div>';
-      g.vehiculos.forEach(r => {
-        html += '<div class="group-card"><div class="card-title">Placa ' + esc(r.placa) + '</div><div class="card-sub" style="margin-top:.25rem">Tipo: ' + esc(r.tipo) + ' ' + estadoBadge(r.estado) + '</div></div>';
-      });
-    }
-    if (runtVeh && runtVeh.success) {
-      html += '<div class="group-sub-title">RUNT Vehiculo</div>';
-      html += '<div class="group-card"><div class="card-sub">' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo) + ' &middot; ' + esc(runtVeh.color) + ' &middot; SOAT: ' + esc(runtVeh.soat_estado) + '</div></div>';
-    }
-    html += '</div></div>';
-  });
-
-  if (noPlaca.length) {
-    html += '<div class="group-section"><div class="group-header" onclick="this.parentElement.classList.toggle(\'open\')"><h3>Sin placa</h3><span class="expand-arrow">&#8250;</span></div>';
-    html += '<div class="group-body"><div class="cards">';
-    noPlaca.forEach((r, i) => { html += renderCard(table, r, i); });
-    html += '</div></div></div>';
-  }
-  return html;
-}
-
-// ===== Card renderers =====
-function renderCard(table, r, idx) {
-  const renderers = { conductores: cardConductor, propietarios: cardPropietario, vehiculos: cardVehiculo };
-  return renderers[table](r, idx);
-}
-
-function cardConductor(r, idx) {
-  const name = fullName(r);
-  const uid = 'cond-' + r.id;
-  const runt = runtLicCache[r.cedula];
-  const initials = getInitials(r);
-  const avatarHtml = r.foto_rostro
-    ? '<img src="' + STORAGE_BASE + r.foto_rostro + '" alt="' + escAttr(name) + '" loading="lazy">'
-    : initials;
-
-  // RUNT strip (always visible)
-  let strip = '';
-  if (runt && runt.success) {
-    const activeLic = getActiveLicense(runt);
-    const cats = activeLic ? activeLic.categorias || [] : [];
-    strip += '<div class="runt-strip">';
-    strip += '<div class="runt-strip-item"><strong>Lic.</strong> ' + (runt.estado_licencia ? estadoRuntBadge(runt.estado_licencia) : '-') + '</div>';
-    if (cats.length) {
-      cats.forEach((c, ci) => {
-        strip += '<div class="runt-strip-sep"></div>';
-        const exp = isExpired(c.fecha_vencimiento);
-        strip += '<div class="runt-strip-item"><strong>' + esc(c.categoria) + '</strong> &rarr; ' + fmtDateShort(c.fecha_vencimiento) + (exp ? ' <span class="badge badge-expired">Vencida</span>' : '') + '</div>';
-      });
-    } else {
-      // fallback to flat columns
-      const expired = isExpired(runt.fecha_vencimiento_cat);
-      strip += '<div class="runt-strip-sep"></div>';
-      strip += '<div class="runt-strip-item"><strong>' + esc(runt.categoria || '?') + '</strong> &rarr; ' + fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') + '</div>';
-    }
-    strip += '</div>';
-  } else if (!runt) {
-    strip += '<div class="runt-strip"><div class="runt-strip-item"><span class="badge badge-pending-runt">RUNT pendiente</span></div></div>';
-  }
-
-  // Detail content
-  let detail = '';
-
-  // Personal info section
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Informacion Personal</div>';
-  detail += '<dl class="detail-grid" id="fields-' + uid + '">';
-  detail += dtEditable(uid, 'primer_nombre', 'Primer nombre', r.primer_nombre);
-  detail += dtEditable(uid, 'segundo_nombre', 'Segundo nombre', r.segundo_nombre);
-  detail += dtEditable(uid, 'primer_apellido', 'Primer apellido', r.primer_apellido);
-  detail += dtEditable(uid, 'segundo_apellido', 'Segundo apellido', r.segundo_apellido);
-  detail += dtEditable(uid, 'cedula', 'Cedula', r.cedula);
-  detail += dtEditable(uid, 'direccion', 'Direccion', r.direccion);
-  detail += dtEditable(uid, 'ciudad', 'Ciudad', r.ciudad);
-  detail += dtEditable(uid, 'telefono', 'Telefono', r.telefono);
-  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
-  detail += dt('Creado', fmtDate(r.created_at));
-  detail += '</dl>';
-
-  // Banking section
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Informacion Bancaria</div>';
-  detail += '<dl class="detail-grid">';
-  detail += dtEditable(uid, 'banco', 'Banco', r.banco);
-  detail += dtEditable(uid, 'tipo_cuenta', 'Tipo cuenta', r.tipo_cuenta);
-  detail += dtEditable(uid, 'numero_cuenta', 'Num. cuenta', r.numero_cuenta);
-  detail += '</dl>';
-
-  // References
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg> Referencias</div>';
-  detail += '<dl class="detail-grid">';
-  detail += dt('Ref. familiar', (r.ref_familiar_nombre || '-') + ' / ' + (r.ref_familiar_telefono || '-'));
-  detail += dt('Ref. empresa', (r.ref_empresa_nombre || '-') + ' / ' + (r.ref_empresa_telefono || '-'));
-  detail += dt('Autoriza datos', r.autoriza_datos);
-  detail += dt('Autoriza sensibles', r.autoriza_sensibles);
-  detail += '</dl>';
-
-  // Documents
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentos</div>';
-  detail += '<div class="docs-grid">';
-  detail += docThumb(r.foto_rostro, 'Foto Rostro');
-  detail += docThumb(r.cedula_frente, 'Cedula Frente');
-  detail += docThumb(r.cedula_reverso, 'Cedula Reverso');
-  detail += docThumb(r.pase_frente, 'Pase Frente');
-  detail += docThumb(r.pase_reverso, 'Pase Reverso');
-  detail += docThumb(r.seguridad_social, 'Seg. Social');
-  detail += docThumb(r.cert_bancaria, 'Cert. Bancaria');
-  detail += '</div>';
-
-  // RUNT License section
-  detail += renderRuntLicSection(r);
-
-  // Actions
-  detail += renderActions('conductores', r, uid);
-
-  return cardWrap(name, 'CC ' + esc(r.cedula), r.estado, detail, uid, avatarHtml, strip, idx);
-}
-
-function cardPropietario(r, idx) {
-  const name = fullName(r);
-  const uid = 'prop-' + r.id;
-  const initials = getInitials(r);
-
-  let detail = '';
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Informacion Personal</div>';
-  detail += '<dl class="detail-grid" id="fields-' + uid + '">';
-  detail += dtEditable(uid, 'primer_nombre', 'Primer nombre', r.primer_nombre);
-  detail += dtEditable(uid, 'segundo_nombre', 'Segundo nombre', r.segundo_nombre);
-  detail += dtEditable(uid, 'primer_apellido', 'Primer apellido', r.primer_apellido);
-  detail += dtEditable(uid, 'segundo_apellido', 'Segundo apellido', r.segundo_apellido);
-  detail += dtEditable(uid, 'cedula', 'Cedula', r.cedula);
-  detail += dtEditable(uid, 'direccion', 'Direccion', r.direccion);
-  detail += dtEditable(uid, 'ciudad', 'Ciudad', r.ciudad);
-  detail += dtEditable(uid, 'telefono', 'Telefono', r.telefono);
-  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
-  detail += dt('Creado', fmtDate(r.created_at));
-  detail += '</dl>';
-
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Informacion Bancaria</div>';
-  detail += '<dl class="detail-grid">';
-  detail += dtEditable(uid, 'banco', 'Banco', r.banco);
-  detail += dtEditable(uid, 'tipo_cuenta', 'Tipo cuenta', r.tipo_cuenta);
-  detail += dtEditable(uid, 'numero_cuenta', 'Num. cuenta', r.numero_cuenta);
-  detail += dt('Factura electronica', esc(r.factura_electronica));
-  detail += dt('Autoriza sensibles', r.autoriza_sensibles);
-  detail += '</dl>';
-
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentos</div>';
-  detail += '<div class="docs-grid">';
-  detail += docThumb(r.cedula_frente, 'Cedula Frente');
-  detail += docThumb(r.cedula_reverso, 'Cedula Reverso');
-  detail += docThumb(r.rut, 'RUT');
-  detail += docThumb(r.cert_bancaria, 'Cert. Bancaria');
-  detail += '</div>';
-
-  detail += renderActions('propietarios', r, uid);
-
-  return cardWrap(name, 'CC ' + esc(r.cedula), r.estado, detail, uid, initials, '', idx);
-}
-
-function cardVehiculo(r, idx) {
-  const uid = 'veh-' + r.id;
-  const runt = runtVehCache[r.placa];
-
-  // RUNT strip
-  let strip = '';
-  if (runt && runt.success) {
-    strip += '<div class="runt-strip">';
-    strip += '<div class="runt-strip-item"><strong>' + esc(runt.marca) + '</strong> ' + esc(runt.linea) + ' ' + esc(runt.modelo) + '</div>';
-    strip += '<div class="runt-strip-sep"></div>';
-    strip += '<div class="runt-strip-item"><strong>Color</strong> ' + esc(runt.color) + '</div>';
-    strip += '<div class="runt-strip-sep"></div>';
-    const soatExpired = isExpired(runt.soat_vencimiento);
-    strip += '<div class="runt-strip-item"><strong>SOAT</strong> ' + fmtDateShort(runt.soat_vencimiento) + (soatExpired ? ' <span class="badge badge-expired">Vencido</span>' : '') + '</div>';
-    strip += '</div>';
-  } else if (!runt) {
-    strip += '<div class="runt-strip"><div class="runt-strip-item"><span class="badge badge-pending-runt">RUNT pendiente</span></div></div>';
-  }
-
-  let detail = '';
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Datos del Vehiculo</div>';
-  detail += '<dl class="detail-grid" id="fields-' + uid + '">';
-  detail += dtEditable(uid, 'placa', 'Placa', r.placa);
-  detail += dtEditable(uid, 'tipo', 'Tipo', r.tipo);
-  detail += dtEditable(uid, 'satelital', 'Satelital', r.satelital);
-  detail += dtEditable(uid, 'satelital_usuario', 'Usuario sat.', r.satelital_usuario);
-  detail += dtEditable(uid, 'satelital_password', 'Password sat.', r.satelital_password);
-  detail += dt('Creado', fmtDate(r.created_at));
-  detail += '</dl>';
-
-  detail += '<div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentos</div>';
-  detail += '<div class="docs-grid">';
-  detail += docThumb(r.tarjeta_frente, 'Tarjeta Frente');
-  detail += docThumb(r.tarjeta_reverso, 'Tarjeta Reverso');
-  detail += docThumb(r.tecnomecanica, 'Tecnomecanica');
-  detail += docThumb(r.soat, 'SOAT');
-  if (r.fotos && Array.isArray(r.fotos)) {
-    r.fotos.forEach((f, i) => { detail += docThumb(f, 'Foto ' + (i + 1)); });
-  }
-  detail += '</div>';
-
-  // RUNT Vehiculo section
-  detail += renderRuntVehSection(r);
-
-  detail += renderActions('vehiculos', r, uid);
-
-  const avatarHtml = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
-  return cardWrap('Placa ' + esc(r.placa), 'Tipo: ' + esc(r.tipo), r.estado, detail, uid, avatarHtml, strip, idx);
-}
-
-// ===== RUNT sections =====
-function renderRuntLicSection(conductor) {
-  const runt = runtLicCache[conductor.cedula];
-  let html = '<div class="runt-section" id="runt-lic-' + conductor.id + '">';
-  html += '<h4>';
-  html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="10"/></svg> ';
-  html += 'Licencia RUNT ';
-
-  if (!runt) {
-    html += '<span class="badge badge-pending-runt">Pendiente</span></h4>';
-    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.65rem">No se ha consultado la licencia en RUNT.</p>';
-    html += '<div class="runt-actions">';
-    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntLic(\'' + conductor.id + '\', \'' + escAttr(conductor.cedula) + '\', \'' + escAttr(conductor.primer_apellido) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
-    html += '</div>';
-  } else {
-    const activeLic = getActiveLicense(runt);
-    const cats = activeLic ? activeLic.categorias || [] : [];
-    const anyExpired = cats.some(c => isExpired(c.fecha_vencimiento)) || (!cats.length && isExpired(runt.fecha_vencimiento_cat));
-    if (runt.success) {
-      html += '<span class="badge badge-success">OK</span>';
-      if (anyExpired) html += ' <span class="badge badge-expired">Vencida</span>';
-    } else {
-      html += '<span class="badge badge-fail">Fallo</span>';
-    }
-    html += '</h4>';
-    html += '<dl class="detail-grid">';
-    html += dt('Estado conductor', runt.estado_conductor);
-    html += dt('Estado licencia', runt.estado_licencia);
-    html += dt('Num. licencia', activeLic ? activeLic.numero_licencia : runt.numero_licencia);
-    html += dt('Organismo transito', activeLic ? activeLic.organismo_transito : runt.organismo_transito);
-    html += dt('Restricciones', (activeLic ? activeLic.restricciones : runt.restricciones) || 'Ninguna');
-    html += dt('Ultima consulta', fmtDate(runt.fecha_consulta));
-    if (runt.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(runt.error) + '</span>');
-    html += '</dl>';
-    // Categories grid
-    if (cats.length) {
-      html += '<div style="font-size:.72rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-top:.75rem;margin-bottom:.35rem">Categorias de licencia</div>';
-      html += '<div class="runt-cats-grid">';
-      cats.forEach(c => {
-        const exp = isExpired(c.fecha_vencimiento);
-        html += '<div class="runt-cat-card">';
-        html += '<span class="cat-name">' + esc(c.categoria) + '</span>';
-        if (exp) html += ' <span class="badge badge-expired" style="font-size:.6rem">Vencida</span>';
-        html += '<div class="cat-dates"><strong>Exp.</strong> ' + fmtDateShort(c.fecha_expedicion) + '</div>';
-        html += '<div class="cat-dates"><strong>Vence</strong> ' + fmtDateShort(c.fecha_vencimiento) + '</div>';
-        html += '</div>';
-      });
-      html += '</div>';
-    } else {
-      // fallback to flat columns
-      const expired = isExpired(runt.fecha_vencimiento_cat);
-      html += '<dl class="detail-grid" style="margin-top:.5rem">';
-      html += dt('Categoria', runt.categoria);
-      html += dt('Vencimiento', runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) + (expired ? ' <span class="badge badge-expired">Vencida</span>' : '') : '-');
-      html += '</dl>';
-    }
-    html += '<div class="runt-actions">';
-    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntLic(\'' + conductor.id + '\', \'' + escAttr(conductor.cedula) + '\', \'' + escAttr(conductor.primer_apellido) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
-    html += '<button class="btn btn-outline btn-sm" onclick="showLicHistory(\'' + escAttr(conductor.cedula) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial</button>';
-    html += '</div>';
-  }
-  html += '</div>';
-  return html;
-}
-
-function renderRuntVehSection(vehiculo) {
-  const runt = runtVehCache[vehiculo.placa];
-  let html = '<div class="runt-section" id="runt-veh-' + vehiculo.id + '">';
-  html += '<h4>';
-  html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> ';
-  html += 'RUNT Vehiculo ';
-
-  if (!runt) {
-    html += '<span class="badge badge-pending-runt">Pendiente</span></h4>';
-    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.65rem">No se ha consultado el vehiculo en RUNT.</p>';
-    html += '<div class="runt-actions">';
-    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntVeh(\'' + vehiculo.id + '\', \'' + escAttr(vehiculo.placa) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
-    html += '</div>';
-  } else {
-    if (runt.success) {
-      html += '<span class="badge badge-success">OK</span>';
-    } else {
-      html += '<span class="badge badge-fail">Fallo</span>';
-    }
-    html += '</h4>';
-    html += '<dl class="detail-grid">';
-    html += dt('Estado', runt.estado);
-    html += dt('Tipo servicio', runt.tipo_servicio);
-    html += dt('Clase', runt.clase);
-    html += dt('Marca', runt.marca);
-    html += dt('Linea', runt.linea);
-    html += dt('Modelo', runt.modelo);
-    html += dt('Color', runt.color);
-    html += dt('Cilindraje', runt.cilindraje);
-    html += dt('SOAT poliza', runt.soat_poliza);
-    html += dt('SOAT aseguradora', runt.soat_aseguradora);
-    const soatExpired = isExpired(runt.soat_vencimiento);
-    html += dt('SOAT vencimiento', runt.soat_vencimiento ? fmtDateShort(runt.soat_vencimiento) + (soatExpired ? ' <span class="badge badge-expired">Vencido</span>' : '') : '-');
-    html += dt('SOAT estado', runt.soat_estado);
-    html += dt('Ultima consulta', fmtDate(runt.fecha_consulta));
-    if (runt.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(runt.error) + '</span>');
-    html += '</dl>';
-    html += '<div class="runt-actions">';
-    html += '<button class="btn btn-dark btn-sm" onclick="consultarRuntVeh(\'' + vehiculo.id + '\', \'' + escAttr(vehiculo.placa) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
-    html += '<button class="btn btn-outline btn-sm" onclick="showVehHistory(\'' + escAttr(vehiculo.placa) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial</button>';
-    html += '</div>';
-  }
-  html += '</div>';
-  return html;
-}
-
-// ===== RUNT API calls =====
-async function consultarRuntLic(condId, cedula, primerApellido) {
-  const section = document.getElementById('runt-lic-' + condId);
-  if (!section) return;
-  section.innerHTML = '<h4><span class="spinner-sm"></span> Consultando RUNT...</h4>';
-
-  try {
-    await fetch(ENRICH_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
-      body: JSON.stringify({ tabla: 'conductores', datos: { cedula, primer_apellido: primerApellido } })
-    });
-    await loadRuntLicencias();
-    delete cache[activeTab];
-    loadTab(activeTab, true);
-  } catch (err) {
-    section.innerHTML = '<h4>Licencia RUNT <span class="badge badge-fail">ERROR</span></h4><p style="font-size:.78rem;color:#C92A2A">' + err.message + '</p>';
-  }
-}
-
-async function consultarRuntVeh(vehId, placa) {
-  const section = document.getElementById('runt-veh-' + vehId);
-  if (!section) return;
-  section.innerHTML = '<h4><span class="spinner-sm"></span> Consultando RUNT...</h4>';
-
-  try {
-    await fetch(ENRICH_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
-      body: JSON.stringify({ tabla: 'vehiculos', datos: { placa } })
-    });
-    await loadRuntVehiculos();
-    delete cache[activeTab];
-    loadTab(activeTab, true);
-  } catch (err) {
-    section.innerHTML = '<h4>RUNT Vehiculo <span class="badge badge-fail">ERROR</span></h4><p style="font-size:.78rem;color:#C92A2A">' + err.message + '</p>';
-  }
-}
-
-// ===== History modals =====
-function showLicHistory(cedula) {
-  const records = runtLicAll
-    .filter(r => r.cedula === cedula)
-    .sort((a, b) => new Date(b.fecha_consulta) - new Date(a.fecha_consulta));
-
-  document.getElementById('historyTitle').textContent = 'Historial RUNT Licencia — CC ' + cedula;
-  const body = document.getElementById('historyBody');
-
-  if (!records.length) {
-    body.innerHTML = '<div class="empty-msg">No hay registros de consulta.</div>';
-  } else {
-    let html = '';
-    records.forEach(r => {
-      const activeLic = getActiveLicense(r);
-      const cats = activeLic ? activeLic.categorias || [] : [];
-      const anyExpired = cats.length ? cats.some(c => isExpired(c.fecha_vencimiento)) : isExpired(r.fecha_vencimiento_cat);
-      html += '<div class="history-entry">';
-      html += '<div class="history-date">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
-      html += fmtDate(r.fecha_consulta) + ' ';
-      html += r.success ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-fail">Fallo</span>';
-      if (anyExpired) html += ' <span class="badge badge-expired">Vencida</span>';
-      html += '</div>';
-      html += '<dl class="detail-grid">';
-      html += dt('Estado conductor', r.estado_conductor);
-      html += dt('Estado licencia', r.estado_licencia);
-      if (cats.length) {
-        html += dt('Categorias', cats.map(c => {
-          const exp = isExpired(c.fecha_vencimiento);
-          return esc(c.categoria) + ' &rarr; ' + fmtDateShort(c.fecha_vencimiento) + (exp ? ' <span class="badge badge-expired" style="font-size:.6rem">Vencida</span>' : '');
-        }).join('<br>'));
-      } else {
-        html += dt('Categoria', r.categoria);
-        html += dt('Vencimiento', fmtDateShort(r.fecha_vencimiento_cat));
-      }
-      html += dt('Restricciones', (activeLic ? activeLic.restricciones : r.restricciones) || 'Ninguna');
-      html += dt('Num. licencia', activeLic ? activeLic.numero_licencia : r.numero_licencia);
-      if (r.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(r.error) + '</span>');
-      html += '</dl></div>';
-    });
-    body.innerHTML = html;
-  }
-  document.getElementById('historyModal').classList.add('active');
-}
-
-function showVehHistory(placa) {
-  const records = runtVehAll
-    .filter(r => r.placa === placa)
-    .sort((a, b) => new Date(b.fecha_consulta) - new Date(a.fecha_consulta));
-
-  document.getElementById('historyTitle').textContent = 'Historial RUNT Vehiculo — ' + placa;
-  const body = document.getElementById('historyBody');
-
-  if (!records.length) {
-    body.innerHTML = '<div class="empty-msg">No hay registros de consulta.</div>';
-  } else {
-    let html = '';
-    records.forEach(r => {
-      html += '<div class="history-entry">';
-      html += '<div class="history-date">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
-      html += fmtDate(r.fecha_consulta) + ' ';
-      html += r.success ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-fail">Fallo</span>';
-      html += '</div>';
-      html += '<dl class="detail-grid">';
-      html += dt('Estado', r.estado);
-      html += dt('Marca', r.marca);
-      html += dt('Linea', r.linea);
-      html += dt('Modelo', r.modelo);
-      html += dt('Color', r.color);
-      html += dt('SOAT estado', r.soat_estado);
-      html += dt('SOAT vencimiento', fmtDateShort(r.soat_vencimiento));
-      if (r.error) html += dt('Error', '<span style="color:#C92A2A">' + esc(r.error) + '</span>');
-      html += '</dl></div>';
-    });
-    body.innerHTML = html;
-  }
-  document.getElementById('historyModal').classList.add('active');
-}
-
-function closeHistoryModal(e) {
-  if (e && e.target !== document.getElementById('historyModal')) return;
-  document.getElementById('historyModal').classList.remove('active');
-}
-
-// ===== Lightbox =====
-function openLightbox(url, label) {
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lightboxImg').src = url;
-  document.getElementById('lightboxLabel').textContent = label;
-  lb.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox(e) {
-  if (e && e.target.tagName === 'IMG') return;
-  document.getElementById('lightbox').classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeLightbox();
-    closeHistoryModal();
-  }
-});
-
-// ===== Edit / Delete =====
-function renderActions(table, r, uid) {
-  let html = '<div class="card-actions" id="actions-' + uid + '">';
-  html += '<button class="btn btn-outline" onclick="startEdit(\'' + table + '\', \'' + r.id + '\', \'' + uid + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>';
-  html += '<div class="card-actions-right">';
-  html += '<button class="btn btn-danger btn-sm" onclick="deleteRecord(\'' + table + '\', \'' + r.id + '\', \'' + uid + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Eliminar</button>';
-  html += '</div></div>';
-  return html;
-}
-
-function startEdit(table, id, uid) {
-  const card = document.getElementById('card-' + uid);
-  if (!card) return;
-
-  card.querySelectorAll('[data-edit-uid="' + uid + '"]').forEach(dd => {
-    const field = dd.dataset.field;
-    const val = dd.dataset.value || '';
-    dd.innerHTML = '<input class="edit-input" data-field="' + field + '" value="' + escAttr(val) + '">';
-  });
-
-  const estadoEl = card.querySelector('[data-estado-uid="' + uid + '"]');
-  if (estadoEl) {
-    const current = estadoEl.dataset.value || 'pendiente';
-    estadoEl.innerHTML = '<select class="edit-select" data-field="estado">' +
-      ['pendiente', 'revisado', 'aprobado', 'rechazado'].map(s =>
-        '<option value="' + s + '"' + (s === current.toLowerCase() ? ' selected' : '') + '>' + s.charAt(0).toUpperCase() + s.slice(1) + '</option>'
-      ).join('') + '</select>';
-  }
-
-  const actions = document.getElementById('actions-' + uid);
-  actions.innerHTML = '<button class="btn btn-primary" onclick="saveEdit(\'' + table + '\', \'' + id + '\', \'' + uid + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg> Guardar</button>' +
-    '<button class="btn btn-outline" onclick="cancelEdit(\'' + table + '\')">Cancelar</button>';
-}
-
-async function saveEdit(table, id, uid) {
-  const card = document.getElementById('card-' + uid);
-  if (!card) return;
-
-  const changes = {};
-  card.querySelectorAll('.edit-input').forEach(input => {
-    changes[input.dataset.field] = input.value || null;
-  });
-  card.querySelectorAll('.edit-select').forEach(select => {
-    changes[select.dataset.field] = select.value;
-  });
-
-  if (Object.keys(changes).length === 0) { cancelEdit(table); return; }
-
-  const saveBtn = card.querySelector('.btn-primary');
-  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner-sm"></span> Guardando...'; }
-
-  const { error } = await sb.from(table).update(changes).eq('id', id);
-  if (error) { alert('Error guardando: ' + error.message); return; }
-
-  if (cache[table]) {
-    const idx = cache[table].findIndex(r => r.id === id);
-    if (idx >= 0) Object.assign(cache[table][idx], changes);
-  }
-  delete cache[table];
-  loadTab(table, true);
-}
-
-function cancelEdit(table) {
-  delete cache[table];
-  loadTab(table, true);
-}
-
-async function deleteRecord(table, id, uid) {
-  if (!confirm('Eliminar este registro? Esta accion no se puede deshacer.')) return;
-
-  const { error } = await sb.from(table).delete().eq('id', id);
-  if (error) { alert('Error eliminando: ' + error.message); return; }
-
-  if (cache[table]) {
-    cache[table] = cache[table].filter(r => r.id !== id);
-    document.getElementById('count-' + table).textContent = cache[table].length;
-  }
-  const card = document.getElementById('card-' + uid);
-  if (card) {
-    card.style.opacity = '0';
-    card.style.transform = 'translateX(-20px)';
-    card.style.transition = 'all .3s ease';
-    setTimeout(() => card.remove(), 300);
-  }
-}
-
-// ===== Helpers =====
-function fullName(r) {
-  return [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
-}
-
-function getInitials(r) {
-  return ((r.primer_nombre || '').charAt(0) + (r.primer_apellido || '').charAt(0)).toUpperCase() || '?';
-}
-
-function dt(label, val) {
-  if (typeof val === 'boolean') val = val ? 'Si' : 'No';
-  return '<dt>' + label + '</dt><dd>' + (val != null && val !== '' ? val : '-') + '</dd>';
-}
-
-function dtEditable(uid, field, label, val) {
-  return '<dt>' + label + '</dt><dd data-edit-uid="' + uid + '" data-field="' + field + '" data-value="' + escAttr(val) + '">' + esc(val) + '</dd>';
-}
-
-function fmtDate(d) {
-  if (!d) return '-';
-  return new Date(d).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
-
-function fmtDateShort(d) {
-  if (!d) return '-';
-  return new Date(d).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-function esc(v) {
-  if (v == null) return '-';
-  if (typeof v === 'boolean') return v ? 'Si' : 'No';
-  return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function escAttr(v) {
-  if (v == null) return '';
-  return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;');
-}
-
-function isExpired(dateStr) {
-  if (!dateStr) return false;
-  return new Date(dateStr) < new Date();
-}
-
-function estadoBadge(v) {
-  if (!v) return '';
-  const cls = { pendiente:'badge-pendiente', revisado:'badge-revisado', aprobado:'badge-aprobado', rechazado:'badge-rechazado' }[v.toLowerCase()] || 'badge-pendiente';
-  return '<span class="badge ' + cls + '">' + esc(v) + '</span>';
-}
-
-function estadoRuntBadge(v) {
-  if (!v) return '-';
-  const lower = v.toLowerCase();
-  let cls = 'badge-pendiente';
-  if (lower.includes('vigente') || lower.includes('activ')) cls = 'badge-vigente';
-  else if (lower.includes('vencid') || lower.includes('cancel') || lower.includes('suspend')) cls = 'badge-vencida';
-  return '<span class="badge ' + cls + '">' + esc(v) + '</span>';
-}
-
-function docThumb(val, label) {
-  if (!val) {
-    return '<div class="doc-missing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' + label + '</div>';
-  }
-  const url = STORAGE_BASE + val;
-  return '<div class="doc-thumb" onclick="openLightbox(\'' + escAttr(url) + '\', \'' + escAttr(label) + '\')"><img src="' + escAttr(url) + '" alt="' + escAttr(label) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=padding:1rem;text-align:center;font-size:.65rem;color:var(--gray-500)>No se pudo cargar</div>\'"><div class="doc-thumb-label">' + label + '</div></div>';
-}
-
-function toggleCard(el) {
-  el.closest('.card').classList.toggle('open');
-}
-
-function cardWrap(title, sub, estado, detail, uid, avatarContent, stripHtml, idx) {
-  const estadoHtml = estado ? '<span data-estado-uid="' + uid + '" data-value="' + escAttr(estado) + '">' + estadoBadge(estado) + '</span>' : '';
-  const delay = Math.min((idx || 0) * 0.04, 0.4);
-  let html = '<div class="card" id="card-' + uid + '" style="animation-delay:' + delay + 's">';
-  html += '<div class="card-header" onclick="toggleCard(this)">';
-  html += '<div class="card-header-left">';
-  html += '<div class="card-avatar">' + (avatarContent || '?') + '</div>';
-  html += '<div><div class="card-title">' + title + '</div><div class="card-sub">' + sub + '</div></div>';
-  html += '</div>';
-  html += '<div class="card-right">' + estadoHtml + ' <span class="expand-arrow">&#8250;</span></div>';
-  html += '</div>';
-  if (stripHtml) html += stripHtml;
-  html += '<div class="card-detail"><div class="card-detail-inner"><div class="card-detail-content">' + detail + '</div></div></div>';
-  html += '</div>';
-  return html;
-}
-
-// ===== Parse active license from licencias_json =====
-function getActiveLicense(runtRecord) {
-  if (!runtRecord || !runtRecord.licencias_json) return null;
-  let arr = runtRecord.licencias_json;
-  if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch(e) { return null; } }
-  if (!Array.isArray(arr)) return null;
-  return arr.find(l => l.estado && l.estado.toUpperCase() === 'ACTIVA') || arr[0] || null;
-}
-
-function getAllLicenseCategories(runtRecord) {
-  const lic = getActiveLicense(runtRecord);
-  return lic && lic.categorias ? lic.categorias : [];
-}
-
-function getEarliestExpiry(cats) {
-  if (!cats.length) return null;
-  let earliest = null;
-  cats.forEach(c => {
-    if (c.fecha_vencimiento) {
-      const d = new Date(c.fecha_vencimiento);
-      if (!earliest || d < earliest) earliest = d;
-    }
-  });
-  return earliest;
-}
-
-function countDocs(r, table) {
-  const docFields = {
-    conductores: ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','seguridad_social','cert_bancaria'],
-    propietarios: ['cedula_frente','cedula_reverso','rut','cert_bancaria'],
-    vehiculos: ['tarjeta_frente','tarjeta_reverso','tecnomecanica','soat']
-  };
-  const fields = docFields[table] || [];
-  let count = fields.filter(f => r[f]).length;
-  if (table === 'vehiculos' && r.fotos && Array.isArray(r.fotos)) count += r.fotos.length;
-  return count;
-}
-
-// ===== Table view toggle =====
-function toggleTableView() {
-  tableView = !tableView;
-  document.getElementById('tableToggle').classList.toggle('active', tableView);
-  tableSortCol = null;
-  tableSortAsc = true;
-  if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
-}
-
-function renderTableView(table, rows) {
   const cols = getTableColumns(table);
   let sorted = [...rows];
-  if (tableSortCol !== null) {
+  if (tableSortCol !== null && cols[tableSortCol]) {
     const colDef = cols[tableSortCol];
     sorted.sort((a, b) => {
       let va = colDef.val(a), vb = colDef.val(b);
@@ -1477,143 +874,705 @@ function renderTableView(table, rows) {
     });
   }
 
-  let html = '<div class="table-wrap"><table class="data-table"><thead><tr>';
+  let html = '<div class="table-container"><div class="table-wrap"><table class="data-table"><thead><tr>';
   cols.forEach((c, i) => {
     const isSorted = tableSortCol === i;
-    const arrow = isSorted ? (tableSortAsc ? ' &#9650;' : ' &#9660;') : ' &#9650;';
-    html += '<th class="' + (isSorted ? 'sorted' : '') + '" onclick="sortTable(' + i + ')">' + c.label + '<span class="sort-arrow">' + arrow + '</span></th>';
+    const arrow = isSorted ? (tableSortAsc ? '&#9650;' : '&#9660;') : '&#9650;';
+    html += '<th class="' + (isSorted ? 'sorted' : '') + '" onclick="sortTable(' + i + ')">' + c.label + '<span class="sort-icon">' + arrow + '</span></th>';
   });
   html += '</tr></thead><tbody>';
 
   sorted.forEach(r => {
-    const uid = table.slice(0, 4) + '-' + r.id;
-    html += '<tr onclick="scrollToCard(\'' + uid + '\')">';
+    html += '<tr onclick="openPanel(\'' + table + '\', \'' + r.id + '\')">';
     cols.forEach(c => {
       html += '<td>' + c.render(r) + '</td>';
     });
     html += '</tr>';
   });
 
-  html += '</tbody></table></div>';
-  return html;
+  html += '</tbody></table></div></div>';
+  content.innerHTML = html;
 }
 
 function getTableColumns(table) {
   if (table === 'conductores') {
     return [
-      { label: 'Nombre', val: r => fullName(r), render: r => esc(fullName(r)) },
-      { label: 'Cedula', val: r => r.cedula, render: r => esc(r.cedula) },
-      { label: 'Placa', val: r => r.vehiculo_placa, render: r => esc(r.vehiculo_placa) },
-      { label: 'Ciudad', val: r => r.ciudad, render: r => esc(r.ciudad) },
-      { label: 'Telefono', val: r => r.telefono, render: r => esc(r.telefono) },
-      { label: 'Estado', val: r => r.estado, render: r => estadoBadge(r.estado) },
-      { label: 'Categorias', val: r => {
+      { label:'Nombre', val:r=>fullName(r), render:r=>'<span class="cell-name">'+esc(fullName(r))+'</span>' },
+      { label:'Cedula', val:r=>r.cedula, render:r=>esc(r.cedula) },
+      { label:'Placa', val:r=>r.vehiculo_placa, render:r=>r.vehiculo_placa?'<strong>'+esc(r.vehiculo_placa)+'</strong>':'-' },
+      { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(r.ciudad) },
+      { label:'Telefono', val:r=>r.telefono, render:r=>esc(r.telefono) },
+      { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
+      { label:'Categorias RUNT', val:r=>{
         const runt = runtLicCache[r.cedula];
-        const cats = runt ? getAllLicenseCategories(runt) : [];
-        return cats.map(c => c.categoria).join(', ') || (runt ? runt.categoria : '-');
-      }, render: r => {
+        return runt ? getAllLicenseCategories(runt).map(c=>c.categoria).join(',') : '';
+      }, render:r=>{
         const runt = runtLicCache[r.cedula];
-        if (!runt || !runt.success) return '<span class="badge badge-pending-runt">Pendiente</span>';
+        if (!runt || !runt.success) return '<span class="badge badge-sin-consultar">Sin consultar</span>';
         const cats = getAllLicenseCategories(runt);
-        if (cats.length) return cats.map(c => {
+        if (!cats.length) return esc(runt.categoria || '-');
+        return cats.map(c=>{
           const exp = isExpired(c.fecha_vencimiento);
-          return '<strong>' + esc(c.categoria) + '</strong>' + (exp ? ' <span class="badge badge-expired">V</span>' : '');
+          return '<span class="runt-cat-badge'+(exp?' expired':'')+'">'+esc(c.categoria)+(exp?' &#9888;':' &#10003;')+'</span>';
         }).join(' ');
-        return esc(runt.categoria || '-');
       }},
-      { label: 'Vence prox.', val: r => {
-        const runt = runtLicCache[r.cedula];
-        const cats = runt ? getAllLicenseCategories(runt) : [];
-        const e = getEarliestExpiry(cats);
-        return e ? e.getTime() : (runt && runt.fecha_vencimiento_cat ? new Date(runt.fecha_vencimiento_cat).getTime() : Infinity);
-      }, render: r => {
-        const runt = runtLicCache[r.cedula];
-        const cats = runt ? getAllLicenseCategories(runt) : [];
-        const e = getEarliestExpiry(cats);
-        if (e) { const exp = e < new Date(); return fmtDateShort(e.toISOString()) + (exp ? ' <span class="badge badge-expired">V</span>' : ''); }
-        if (runt && runt.fecha_vencimiento_cat) { const exp = isExpired(runt.fecha_vencimiento_cat); return fmtDateShort(runt.fecha_vencimiento_cat) + (exp ? ' <span class="badge badge-expired">V</span>' : ''); }
-        return '-';
-      }},
-      { label: 'Docs', val: r => countDocs(r, 'conductores'), render: r => String(countDocs(r, 'conductores')) }
+      { label:'Docs', val:r=>countDocs(r,table), render:r=>{
+        const c = countDocs(r,table), t = DOC_FIELDS.conductores.length;
+        const cls = c>=t?'complete':'partial';
+        return '<span class="doc-fraction '+cls+'">'+c+'/'+t+'</span>';
+      }}
     ];
   }
   if (table === 'propietarios') {
     return [
-      { label: 'Nombre', val: r => fullName(r), render: r => esc(fullName(r)) },
-      { label: 'Cedula', val: r => r.cedula, render: r => esc(r.cedula) },
-      { label: 'Placa', val: r => r.vehiculo_placa, render: r => esc(r.vehiculo_placa) },
-      { label: 'Ciudad', val: r => r.ciudad, render: r => esc(r.ciudad) },
-      { label: 'Telefono', val: r => r.telefono, render: r => esc(r.telefono) },
-      { label: 'Estado', val: r => r.estado, render: r => estadoBadge(r.estado) },
-      { label: 'Docs', val: r => countDocs(r, 'propietarios'), render: r => String(countDocs(r, 'propietarios')) }
+      { label:'Nombre', val:r=>fullName(r), render:r=>'<span class="cell-name">'+esc(fullName(r))+'</span>' },
+      { label:'Cedula', val:r=>r.cedula, render:r=>esc(r.cedula) },
+      { label:'Placa', val:r=>r.vehiculo_placa, render:r=>r.vehiculo_placa?'<strong>'+esc(r.vehiculo_placa)+'</strong>':'-' },
+      { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(r.ciudad) },
+      { label:'Telefono', val:r=>r.telefono, render:r=>esc(r.telefono) },
+      { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
+      { label:'Docs', val:r=>countDocs(r,table), render:r=>{
+        const c = countDocs(r,table), t = DOC_FIELDS.propietarios.length;
+        const cls = c>=t?'complete':'partial';
+        return '<span class="doc-fraction '+cls+'">'+c+'/'+t+'</span>';
+      }}
     ];
   }
   // vehiculos
   return [
-    { label: 'Placa', val: r => r.placa, render: r => '<strong>' + esc(r.placa) + '</strong>' },
-    { label: 'Tipo', val: r => r.tipo, render: r => esc(r.tipo) },
-    { label: 'Satelital', val: r => r.satelital, render: r => esc(r.satelital) },
-    { label: 'Estado', val: r => r.estado, render: r => estadoBadge(r.estado) },
-    { label: 'RUNT', val: r => { const rv = runtVehCache[r.placa]; return rv ? rv.estado : ''; }, render: r => {
-      const rv = runtVehCache[r.placa];
-      if (!rv) return '<span class="badge badge-pending-runt">Pendiente</span>';
-      return rv.success ? estadoRuntBadge(rv.estado) : '<span class="badge badge-fail">Fallo</span>';
+    { label:'Placa', val:r=>r.placa, render:r=>'<strong>'+esc(r.placa)+'</strong>' },
+    { label:'Tipo', val:r=>r.tipo, render:r=>esc(r.tipo) },
+    { label:'Satelital', val:r=>r.satelital, render:r=>esc(r.satelital) },
+    { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
+    { label:'RUNT', val:r=>{const rv=runtVehCache[r.placa];return rv?rv.estado:'';}, render:r=>{
+      const rv=runtVehCache[r.placa];
+      if(!rv)return '<span class="badge badge-sin-consultar">Sin consultar</span>';
+      return rv.success?estadoRuntBadge(rv.estado):'<span class="badge badge-fail">Fallo</span>';
     }},
-    { label: 'Docs', val: r => countDocs(r, 'vehiculos'), render: r => String(countDocs(r, 'vehiculos')) }
+    { label:'Docs', val:r=>countDocs(r,table), render:r=>{
+      const c=countDocs(r,table),t=DOC_FIELDS.vehiculos.length+(r.fotos&&Array.isArray(r.fotos)?r.fotos.length:0);
+      const total=DOC_FIELDS.vehiculos.length;
+      const cls=c>=total?'complete':'partial';
+      return '<span class="doc-fraction '+cls+'">'+c+'/'+total+'</span>';
+    }}
   ];
 }
 
 function sortTable(colIdx) {
-  if (tableSortCol === colIdx) {
-    tableSortAsc = !tableSortAsc;
-  } else {
-    tableSortCol = colIdx;
-    tableSortAsc = true;
-  }
-  if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
+  if (tableSortCol === colIdx) tableSortAsc = !tableSortAsc;
+  else { tableSortCol = colIdx; tableSortAsc = true; }
+  renderCurrentTab();
 }
 
-function scrollToCard(uid) {
-  // Switch to card view and scroll to the card
-  if (tableView) {
-    tableView = false;
-    document.getElementById('tableToggle').classList.remove('active');
-    if (cache[activeTab]) renderTab(activeTab, cache[activeTab]);
-  }
-  setTimeout(() => {
-    const card = document.getElementById('card-' + uid);
-    if (card) {
-      card.classList.add('open');
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      card.style.boxShadow = '0 0 0 3px var(--red)';
-      setTimeout(() => { card.style.boxShadow = ''; }, 2000);
+// ===== Expedientes Tab =====
+function renderExpedientes() {
+  const content = document.getElementById('content');
+  const placas = {};
+
+  // Collect all placas from all tables
+  (cache.conductores||[]).forEach(r => { if(r.vehiculo_placa) { if(!placas[r.vehiculo_placa]) placas[r.vehiculo_placa]={conductores:[],propietarios:[],vehiculos:[]}; placas[r.vehiculo_placa].conductores.push(r); }});
+  (cache.propietarios||[]).forEach(r => { if(r.vehiculo_placa) { if(!placas[r.vehiculo_placa]) placas[r.vehiculo_placa]={conductores:[],propietarios:[],vehiculos:[]}; placas[r.vehiculo_placa].propietarios.push(r); }});
+  (cache.vehiculos||[]).forEach(r => { if(r.placa) { if(!placas[r.placa]) placas[r.placa]={conductores:[],propietarios:[],vehiculos:[]}; placas[r.placa].vehiculos.push(r); }});
+
+  const sorted = Object.keys(placas).sort();
+  if (!sorted.length) { content.innerHTML = '<div class="empty-msg">No hay expedientes</div>'; return; }
+
+  let html = '';
+  sorted.forEach(placa => {
+    const g = placas[placa];
+    const runtVeh = runtVehCache[placa];
+    const vehicleInfo = runtVeh && runtVeh.success ? esc(runtVeh.marca)+' '+esc(runtVeh.linea)+' '+esc(runtVeh.modelo) : '';
+    const cond = g.conductores[0];
+    const prop = g.propietarios[0];
+    const veh = g.vehiculos[0];
+
+    // Status dots
+    const docsComplete = checkExpedienteDocs(g);
+    const runtConsulted = !!runtVeh;
+    const licValid = cond ? checkLicenseValid(cond.cedula) : null;
+
+    html += '<div class="expediente-card" id="exp-'+escAttr(placa)+'">';
+    html += '<div class="expediente-header" onclick="this.parentElement.classList.toggle(\'open\')">';
+    html += '<div class="expediente-placa">'+esc(placa)+'</div>';
+    html += '<div class="expediente-info">';
+    if (vehicleInfo) html += '<div class="expediente-vehicle">'+vehicleInfo+'</div>';
+    html += '<div class="expediente-entities">';
+    if (cond) html += '<span class="expediente-entity">Conductor: '+esc(fullName(cond))+' '+estadoBadge(cond.estado)+'</span>';
+    if (prop) html += '<span class="expediente-entity">Propietario: '+esc(fullName(prop))+' '+estadoBadge(prop.estado)+'</span>';
+    if (veh) html += '<span class="expediente-entity">Vehiculo: '+esc(veh.tipo||'')+' '+estadoBadge(veh.estado)+'</span>';
+    html += '</div></div>';
+    html += '<div class="expediente-statuses">';
+    html += '<span class="expediente-status-dot"><span class="dot '+(docsComplete?'dot-green':'dot-amber')+'"></span>Docs</span>';
+    html += '<span class="expediente-status-dot"><span class="dot '+(runtConsulted?'dot-green':'dot-gray')+'"></span>RUNT</span>';
+    if (licValid !== null) html += '<span class="expediente-status-dot"><span class="dot '+(licValid?'dot-green':'dot-red')+'"></span>Lic.</span>';
+    html += '</div>';
+    html += '<span class="expediente-arrow">&#8250;</span>';
+    html += '</div>';
+
+    // Body
+    html += '<div class="expediente-body"><div class="expediente-body-inner"><div class="expediente-body-content">';
+    if (g.conductores.length) {
+      html += '<div class="expediente-sub">Conductores</div>';
+      g.conductores.forEach(r => {
+        html += '<div class="expediente-entity-card" onclick="event.stopPropagation();openPanel(\'conductores\',\''+r.id+'\')">';
+        html += '<div><div class="entity-card-name">'+esc(fullName(r))+'</div><div class="entity-card-sub">CC '+esc(r.cedula)+'</div></div>';
+        html += estadoBadge(r.estado)+'</div>';
+      });
     }
-  }, 100);
+    if (g.propietarios.length) {
+      html += '<div class="expediente-sub">Propietarios</div>';
+      g.propietarios.forEach(r => {
+        html += '<div class="expediente-entity-card" onclick="event.stopPropagation();openPanel(\'propietarios\',\''+r.id+'\')">';
+        html += '<div><div class="entity-card-name">'+esc(fullName(r))+'</div><div class="entity-card-sub">CC '+esc(r.cedula)+'</div></div>';
+        html += estadoBadge(r.estado)+'</div>';
+      });
+    }
+    if (g.vehiculos.length) {
+      html += '<div class="expediente-sub">Vehiculos</div>';
+      g.vehiculos.forEach(r => {
+        html += '<div class="expediente-entity-card" onclick="event.stopPropagation();openPanel(\'vehiculos\',\''+r.id+'\')">';
+        html += '<div><div class="entity-card-name">Placa '+esc(r.placa)+'</div><div class="entity-card-sub">Tipo: '+esc(r.tipo||'')+'</div></div>';
+        html += estadoBadge(r.estado)+'</div>';
+      });
+    }
+    if (runtVeh && runtVeh.success) {
+      html += '<div class="expediente-sub">RUNT Vehiculo</div>';
+      html += '<div class="runt-card"><div class="field-grid">';
+      html += fieldHTML('Marca',runtVeh.marca)+fieldHTML('Linea',runtVeh.linea);
+      html += fieldHTML('Modelo',runtVeh.modelo)+fieldHTML('Color',runtVeh.color);
+      html += fieldHTML('SOAT Estado',runtVeh.soat_estado)+fieldHTML('SOAT Vence',fmtDateShort(runtVeh.soat_vencimiento));
+      html += '</div></div>';
+    }
+    html += '</div></div></div></div>';
+  });
+
+  content.innerHTML = html;
+}
+
+function checkExpedienteDocs(g) {
+  let complete = true;
+  g.conductores.forEach(r => { if(DOC_FIELDS.conductores.some(f=>!r[f])) complete=false; });
+  g.propietarios.forEach(r => { if(DOC_FIELDS.propietarios.some(f=>!r[f])) complete=false; });
+  g.vehiculos.forEach(r => { if(DOC_FIELDS.vehiculos.some(f=>!r[f])) complete=false; });
+  return complete;
+}
+function checkLicenseValid(cedula) {
+  const runt = runtLicCache[cedula];
+  if (!runt || !runt.success) return null;
+  const cats = getAllLicenseCategories(runt);
+  if (cats.length) return !cats.some(c => isExpired(c.fecha_vencimiento));
+  return !isExpired(runt.fecha_vencimiento_cat);
+}
+
+// ===== Detail Panel =====
+function openPanel(table, id) {
+  const record = (cache[table]||[]).find(r => r.id === id);
+  if (!record) return;
+  openPanelRecord = record;
+  openPanelTable = table;
+  openPanelTab = 'datos';
+  editMode = false;
+  renderPanel();
+  document.getElementById('panelOverlay').classList.add('active');
+  document.getElementById('detailPanel').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePanel() {
+  document.getElementById('panelOverlay').classList.remove('active');
+  document.getElementById('detailPanel').classList.remove('active');
+  document.body.style.overflow = '';
+  openPanelRecord = null;
+  editMode = false;
+}
+
+function switchPanelTab(tab) {
+  openPanelTab = tab;
+  editMode = false;
+  renderPanel();
+}
+
+function renderPanel() {
+  const r = openPanelRecord;
+  const table = openPanelTable;
+  if (!r) return;
+
+  // Header
+  const header = document.getElementById('panelHeader');
+  const name = table === 'vehiculos' ? 'Placa ' + esc(r.placa) : fullName(r);
+  let avatarHTML;
+  if (table === 'conductores' && r.foto_rostro) {
+    avatarHTML = '<img src="'+STORAGE_BASE+r.foto_rostro+'" alt="">';
+  } else if (table === 'vehiculos') {
+    avatarHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
+  } else {
+    avatarHTML = getInitials(r);
+  }
+  const sub = table === 'vehiculos' ? 'Tipo: '+(r.tipo||'-') : 'CC '+(r.cedula||'-');
+  header.innerHTML = '<div class="panel-avatar">'+avatarHTML+'</div>'+
+    '<div class="panel-header-info"><h3>'+esc(name)+'</h3><p>'+sub+' &middot; '+estadoBadge(r.estado)+'</p></div>'+
+    '<button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+
+  // Tabs
+  const tabs = document.getElementById('panelTabs');
+  let tabsHTML = '<button class="panel-tab'+(openPanelTab==='datos'?' active':'')+'" onclick="switchPanelTab(\'datos\')">Datos</button>';
+  tabsHTML += '<button class="panel-tab'+(openPanelTab==='documentos'?' active':'')+'" onclick="switchPanelTab(\'documentos\')">Documentos</button>';
+  if (table === 'conductores' || table === 'vehiculos') {
+    tabsHTML += '<button class="panel-tab'+(openPanelTab==='runt'?' active':'')+'" onclick="switchPanelTab(\'runt\')">RUNT</button>';
+    tabsHTML += '<button class="panel-tab'+(openPanelTab==='historial'?' active':'')+'" onclick="switchPanelTab(\'historial\')">Historial</button>';
+  }
+  tabs.innerHTML = tabsHTML;
+
+  // Body
+  const body = document.getElementById('panelBody');
+  if (openPanelTab === 'datos') renderPanelDatos(body, table, r);
+  else if (openPanelTab === 'documentos') renderPanelDocs(body, table, r);
+  else if (openPanelTab === 'runt') renderPanelRunt(body, table, r);
+  else if (openPanelTab === 'historial') renderPanelHistorial(body, table, r);
+
+  // Footer
+  const footer = document.getElementById('panelFooter');
+  if (openPanelTab === 'datos' && !editMode) {
+    footer.innerHTML = '<button class="btn btn-primary" onclick="startEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>'+
+      '<div class="panel-footer-right"><button class="btn btn-danger-subtle btn-sm" onclick="deactivateRecord()">Desactivar</button></div>';
+  } else if (openPanelTab === 'datos' && editMode) {
+    footer.innerHTML = '<button class="btn btn-primary" id="saveBtn" onclick="saveEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Guardar</button>'+
+      '<button class="btn btn-outline" onclick="cancelEdit()">Cancelar</button>';
+  } else {
+    footer.innerHTML = '';
+  }
+}
+
+function renderPanelDatos(body, table, r) {
+  let html = '';
+  if (table === 'conductores') {
+    html += sectionStart('Informacion Personal');
+    html += '<div class="field-grid">';
+    html += editableField('primer_nombre','Primer Nombre',r.primer_nombre);
+    html += editableField('segundo_nombre','Segundo Nombre',r.segundo_nombre);
+    html += editableField('primer_apellido','Primer Apellido',r.primer_apellido);
+    html += editableField('segundo_apellido','Segundo Apellido',r.segundo_apellido);
+    html += editableField('cedula','Cedula',r.cedula);
+    html += editableField('vehiculo_placa','Placa Vehiculo',r.vehiculo_placa);
+    html += editableField('direccion','Direccion',r.direccion);
+    html += editableField('ciudad','Ciudad',r.ciudad);
+    html += editableField('telefono','Telefono',r.telefono);
+    html += fieldHTML('Creado',fmtDate(r.created_at));
+    html += '</div>';
+    html += sectionStart('Informacion Bancaria');
+    html += '<div class="field-grid">';
+    html += editableField('banco','Banco',r.banco);
+    html += editableField('tipo_cuenta','Tipo Cuenta',r.tipo_cuenta);
+    html += editableField('numero_cuenta','Numero Cuenta',r.numero_cuenta);
+    html += '</div>';
+    html += sectionStart('Referencias');
+    html += '<div class="field-grid">';
+    html += fieldHTML('Ref. Familiar',((r.ref_familiar_nombre||'-')+' / '+(r.ref_familiar_telefono||'-')));
+    html += fieldHTML('Ref. Empresa',((r.ref_empresa_nombre||'-')+' / '+(r.ref_empresa_telefono||'-')));
+    html += '</div>';
+    html += sectionStart('Autorizaciones');
+    html += '<div class="field-grid">';
+    html += fieldHTML('Autoriza Datos',r.autoriza_datos===true?'Si':r.autoriza_datos===false?'No':'-');
+    html += fieldHTML('Autoriza Sensibles',r.autoriza_sensibles===true?'Si':r.autoriza_sensibles===false?'No':'-');
+    html += '</div>';
+  } else if (table === 'propietarios') {
+    html += sectionStart('Informacion Personal');
+    html += '<div class="field-grid">';
+    html += editableField('primer_nombre','Primer Nombre',r.primer_nombre);
+    html += editableField('segundo_nombre','Segundo Nombre',r.segundo_nombre);
+    html += editableField('primer_apellido','Primer Apellido',r.primer_apellido);
+    html += editableField('segundo_apellido','Segundo Apellido',r.segundo_apellido);
+    html += editableField('cedula','Cedula',r.cedula);
+    html += editableField('vehiculo_placa','Placa Vehiculo',r.vehiculo_placa);
+    html += editableField('direccion','Direccion',r.direccion);
+    html += editableField('ciudad','Ciudad',r.ciudad);
+    html += editableField('telefono','Telefono',r.telefono);
+    html += fieldHTML('Creado',fmtDate(r.created_at));
+    html += '</div>';
+    html += sectionStart('Informacion Bancaria');
+    html += '<div class="field-grid">';
+    html += editableField('banco','Banco',r.banco);
+    html += editableField('tipo_cuenta','Tipo Cuenta',r.tipo_cuenta);
+    html += editableField('numero_cuenta','Numero Cuenta',r.numero_cuenta);
+    html += fieldHTML('Factura Electronica',esc(r.factura_electronica));
+    html += '</div>';
+    html += sectionStart('Autorizaciones');
+    html += '<div class="field-grid">';
+    html += fieldHTML('Autoriza Sensibles',r.autoriza_sensibles===true?'Si':r.autoriza_sensibles===false?'No':'-');
+    html += '</div>';
+  } else {
+    html += sectionStart('Datos del Vehiculo');
+    html += '<div class="field-grid">';
+    html += editableField('placa','Placa',r.placa);
+    html += editableField('tipo','Tipo',r.tipo);
+    html += editableField('satelital','Satelital',r.satelital);
+    html += editableField('satelital_usuario','Usuario Satelital',r.satelital_usuario);
+    html += editableField('satelital_password','Password Satelital',r.satelital_password);
+    html += fieldHTML('Creado',fmtDate(r.created_at));
+    html += '</div>';
+  }
+
+  // Estado edit (in edit mode)
+  if (editMode) {
+    html += '<div class="section" style="margin-top:16px"><div class="field"><div class="field-label">Estado</div>';
+    html += '<select class="edit-select" data-field="estado">';
+    ['pendiente','revisado','aprobado','rechazado'].forEach(s => {
+      html += '<option value="'+s+'"'+(r.estado&&r.estado.toLowerCase()===s?' selected':'')+'>'+s.charAt(0).toUpperCase()+s.slice(1)+'</option>';
+    });
+    html += '</select></div></div>';
+  }
+
+  body.innerHTML = html;
+}
+
+function renderPanelDocs(body, table, r) {
+  let html = '';
+  const groups = table === 'conductores' ? DOC_GROUPS_CONDUCTOR : table === 'propietarios' ? DOC_GROUPS_PROPIETARIO : DOC_GROUPS_VEHICULO;
+  const uploaded = countDocs(r, table);
+  const total = DOC_FIELDS[table].length;
+  const cls = uploaded >= total ? 'complete' : 'partial';
+  html += '<div style="margin-bottom:16px;font-size:.82rem;color:var(--gray-600)">Documentos cargados: <span class="doc-fraction '+cls+'">'+uploaded+'/'+total+'</span></div>';
+
+  Object.keys(groups).forEach(groupName => {
+    html += '<div class="doc-group"><div class="doc-group-label">'+groupName+'</div><div class="docs-grid">';
+    groups[groupName].forEach(field => {
+      html += docThumb(r[field], DOC_LABELS[field] || field);
+    });
+    html += '</div></div>';
+  });
+
+  // Vehicle photos
+  if (table === 'vehiculos' && r.fotos && Array.isArray(r.fotos) && r.fotos.length) {
+    html += '<div class="doc-group"><div class="doc-group-label">Fotos del vehiculo</div><div class="docs-grid">';
+    r.fotos.forEach((f, i) => { html += docThumb(f, 'Foto '+(i+1)); });
+    html += '</div></div>';
+  }
+
+  body.innerHTML = html;
+}
+
+function renderPanelRunt(body, table, r) {
+  let html = '';
+  if (table === 'conductores') {
+    const runt = runtLicCache[r.cedula];
+    if (!runt) {
+      html += '<div class="runt-card">';
+      html += '<p style="font-size:.82rem;color:var(--gray-500);margin-bottom:16px">No se ha consultado la licencia en RUNT.</p>';
+      html += '<button class="btn btn-primary btn-sm" onclick="consultarRuntLic(\''+r.id+'\',\''+escAttr(r.cedula)+'\',\''+escAttr(r.primer_apellido)+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+      html += '</div>';
+    } else {
+      const activeLic = getActiveLicense(runt);
+      const cats = activeLic ? activeLic.categorias || [] : [];
+
+      html += '<div class="runt-card">';
+      html += '<div class="runt-card-header"><h4>Licencia de Conduccion ';
+      html += runt.success ? '<span class="badge badge-ok">Consultado</span>' : '<span class="badge badge-fail">Fallo</span>';
+      html += '</h4></div>';
+      html += '<div class="field-grid">';
+      html += fieldHTML('Estado Conductor',runt.estado_conductor);
+      html += fieldHTML('Estado Licencia',runt.estado_licencia);
+      html += fieldHTML('Num. Licencia',activeLic?activeLic.numero_licencia:runt.numero_licencia);
+      html += fieldHTML('Organismo Transito',activeLic?activeLic.organismo_transito:runt.organismo_transito);
+      html += fieldHTML('Restricciones',(activeLic?activeLic.restricciones:runt.restricciones)||'Ninguna');
+      html += fieldHTML('Ultima Consulta',fmtDate(runt.fecha_consulta));
+      if (runt.error) html += '<div class="field field-full"><div class="field-label">Error</div><div class="field-value" style="color:#991B1B">'+esc(runt.error)+'</div></div>';
+      html += '</div>';
+
+      if (cats.length) {
+        html += '<div class="runt-cats-grid">';
+        cats.forEach(c => {
+          const exp = isExpired(c.fecha_vencimiento);
+          html += '<div class="runt-cat-item">';
+          html += '<div style="display:flex;align-items:center;gap:8px"><span class="cat-name">'+esc(c.categoria)+'</span>';
+          html += exp ? '<span class="badge badge-vencida">Vencida</span>' : '<span class="badge badge-vigente">Vigente</span>';
+          html += '</div>';
+          html += '<div class="cat-meta"><strong>Expedicion:</strong> '+fmtDateShort(c.fecha_expedicion)+'</div>';
+          html += '<div class="cat-meta"><strong>Vencimiento:</strong> '+fmtDateShort(c.fecha_vencimiento)+'</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      } else if (runt.categoria) {
+        const exp = isExpired(runt.fecha_vencimiento_cat);
+        html += '<div style="margin-top:12px"><div class="field-grid">';
+        html += fieldHTML('Categoria',runt.categoria);
+        html += fieldHTML('Vencimiento',fmtDateShort(runt.fecha_vencimiento_cat)+(exp?' (Vencida)':''));
+        html += '</div></div>';
+      }
+
+      html += '<div style="margin-top:16px;display:flex;gap:8px">';
+      html += '<button class="btn btn-primary btn-sm" id="runtBtn" onclick="consultarRuntLic(\''+r.id+'\',\''+escAttr(r.cedula)+'\',\''+escAttr(r.primer_apellido)+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+      html += '</div>';
+      html += '</div>';
+    }
+  } else if (table === 'vehiculos') {
+    const runt = runtVehCache[r.placa];
+    if (!runt) {
+      html += '<div class="runt-card">';
+      html += '<p style="font-size:.82rem;color:var(--gray-500);margin-bottom:16px">No se ha consultado el vehiculo en RUNT.</p>';
+      html += '<button class="btn btn-primary btn-sm" onclick="consultarRuntVeh(\''+r.id+'\',\''+escAttr(r.placa)+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+      html += '</div>';
+    } else {
+      html += '<div class="runt-card">';
+      html += '<div class="runt-card-header"><h4>Datos RUNT Vehiculo ';
+      html += runt.success ? '<span class="badge badge-ok">Consultado</span>' : '<span class="badge badge-fail">Fallo</span>';
+      html += '</h4></div>';
+      html += '<div class="field-grid">';
+      html += fieldHTML('Estado',runt.estado);
+      html += fieldHTML('Tipo Servicio',runt.tipo_servicio);
+      html += fieldHTML('Clase',runt.clase);
+      html += fieldHTML('Marca',runt.marca);
+      html += fieldHTML('Linea',runt.linea);
+      html += fieldHTML('Modelo',runt.modelo);
+      html += fieldHTML('Color',runt.color);
+      html += fieldHTML('Cilindraje',runt.cilindraje);
+      html += fieldHTML('SOAT Poliza',runt.soat_poliza);
+      html += fieldHTML('SOAT Aseguradora',runt.soat_aseguradora);
+      const soatExp = isExpired(runt.soat_vencimiento);
+      html += fieldHTML('SOAT Vencimiento',fmtDateShort(runt.soat_vencimiento)+(soatExp?' (Vencido)':''));
+      html += fieldHTML('SOAT Estado',runt.soat_estado);
+      html += fieldHTML('Ultima Consulta',fmtDate(runt.fecha_consulta));
+      if (runt.error) html += '<div class="field field-full"><div class="field-label">Error</div><div class="field-value" style="color:#991B1B">'+esc(runt.error)+'</div></div>';
+      html += '</div>';
+      html += '<div style="margin-top:16px;display:flex;gap:8px">';
+      html += '<button class="btn btn-primary btn-sm" id="runtBtn" onclick="consultarRuntVeh(\''+r.id+'\',\''+escAttr(r.placa)+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 21 5.64L23 10"/></svg> Consultar RUNT</button>';
+      html += '</div>';
+      html += '</div>';
+    }
+  }
+  body.innerHTML = html;
+}
+
+function renderPanelHistorial(body, table, r) {
+  let html = '';
+  if (table === 'conductores') {
+    const records = runtLicAll.filter(x => x.cedula === r.cedula).sort((a,b) => new Date(b.fecha_consulta) - new Date(a.fecha_consulta));
+    if (!records.length) {
+      html = '<div class="empty-msg">No hay registros de consulta RUNT.</div>';
+    } else {
+      records.forEach(rec => {
+        const activeLic = getActiveLicense(rec);
+        const cats = activeLic ? activeLic.categorias || [] : [];
+        html += '<div class="history-entry">';
+        html += '<div class="history-date">'+fmtDate(rec.fecha_consulta)+' '+(rec.success?'<span class="badge badge-ok">OK</span>':'<span class="badge badge-fail">Fallo</span>')+'</div>';
+        html += '<div class="field-grid">';
+        html += fieldHTML('Estado Conductor',rec.estado_conductor);
+        html += fieldHTML('Estado Licencia',rec.estado_licencia);
+        if (cats.length) {
+          html += '<div class="field field-full"><div class="field-label">Categorias</div><div class="field-value">';
+          cats.forEach(c => {
+            const exp = isExpired(c.fecha_vencimiento);
+            html += '<span class="runt-cat-badge'+(exp?' expired':'')+'">'+esc(c.categoria)+(exp?' &#9888;':' &#10003;')+'</span> '+fmtDateShort(c.fecha_vencimiento)+'&nbsp;&nbsp;';
+          });
+          html += '</div></div>';
+        } else {
+          html += fieldHTML('Categoria',rec.categoria);
+          html += fieldHTML('Vencimiento',fmtDateShort(rec.fecha_vencimiento_cat));
+        }
+        html += fieldHTML('Restricciones',(activeLic?activeLic.restricciones:rec.restricciones)||'Ninguna');
+        if (rec.error) html += '<div class="field field-full"><div class="field-label">Error</div><div class="field-value" style="color:#991B1B">'+esc(rec.error)+'</div></div>';
+        html += '</div></div>';
+      });
+    }
+  } else if (table === 'vehiculos') {
+    const records = runtVehAll.filter(x => x.placa === r.placa).sort((a,b) => new Date(b.fecha_consulta) - new Date(a.fecha_consulta));
+    if (!records.length) {
+      html = '<div class="empty-msg">No hay registros de consulta RUNT.</div>';
+    } else {
+      records.forEach(rec => {
+        html += '<div class="history-entry">';
+        html += '<div class="history-date">'+fmtDate(rec.fecha_consulta)+' '+(rec.success?'<span class="badge badge-ok">OK</span>':'<span class="badge badge-fail">Fallo</span>')+'</div>';
+        html += '<div class="field-grid">';
+        html += fieldHTML('Estado',rec.estado);
+        html += fieldHTML('Marca',rec.marca);
+        html += fieldHTML('Linea',rec.linea);
+        html += fieldHTML('Modelo',rec.modelo);
+        html += fieldHTML('Color',rec.color);
+        html += fieldHTML('SOAT Estado',rec.soat_estado);
+        html += fieldHTML('SOAT Vencimiento',fmtDateShort(rec.soat_vencimiento));
+        if (rec.error) html += '<div class="field field-full"><div class="field-label">Error</div><div class="field-value" style="color:#991B1B">'+esc(rec.error)+'</div></div>';
+        html += '</div></div>';
+      });
+    }
+  }
+  body.innerHTML = html;
+}
+
+// ===== Edit mode =====
+function startEdit() {
+  editMode = true;
+  renderPanel();
+}
+function cancelEdit() {
+  editMode = false;
+  renderPanel();
+}
+
+async function saveEdit() {
+  const body = document.getElementById('panelBody');
+  const footer = document.getElementById('panelFooter');
+  const changes = {};
+
+  body.querySelectorAll('.edit-input').forEach(input => {
+    changes[input.dataset.field] = input.value || null;
+  });
+  body.querySelectorAll('.edit-select').forEach(sel => {
+    changes[sel.dataset.field] = sel.value;
+  });
+  // Also check footer for estado select
+  footer.querySelectorAll && document.getElementById('panelBody').querySelectorAll('.edit-select').forEach(sel => {
+    changes[sel.dataset.field] = sel.value;
+  });
+
+  if (!Object.keys(changes).length) { cancelEdit(); return; }
+
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner-sm"></span> Guardando...'; }
+
+  const { error } = await sb.from(openPanelTable).update(changes).eq('id', openPanelRecord.id);
+  if (error) {
+    showToast('Error guardando: ' + error.message, 'error');
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = 'Guardar'; }
+    return;
+  }
+
+  // Update local cache
+  Object.assign(openPanelRecord, changes);
+  if (cache[openPanelTable]) {
+    const idx = cache[openPanelTable].findIndex(r => r.id === openPanelRecord.id);
+    if (idx >= 0) Object.assign(cache[openPanelTable][idx], changes);
+  }
+
+  editMode = false;
+  showToast('Cambios guardados', 'success');
+  updateCounts();
+  updateKPIs();
+  renderCurrentTab();
+  renderPanel();
+}
+
+// ===== Deactivate =====
+async function deactivateRecord() {
+  const ok = await showConfirm(
+    'Desactivar registro',
+    'Seguro que deseas desactivar este registro? Esta accion no se puede deshacer.'
+  );
+  if (!ok) return;
+
+  const { error } = await sb.from(openPanelTable).delete().eq('id', openPanelRecord.id);
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+  if (cache[openPanelTable]) {
+    cache[openPanelTable] = cache[openPanelTable].filter(r => r.id !== openPanelRecord.id);
+  }
+  closePanel();
+  updateCounts();
+  updateKPIs();
+  renderCurrentTab();
+  showToast('Registro desactivado', 'success');
+}
+
+// ===== RUNT API =====
+async function consultarRuntLic(condId, cedula, primerApellido) {
+  const btn = document.getElementById('runtBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Consultando...'; }
+
+  try {
+    await fetch(ENRICH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
+      body: JSON.stringify({ tabla: 'conductores', datos: { cedula, primer_apellido: primerApellido } })
+    });
+    await loadRuntLicencias();
+    showToast('Consulta RUNT completada', 'success');
+    updateKPIs();
+    renderCurrentTab();
+    if (openPanelRecord) renderPanel();
+  } catch (err) {
+    showToast('Error RUNT: ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Consultar RUNT'; }
+  }
+}
+
+async function consultarRuntVeh(vehId, placa) {
+  const btn = document.getElementById('runtBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Consultando...'; }
+
+  try {
+    await fetch(ENRICH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
+      body: JSON.stringify({ tabla: 'vehiculos', datos: { placa } })
+    });
+    await loadRuntVehiculos();
+    showToast('Consulta RUNT completada', 'success');
+    renderCurrentTab();
+    if (openPanelRecord) renderPanel();
+  } catch (err) {
+    showToast('Error RUNT: ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Consultar RUNT'; }
+  }
+}
+
+// ===== Lightbox =====
+function openLightbox(url, label) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxLabel').textContent = label;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox(e) {
+  if (e && e.target.tagName === 'IMG') return;
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+// ===== Confirm Dialog =====
+function showConfirm(title, msg) {
+  return new Promise(resolve => {
+    confirmResolver = resolve;
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMsg').textContent = msg;
+    document.getElementById('confirmOverlay').classList.add('active');
+  });
+}
+function closeConfirm(result) {
+  document.getElementById('confirmOverlay').classList.remove('active');
+  if (confirmResolver) { confirmResolver(result); confirmResolver = null; }
+}
+
+// ===== Toast =====
+function showToast(msg, type) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + (type || 'info');
+  toast.textContent = msg;
+  container.appendChild(toast);
+  requestAnimationFrame(() => { requestAnimationFrame(() => { toast.classList.add('show'); }); });
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
 
 // ===== CSV Export =====
 function exportCSV() {
-  const data = cache[activeTab];
-  if (!data || !data.length) { alert('No hay datos para exportar.'); return; }
+  const table = activeTab;
+  if (table === 'expedientes') { showToast('Exportar no disponible para Expedientes', 'info'); return; }
+  const data = cache[table];
+  if (!data || !data.length) { showToast('No hay datos para exportar', 'info'); return; }
 
   let cols, rowFn;
-
-  if (activeTab === 'conductores') {
-    // Find max categories across all records
+  if (table === 'conductores') {
     let maxCats = 0;
     data.forEach(r => {
       const runt = runtLicCache[r.cedula];
       const cats = runt ? getAllLicenseCategories(runt) : [];
       if (cats.length > maxCats) maxCats = cats.length;
     });
-    if (maxCats === 0) maxCats = 1; // at least one fallback column
+    if (maxCats === 0) maxCats = 1;
 
     cols = ['Nombre','Cedula','Placa','Ciudad','Direccion','Telefono','Estado',
             'Banco','Tipo_Cuenta','Num_Cuenta',
             'Estado_Licencia','Num_Licencia','Restricciones'];
-    for (let i = 1; i <= maxCats; i++) {
-      cols.push('Cat_' + i, 'Vence_' + i);
-    }
+    for (let i = 1; i <= maxCats; i++) { cols.push('Cat_'+i, 'Vence_'+i); }
 
     rowFn = r => {
       const runt = runtLicCache[r.cedula];
@@ -1627,67 +1586,140 @@ function exportCSV() {
         activeLic ? (activeLic.restricciones || '') : (runt ? (runt.restricciones || '') : '')
       ];
       for (let i = 0; i < maxCats; i++) {
-        if (cats[i]) {
-          row.push(cats[i].categoria, cats[i].fecha_vencimiento ? fmtDateShort(cats[i].fecha_vencimiento) : '');
-        } else if (i === 0 && runt && runt.categoria) {
-          row.push(runt.categoria, runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) : '');
-        } else {
-          row.push('', '');
-        }
+        if (cats[i]) { row.push(cats[i].categoria, cats[i].fecha_vencimiento ? fmtDateShort(cats[i].fecha_vencimiento) : ''); }
+        else if (i === 0 && runt && runt.categoria) { row.push(runt.categoria, runt.fecha_vencimiento_cat ? fmtDateShort(runt.fecha_vencimiento_cat) : ''); }
+        else { row.push('', ''); }
       }
       return row;
     };
-  } else if (activeTab === 'propietarios') {
+  } else if (table === 'propietarios') {
     cols = ['Nombre','Cedula','Placa','Ciudad','Direccion','Telefono','Estado',
             'Banco','Tipo_Cuenta','Num_Cuenta','Factura_Electronica'];
-    rowFn = r => [
-      fullName(r), r.cedula, r.vehiculo_placa, r.ciudad, r.direccion, r.telefono, r.estado,
-      r.banco, r.tipo_cuenta, r.numero_cuenta, r.factura_electronica
-    ];
+    rowFn = r => [fullName(r), r.cedula, r.vehiculo_placa, r.ciudad, r.direccion, r.telefono, r.estado,
+      r.banco, r.tipo_cuenta, r.numero_cuenta, r.factura_electronica];
   } else {
     cols = ['Placa','Tipo','Satelital','Estado',
             'RUNT_Estado','Marca','Linea','Modelo','Color',
             'SOAT_Estado','SOAT_Vencimiento'];
     rowFn = r => {
       const rv = runtVehCache[r.placa];
-      return [
-        r.placa, r.tipo, r.satelital, r.estado,
-        rv ? rv.estado : '', rv ? rv.marca : '', rv ? rv.linea : '', rv ? rv.modelo : '', rv ? rv.color : '',
-        rv ? rv.soat_estado : '', rv && rv.soat_vencimiento ? fmtDateShort(rv.soat_vencimiento) : ''
-      ];
+      return [r.placa, r.tipo, r.satelital, r.estado,
+        rv?rv.estado:'', rv?rv.marca:'', rv?rv.linea:'', rv?rv.modelo:'', rv?rv.color:'',
+        rv?rv.soat_estado:'', rv&&rv.soat_vencimiento?fmtDateShort(rv.soat_vencimiento):''];
     };
   }
 
-  // Build CSV with BOM
-  const csvEscape = v => {
+  const csvEsc = v => {
     if (v == null) return '';
     const s = String(v);
     if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
     return s;
   };
 
-  let csv = '\uFEFF'; // UTF-8 BOM
-  csv += cols.map(csvEscape).join(',') + '\n';
-  data.forEach(r => {
-    csv += rowFn(r).map(csvEscape).join(',') + '\n';
-  });
+  let csv = '\uFEFF';
+  csv += cols.map(csvEsc).join(',') + '\n';
+  data.forEach(r => { csv += rowFn(r).map(csvEsc).join(',') + '\n'; });
 
   const today = new Date().toISOString().slice(0, 10);
-  const filename = activeTab + '_' + today + '.csv';
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = filename; a.style.display = 'none';
+  a.href = url; a.download = table + '_' + today + '.csv'; a.style.display = 'none';
   document.body.appendChild(a); a.click();
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  showToast('CSV exportado', 'success');
 }
 
-// Load counts
-async function loadAllCounts() {
-  for (const t of ['conductores', 'propietarios', 'vehiculos']) {
-    const { count, error } = await sb.from(t).select('*', { count: 'exact', head: true });
-    if (!error && count != null) document.getElementById('count-' + t).textContent = count;
+// ===== Keyboard shortcuts =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    closePanel();
+    closeConfirm(false);
   }
+});
+
+// ===== Helpers =====
+function fullName(r) {
+  return [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+}
+function getInitials(r) {
+  return ((r.primer_nombre || '').charAt(0) + (r.primer_apellido || '').charAt(0)).toUpperCase() || '?';
+}
+function esc(v) {
+  if (v == null) return '-';
+  if (typeof v === 'boolean') return v ? 'Si' : 'No';
+  return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function escAttr(v) {
+  if (v == null) return '';
+  return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;');
+}
+function fmtDate(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('es-CO', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function fmtDateShort(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('es-CO', { year:'numeric', month:'short', day:'numeric' });
+}
+function isExpired(dateStr) {
+  if (!dateStr) return false;
+  return new Date(dateStr) < new Date();
+}
+function estadoBadge(v) {
+  if (!v) return '';
+  const cls = {pendiente:'badge-pendiente',revisado:'badge-revisado',aprobado:'badge-aprobado',rechazado:'badge-rechazado'}[v.toLowerCase()] || 'badge-pendiente';
+  return '<span class="badge '+cls+'">'+esc(v)+'</span>';
+}
+function estadoRuntBadge(v) {
+  if (!v) return '-';
+  const lower = v.toLowerCase();
+  let cls = 'badge-sin-consultar';
+  if (lower.includes('vigente') || lower.includes('activ')) cls = 'badge-vigente';
+  else if (lower.includes('vencid') || lower.includes('cancel') || lower.includes('suspend')) cls = 'badge-vencida';
+  return '<span class="badge '+cls+'">'+esc(v)+'</span>';
+}
+function getActiveLicense(runtRecord) {
+  if (!runtRecord || !runtRecord.licencias_json) return null;
+  let arr = runtRecord.licencias_json;
+  if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch(e) { return null; } }
+  if (!Array.isArray(arr)) return null;
+  return arr.find(l => l.estado && l.estado.toUpperCase() === 'ACTIVA') || arr[0] || null;
+}
+function getAllLicenseCategories(runtRecord) {
+  const lic = getActiveLicense(runtRecord);
+  return lic && lic.categorias ? lic.categorias : [];
+}
+function countDocs(r, table) {
+  const fields = DOC_FIELDS[table] || [];
+  let count = fields.filter(f => r[f]).length;
+  if (table === 'vehiculos' && r.fotos && Array.isArray(r.fotos)) count += r.fotos.length;
+  return count;
+}
+
+function fieldHTML(label, value) {
+  const v = (value != null && value !== '' && value !== '-') ? esc(value) : null;
+  return '<div class="field"><div class="field-label">'+label+'</div><div class="field-value'+(v?'':' empty')+'">'+(v||'Sin informacion')+'</div></div>';
+}
+function editableField(field, label, value) {
+  if (editMode) {
+    return '<div class="field"><div class="field-label">'+label+'</div><input class="edit-input" data-field="'+field+'" value="'+escAttr(value)+'"></div>';
+  }
+  return fieldHTML(label, value);
+}
+function sectionStart(title) {
+  return '<div class="section"><div class="section-heading">'+title+'</div>';
+}
+function docThumb(val, label) {
+  if (!val) {
+    return '<div class="doc-missing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>'+label+'</div>';
+  }
+  const url = STORAGE_BASE + val;
+  return '<div class="doc-thumb" onclick="openLightbox(\''+escAttr(url)+'\',\''+escAttr(label)+'\')">' +
+    '<img src="'+escAttr(url)+'" alt="'+escAttr(label)+'" loading="lazy" onerror="this.style.display=\'none\'">' +
+    '<span class="doc-check">&#10003;</span>' +
+    '<div class="doc-thumb-label">'+label+'</div></div>';
 }
 </script>
 </body>
