@@ -145,8 +145,22 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
         <div class="error-msg">Selecciona una opción.</div>
       </div>
 
-      <!-- Conditional: satelital user/pass -->
+      <!-- Conditional: satelital details -->
       <div class="conditional" id="satelitalFields">
+        <div class="field">
+          <label for="satelital_proveedor">Proveedor satelital<span class="req">*</span></label>
+          <select id="satelital_proveedor" name="satelital_proveedor">
+            <option value="">Selecciona proveedor</option>
+            <option value="Satrack">Satrack</option>
+            <option value="Ubiquando">Ubiquando</option>
+            <option value="Geotab">Geotab</option>
+            <option value="Securitrac">Securitrac</option>
+            <option value="Globalstar">Globalstar</option>
+            <option value="Wialon">Wialon</option>
+            <option value="MDVR">MDVR</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
         <div class="field">
           <label for="satelital_usuario">Usuario satelital</label>
           <input type="text" id="satelital_usuario" name="satelital_usuario" autocomplete="off">
@@ -443,6 +457,14 @@ function validate(){
     valid = false;
   } else {
     satField.classList.remove('has-error');
+    // Proveedor required when satelital = sí
+    var provSelect = document.getElementById('satelital_proveedor');
+    if(satVal.value === 'si' && !provSelect.value){
+      provSelect.classList.add('error');
+      valid = false;
+    } else {
+      provSelect.classList.remove('error');
+    }
   }
 
   // File fields
@@ -523,6 +545,7 @@ form.addEventListener('submit', async function(e){
     var row = {
       placa: placa,
       satelital: isSat,
+      satelital_proveedor: isSat ? (document.getElementById('satelital_proveedor').value || null) : null,
       satelital_usuario: isSat ? (document.getElementById('satelital_usuario').value.trim() || null) : null,
       satelital_password: isSat ? (document.getElementById('satelital_password').value.trim() || null) : null,
       tarjeta_frente: tarjetaFrentePath,

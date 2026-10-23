@@ -942,7 +942,7 @@ function getTableColumns(table) {
   return [
     { label:'Placa', val:r=>r.placa, render:r=>'<strong>'+esc(r.placa)+'</strong>' },
     { label:'Tipo', val:r=>r.tipo, render:r=>esc(r.tipo) },
-    { label:'Satelital', val:r=>r.satelital, render:r=>esc(r.satelital) },
+    { label:'Satelital', val:r=>r.satelital_proveedor||r.satelital, render:r=>r.satelital_proveedor?esc(titleCase(r.satelital_proveedor)):(r.satelital?esc(r.satelital):'-') },
     { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
     { label:'RUNT', val:r=>{const rv=runtVehCache[r.placa];return rv?rv.estado:'';}, render:r=>{
       const rv=runtVehCache[r.placa];
@@ -1206,6 +1206,7 @@ function renderPanelDatos(body, table, r) {
     html += editableField('placa','Placa',r.placa);
     html += editableField('tipo','Tipo',r.tipo);
     html += editableField('satelital','Satelital',r.satelital);
+    html += editableField('satelital_proveedor','Proveedor Satelital',r.satelital_proveedor);
     html += editableField('satelital_usuario','Usuario Satelital',r.satelital_usuario);
     html += editableField('satelital_password','Password Satelital',r.satelital_password);
     html += fieldHTML('Creado',fmtDate(r.created_at));
