@@ -13,12 +13,12 @@ header{background:var(--white);color:var(--navy);padding:1.25rem 1rem;text-align
 header h1{font-size:1.35rem;letter-spacing:.12em;font-weight:800;margin-bottom:.15rem}
 header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 .red{color:var(--red)}
-.top-bar{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto;padding:.75rem 1rem}
+.top-bar{display:flex;align-items:center;justify-content:space-between;max-width:960px;margin:0 auto;padding:.75rem 1rem}
 .top-bar a{color:var(--red);text-decoration:none;font-size:.85rem;font-weight:600}
 .top-bar a:hover{text-decoration:underline}
 
 /* Tabs */
-.tabs-wrap{max-width:900px;margin:0 auto;padding:0 1rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs-wrap{max-width:960px;margin:0 auto;padding:0 1rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tabs{display:flex;gap:.5rem;padding:.5rem 0;min-width:max-content}
 .tab-btn{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.5rem 1rem;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;color:var(--gray-600)}
 .tab-btn:hover{border-color:var(--red);color:var(--red)}
@@ -27,15 +27,18 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 .tab-btn.active .tab-count{background:rgba(255,255,255,.3)}
 
 /* Content area */
-.content{max-width:900px;margin:0 auto;padding:1rem}
-.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.content{max-width:960px;margin:0 auto;padding:1rem}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
 .toolbar h2{font-size:1rem;color:var(--navy)}
-.refresh-btn{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.4rem .85rem;font-size:.8rem;cursor:pointer;color:var(--gray-600);transition:all .2s}
-.refresh-btn:hover{border-color:var(--red);color:var(--red)}
+.toolbar-right{display:flex;gap:.5rem;align-items:center}
+.refresh-btn,.toggle-btn{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:.4rem .85rem;font-size:.8rem;cursor:pointer;color:var(--gray-600);transition:all .2s}
+.refresh-btn:hover,.toggle-btn:hover{border-color:var(--red);color:var(--red)}
+.toggle-btn.active{background:var(--red);color:var(--white);border-color:var(--red)}
 
 /* Spinner */
 .spinner-wrap{display:flex;justify-content:center;padding:3rem 0}
 .spinner{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+.spinner-sm{width:18px;height:18px;border:2px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Cards */
@@ -58,6 +61,7 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 .badge-success{background:#D3F9D8;color:#2B8A3E}
 .badge-fail{background:#FFE3E3;color:#C92A2A}
 .badge-expired{background:#FFE3E3;color:#C92A2A}
+.badge-pending-runt{background:#FFF3CD;color:#856404}
 
 /* Card detail */
 .card-detail{display:none;padding:0 1.25rem 1rem;border-top:1px solid var(--gray-100)}
@@ -69,6 +73,43 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 .file-link:hover{text-decoration:underline}
 .file-check{color:#2B8A3E;font-weight:700}
 .file-missing{color:#C92A2A;font-weight:700}
+
+/* RUNT section inside cards */
+.runt-section{margin-top:1rem;padding:.85rem;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-200)}
+.runt-section h4{font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.runt-section .detail-grid{margin-top:.35rem}
+
+/* Action buttons */
+.card-actions{display:flex;gap:.5rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--gray-100);flex-wrap:wrap}
+.btn{padding:.35rem .75rem;border-radius:var(--radius);font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.btn-edit{background:var(--white);border-color:var(--gray-300);color:var(--gray-600)}
+.btn-edit:hover{border-color:var(--red);color:var(--red)}
+.btn-delete{background:var(--white);border-color:#FFE3E3;color:#C92A2A;font-size:.72rem}
+.btn-delete:hover{background:#FFE3E3}
+.btn-save{background:var(--red);color:var(--white);border-color:var(--red)}
+.btn-save:hover{opacity:.9}
+.btn-cancel{background:var(--white);border-color:var(--gray-300);color:var(--gray-600)}
+.btn-cancel:hover{background:var(--gray-100)}
+.btn-runt{background:var(--navy);color:var(--white);border-color:var(--navy);font-size:.72rem}
+.btn-runt:hover{opacity:.85}
+
+/* Edit mode */
+.edit-input{width:100%;padding:.3rem .5rem;border:1px solid var(--gray-300);border-radius:4px;font-size:.78rem;font-family:inherit}
+.edit-input:focus{outline:none;border-color:var(--red)}
+.edit-select{padding:.3rem .5rem;border:1px solid var(--gray-300);border-radius:4px;font-size:.78rem;font-family:inherit}
+
+/* Group by placa */
+.group-section{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1rem;overflow:hidden;border-left:4px solid var(--navy)}
+.group-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;background:var(--gray-50);border-bottom:1px solid var(--gray-100)}
+.group-header:hover{background:var(--gray-100)}
+.group-header h3{font-size:.92rem;font-weight:700;color:var(--navy)}
+.group-header .badge{margin-left:.5rem}
+.group-body{display:none;padding:.75rem}
+.group-section.open .group-body{display:block}
+.group-sub-title{font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin:.75rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--gray-100)}
+.group-sub-title:first-child{margin-top:0}
+.group-card{background:var(--gray-50);border-radius:var(--radius);padding:.85rem;margin-bottom:.5rem;border:1px solid var(--gray-200)}
+.group-card .card-title{font-size:.82rem}
 
 /* Login overlay */
 .login-overlay{position:fixed;inset:0;background:rgba(26,26,26,.95);display:flex;align-items:center;justify-content:center;z-index:1000}
@@ -88,6 +129,7 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
   .detail-grid dd{margin-bottom:.35rem}
   .content{padding:.75rem}
   .card-header{padding:.85rem 1rem}
+  .toolbar{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
@@ -121,8 +163,6 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
     <button class="tab-btn active" data-tab="conductores">Conductores <span class="tab-count" id="count-conductores">-</span></button>
     <button class="tab-btn" data-tab="propietarios">Propietarios <span class="tab-count" id="count-propietarios">-</span></button>
     <button class="tab-btn" data-tab="vehiculos">Vehiculos <span class="tab-count" id="count-vehiculos">-</span></button>
-    <button class="tab-btn" data-tab="runt_licencias">RUNT Licencias <span class="tab-count" id="count-runt_licencias">-</span></button>
-    <button class="tab-btn" data-tab="runt_vehiculos">RUNT Vehiculos <span class="tab-count" id="count-runt_vehiculos">-</span></button>
   </div>
 </div>
 
@@ -137,14 +177,18 @@ header p{font-size:.85rem;color:var(--gray-500);letter-spacing:.04em}
 const SUPA_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZHZyanBlbGN5anJ2b25waW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDc0ODcsImV4cCI6MjEwODE4MzQ4N30.Wz7ceDsvmBZtSnad1cHV972pnOXXaE00VoGkt0bqF-g';
 const STORAGE_BASE = SUPA_URL + '/storage/v1/object/public/vinculacion-docs/';
+const ENRICH_URL = SUPA_URL + '/functions/v1/enrich-runt';
 const PASSWORD = 'capitalcargo2026';
 
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 let activeTab = 'conductores';
 let cache = {};
+let runtLicCache = {};  // keyed by cedula
+let runtVehCache = {};  // keyed by placa
+let groupByPlaca = false;
 
-// --- Auth gate ---
+// ========== Auth gate ==========
 function checkLogin() {
   const v = document.getElementById('loginPass').value;
   if (v === PASSWORD) {
@@ -159,14 +203,47 @@ document.getElementById('loginPass').addEventListener('keydown', e => { if (e.ke
 function showApp() {
   document.getElementById('loginOverlay').style.display = 'none';
   document.getElementById('appContent').style.display = 'block';
-  loadTab(activeTab);
+  loadAllData();
 }
 
 if (sessionStorage.getItem('cc_admin') === '1') {
   showApp();
 }
 
-// --- Tabs ---
+// ========== Load all data including RUNT ==========
+async function loadAllData() {
+  // Load RUNT data into caches first, then load active tab
+  await Promise.all([loadRuntLicencias(), loadRuntVehiculos()]);
+  loadTab(activeTab);
+  loadAllCounts();
+}
+
+async function loadRuntLicencias() {
+  const { data } = await sb.from('runt_licencias').select('*');
+  runtLicCache = {};
+  if (data) {
+    data.forEach(r => {
+      // Keep latest per cedula
+      if (!runtLicCache[r.cedula] || new Date(r.fecha_consulta) > new Date(runtLicCache[r.cedula].fecha_consulta)) {
+        runtLicCache[r.cedula] = r;
+      }
+    });
+  }
+}
+
+async function loadRuntVehiculos() {
+  const { data } = await sb.from('runt_vehiculos').select('*');
+  runtVehCache = {};
+  if (data) {
+    data.forEach(r => {
+      if (!runtVehCache[r.placa] || new Date(r.fecha_consulta) > new Date(runtVehCache[r.placa].fecha_consulta)) {
+        runtVehCache[r.placa] = r;
+      }
+    });
+  }
+}
+
+// ========== Tabs ==========
 document.getElementById('tabs').addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn');
   if (!btn) return;
@@ -176,45 +253,12 @@ document.getElementById('tabs').addEventListener('click', e => {
   loadTab(activeTab);
 });
 
-// --- Data loading ---
-async function loadTab(table, force) {
-  const content = document.getElementById('content');
-  if (cache[table] && !force) {
-    renderTab(table, cache[table]);
-    return;
-  }
-  content.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
-  const { data, error } = await sb.from(table).select('*').order('created_at' in columnDefs[table] ? 'created_at' : 'id', { ascending: false });
-  if (error) {
-    content.innerHTML = '<div class="empty-msg">Error cargando datos: ' + error.message + '</div>';
-    return;
-  }
-  cache[table] = data || [];
-  document.getElementById('count-' + table).textContent = (data || []).length;
-  renderTab(table, data || []);
-}
-
-// Has created_at?
-const columnDefs = {
-  conductores: { created_at: true },
-  propietarios: { created_at: true },
-  vehiculos: { created_at: true },
-  runt_licencias: {},
-  runt_vehiculos: {}
-};
-
-// Order column
-function orderCol(table) {
-  if (table === 'runt_licencias' || table === 'runt_vehiculos') return 'fecha_consulta';
-  return 'created_at';
-}
-
+// ========== Data loading ==========
 async function loadTab(table, force) {
   const content = document.getElementById('content');
   if (cache[table] && !force) { renderTab(table, cache[table]); return; }
   content.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
-  const col = orderCol(table);
-  const { data, error } = await sb.from(table).select('*').order(col, { ascending: false });
+  const { data, error } = await sb.from(table).select('*').order('created_at', { ascending: false });
   if (error) {
     content.innerHTML = '<div class="empty-msg">Error: ' + error.message + '</div>';
     return;
@@ -224,68 +268,145 @@ async function loadTab(table, force) {
   renderTab(table, data || []);
 }
 
-// --- Rendering ---
+function refreshTab() {
+  delete cache[activeTab];
+  // Also refresh RUNT caches
+  Promise.all([loadRuntLicencias(), loadRuntVehiculos()]).then(() => {
+    loadTab(activeTab, true);
+  });
+}
+
+// ========== Rendering ==========
 function renderTab(table, rows) {
   const content = document.getElementById('content');
-  let html = '<div class="toolbar"><h2>' + tableName(table) + ' (' + rows.length + ')</h2><button class="refresh-btn" onclick="refreshTab()">Actualizar</button></div>';
+  const tname = { conductores: 'Conductores', propietarios: 'Propietarios', vehiculos: 'Vehiculos' }[table];
+
+  let html = '<div class="toolbar"><h2>' + tname + ' (' + rows.length + ')</h2>';
+  html += '<div class="toolbar-right">';
+  if (table !== 'propietarios') {
+    html += '<button class="toggle-btn' + (groupByPlaca ? ' active' : '') + '" onclick="toggleGroupByPlaca()">Agrupar por placa</button>';
+  }
+  html += '<button class="refresh-btn" onclick="refreshTab()">Actualizar</button>';
+  html += '</div></div>';
+
   if (!rows.length) { html += '<div class="empty-msg">No hay registros</div>'; content.innerHTML = html; return; }
-  html += '<div class="cards">';
-  rows.forEach((r, i) => { html += renderCard(table, r, i); });
-  html += '</div>';
+
+  if (groupByPlaca && table !== 'propietarios') {
+    html += renderGroupedByPlaca(table, rows);
+  } else {
+    html += '<div class="cards">';
+    rows.forEach(r => { html += renderCard(table, r); });
+    html += '</div>';
+  }
   content.innerHTML = html;
 }
 
-function refreshTab() { delete cache[activeTab]; loadTab(activeTab, true); }
-
-function tableName(t) {
-  return { conductores: 'Conductores', propietarios: 'Propietarios', vehiculos: 'Vehiculos', runt_licencias: 'RUNT Licencias', runt_vehiculos: 'RUNT Vehiculos' }[t];
+function toggleGroupByPlaca() {
+  groupByPlaca = !groupByPlaca;
+  renderTab(activeTab, cache[activeTab] || []);
 }
 
-function estadoBadge(v) {
-  if (!v) return '';
-  const cls = { pendiente: 'badge-pendiente', revisado: 'badge-revisado', aprobado: 'badge-aprobado', rechazado: 'badge-rechazado' }[v.toLowerCase()] || 'badge-pendiente';
-  return '<span class="badge ' + cls + '">' + v + '</span>';
+// ========== Group by placa view ==========
+function renderGroupedByPlaca(table, rows) {
+  // Collect all placas
+  const placas = {};
+  rows.forEach(r => {
+    const p = (table === 'vehiculos') ? r.placa : r.vehiculo_placa;
+    if (!p) return;
+    if (!placas[p]) placas[p] = { conductores: [], propietarios: [], vehiculos: [] };
+    placas[p][table].push(r);
+  });
+
+  // Also pull from other cached tables
+  const otherTables = ['conductores', 'propietarios', 'vehiculos'].filter(t => t !== table);
+  otherTables.forEach(t => {
+    (cache[t] || []).forEach(r => {
+      const p = (t === 'vehiculos') ? r.placa : r.vehiculo_placa;
+      if (!p || !placas[p]) return;
+      placas[p][t].push(r);
+    });
+  });
+
+  // Handle rows with no placa
+  const noPlaca = rows.filter(r => {
+    const p = (table === 'vehiculos') ? r.placa : r.vehiculo_placa;
+    return !p;
+  });
+
+  let html = '';
+  Object.keys(placas).sort().forEach(placa => {
+    const g = placas[placa];
+    const runtVeh = runtVehCache[placa];
+    html += '<div class="group-section">';
+    html += '<div class="group-header" onclick="this.parentElement.classList.toggle(\'open\')">';
+    html += '<h3>Placa ' + esc(placa);
+    if (runtVeh && runtVeh.marca) html += ' &middot; ' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo);
+    html += '</h3>';
+    html += '<span class="expand-arrow">&#8250;</span>';
+    html += '</div>';
+    html += '<div class="group-body">';
+
+    if (g.conductores.length) {
+      html += '<div class="group-sub-title">Conductores</div>';
+      g.conductores.forEach(r => {
+        const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub">CC ' + esc(r.cedula) + ' &middot; ' + estadoBadge(r.estado) + '</div></div>';
+      });
+    }
+    if (g.propietarios.length) {
+      html += '<div class="group-sub-title">Propietarios</div>';
+      g.propietarios.forEach(r => {
+        const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+        html += '<div class="group-card"><div class="card-title">' + name + '</div><div class="card-sub">CC ' + esc(r.cedula) + ' &middot; ' + estadoBadge(r.estado) + '</div></div>';
+      });
+    }
+    if (g.vehiculos.length) {
+      html += '<div class="group-sub-title">Vehiculos</div>';
+      g.vehiculos.forEach(r => {
+        html += '<div class="group-card"><div class="card-title">Placa ' + esc(r.placa) + '</div><div class="card-sub">Tipo: ' + esc(r.tipo) + ' &middot; ' + estadoBadge(r.estado) + '</div></div>';
+      });
+    }
+    if (runtVeh) {
+      html += '<div class="group-sub-title">RUNT Vehiculo</div>';
+      html += '<div class="group-card"><div class="card-sub">' + esc(runtVeh.marca) + ' ' + esc(runtVeh.linea) + ' ' + esc(runtVeh.modelo) + ' &middot; ' + esc(runtVeh.color) + ' &middot; SOAT: ' + esc(runtVeh.soat_estado) + '</div></div>';
+    }
+
+    html += '</div></div>';
+  });
+
+  if (noPlaca.length) {
+    html += '<div class="group-section"><div class="group-header" onclick="this.parentElement.classList.toggle(\'open\')"><h3>Sin placa</h3><span class="expand-arrow">&#8250;</span></div>';
+    html += '<div class="group-body"><div class="cards">';
+    noPlaca.forEach(r => { html += renderCard(table, r); });
+    html += '</div></div></div>';
+  }
+
+  return html;
 }
 
-function successBadge(v) {
-  if (v === true) return '<span class="badge badge-success">OK</span>';
-  if (v === false) return '<span class="badge badge-fail">FALLO</span>';
-  return '-';
-}
-
-function fileIndicator(val, label) {
-  if (!val) return '<span class="file-missing" title="No subido">&#10007; ' + label + '</span>';
-  const url = STORAGE_BASE + val;
-  return '<a class="file-link" href="' + url + '" target="_blank" rel="noopener">&#10003; ' + label + '</a>';
-}
-
-function esc(v) {
-  if (v == null) return '-';
-  if (typeof v === 'boolean') return v ? 'Si' : 'No';
-  return String(v);
-}
-
-function isExpired(dateStr) {
-  if (!dateStr) return false;
-  return new Date(dateStr) < new Date();
-}
-
-function toggleCard(el) {
-  el.closest('.card').classList.toggle('open');
-}
-
-// --- Card renderers per table ---
-function renderCard(table, r, idx) {
-  const renderers = { conductores: cardConductor, propietarios: cardPropietario, vehiculos: cardVehiculo, runt_licencias: cardRuntLic, runt_vehiculos: cardRuntVeh };
-  return renderers[table](r, idx);
+// ========== Card renderers ==========
+function renderCard(table, r) {
+  const renderers = { conductores: cardConductor, propietarios: cardPropietario, vehiculos: cardVehiculo };
+  return renderers[table](r);
 }
 
 function cardConductor(r) {
   const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
-  let detail = '<dl class="detail-grid">';
-  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at)) + dt('Cedula', r.cedula);
-  detail += dt('Direccion', r.direccion) + dt('Ciudad', r.ciudad) + dt('Telefono', r.telefono);
-  detail += dt('Banco', r.banco) + dt('Tipo cuenta', r.tipo_cuenta) + dt('Num. cuenta', r.numero_cuenta);
+  const uid = 'cond-' + r.id;
+  let detail = '<dl class="detail-grid" id="fields-' + uid + '">';
+  detail += dtEditable(uid, 'primer_nombre', 'Primer nombre', r.primer_nombre);
+  detail += dtEditable(uid, 'segundo_nombre', 'Segundo nombre', r.segundo_nombre);
+  detail += dtEditable(uid, 'primer_apellido', 'Primer apellido', r.primer_apellido);
+  detail += dtEditable(uid, 'segundo_apellido', 'Segundo apellido', r.segundo_apellido);
+  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at));
+  detail += dtEditable(uid, 'cedula', 'Cedula', r.cedula);
+  detail += dtEditable(uid, 'direccion', 'Direccion', r.direccion);
+  detail += dtEditable(uid, 'ciudad', 'Ciudad', r.ciudad);
+  detail += dtEditable(uid, 'telefono', 'Telefono', r.telefono);
+  detail += dtEditable(uid, 'banco', 'Banco', r.banco);
+  detail += dtEditable(uid, 'tipo_cuenta', 'Tipo cuenta', r.tipo_cuenta);
+  detail += dtEditable(uid, 'numero_cuenta', 'Num. cuenta', r.numero_cuenta);
+  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
   detail += dt('Ref. familiar', (r.ref_familiar_nombre || '-') + ' / ' + (r.ref_familiar_telefono || '-'));
   detail += dt('Ref. empresa', (r.ref_empresa_nombre || '-') + ' / ' + (r.ref_empresa_telefono || '-'));
   detail += dt('Autoriza datos', esc(r.autoriza_datos)) + dt('Autoriza sensibles', esc(r.autoriza_sensibles));
@@ -299,15 +420,33 @@ function cardConductor(r) {
   detail += fileIndicator(r.pase_reverso, 'Pase reverso') + ' ';
   detail += fileIndicator(r.cert_bancaria, 'Cert. bancaria');
   detail += '</div>';
-  return cardWrap(name, 'CC ' + esc(r.cedula) + ' &middot; Placa ' + esc(r.vehiculo_placa), r.estado, detail);
+
+  // RUNT Licencia section
+  detail += renderRuntLicSection(r);
+
+  // Action buttons
+  detail += renderActions('conductores', r, uid);
+
+  return cardWrap(name, 'CC ' + esc(r.cedula) + ' &middot; Placa ' + esc(r.vehiculo_placa), r.estado, detail, uid);
 }
 
 function cardPropietario(r) {
   const name = [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
-  let detail = '<dl class="detail-grid">';
-  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at)) + dt('Cedula', r.cedula);
-  detail += dt('Direccion', r.direccion) + dt('Ciudad', r.ciudad) + dt('Telefono', r.telefono);
-  detail += dt('Banco', r.banco) + dt('Tipo cuenta', r.tipo_cuenta) + dt('Num. cuenta', r.numero_cuenta);
+  const uid = 'prop-' + r.id;
+  let detail = '<dl class="detail-grid" id="fields-' + uid + '">';
+  detail += dtEditable(uid, 'primer_nombre', 'Primer nombre', r.primer_nombre);
+  detail += dtEditable(uid, 'segundo_nombre', 'Segundo nombre', r.segundo_nombre);
+  detail += dtEditable(uid, 'primer_apellido', 'Primer apellido', r.primer_apellido);
+  detail += dtEditable(uid, 'segundo_apellido', 'Segundo apellido', r.segundo_apellido);
+  detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at));
+  detail += dtEditable(uid, 'cedula', 'Cedula', r.cedula);
+  detail += dtEditable(uid, 'direccion', 'Direccion', r.direccion);
+  detail += dtEditable(uid, 'ciudad', 'Ciudad', r.ciudad);
+  detail += dtEditable(uid, 'telefono', 'Telefono', r.telefono);
+  detail += dtEditable(uid, 'banco', 'Banco', r.banco);
+  detail += dtEditable(uid, 'tipo_cuenta', 'Tipo cuenta', r.tipo_cuenta);
+  detail += dtEditable(uid, 'numero_cuenta', 'Num. cuenta', r.numero_cuenta);
+  detail += dtEditable(uid, 'vehiculo_placa', 'Placa vehiculo', r.vehiculo_placa);
   detail += dt('Factura electronica', esc(r.factura_electronica)) + dt('Autoriza sensibles', esc(r.autoriza_sensibles));
   detail += '</dl>';
   detail += '<div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;font-size:.78rem">';
@@ -316,14 +455,22 @@ function cardPropietario(r) {
   detail += fileIndicator(r.rut, 'RUT') + ' ';
   detail += fileIndicator(r.cert_bancaria, 'Cert. bancaria');
   detail += '</div>';
-  return cardWrap(name, 'CC ' + esc(r.cedula) + ' &middot; Placa ' + esc(r.vehiculo_placa), r.estado, detail);
+
+  // Action buttons
+  detail += renderActions('propietarios', r, uid);
+
+  return cardWrap(name, 'CC ' + esc(r.cedula) + ' &middot; Placa ' + esc(r.vehiculo_placa), r.estado, detail, uid);
 }
 
 function cardVehiculo(r) {
-  let detail = '<dl class="detail-grid">';
+  const uid = 'veh-' + r.id;
+  let detail = '<dl class="detail-grid" id="fields-' + uid + '">';
   detail += dt('ID', r.id) + dt('Creado', fmtDate(r.created_at));
-  detail += dt('Placa', r.placa) + dt('Tipo', r.tipo);
-  detail += dt('Satelital', r.satelital) + dt('Usuario', r.satelital_usuario) + dt('Password', r.satelital_password);
+  detail += dtEditable(uid, 'placa', 'Placa', r.placa);
+  detail += dtEditable(uid, 'tipo', 'Tipo', r.tipo);
+  detail += dtEditable(uid, 'satelital', 'Satelital', r.satelital);
+  detail += dtEditable(uid, 'satelital_usuario', 'Usuario', r.satelital_usuario);
+  detail += dtEditable(uid, 'satelital_password', 'Password', r.satelital_password);
   detail += '</dl>';
   detail += '<div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;font-size:.78rem">';
   detail += fileIndicator(r.tarjeta_frente, 'Tarjeta frente') + ' ';
@@ -334,40 +481,235 @@ function cardVehiculo(r) {
     r.fotos.forEach((f, i) => { detail += fileIndicator(f, 'Foto ' + (i + 1)) + ' '; });
   }
   detail += '</div>';
-  return cardWrap('Placa ' + esc(r.placa), 'Tipo: ' + esc(r.tipo), r.estado, detail);
+
+  // RUNT Vehiculo section
+  detail += renderRuntVehSection(r);
+
+  // Action buttons
+  detail += renderActions('vehiculos', r, uid);
+
+  return cardWrap('Placa ' + esc(r.placa), 'Tipo: ' + esc(r.tipo), r.estado, detail, uid);
 }
 
-function cardRuntLic(r) {
-  const name = [r.nombre, r.apellidos].filter(Boolean).join(' ');
-  const expired = isExpired(r.fecha_vencimiento_cat);
-  let detail = '<dl class="detail-grid">';
-  detail += dt('ID', r.id) + dt('Consulta', fmtDate(r.fecha_consulta));
-  detail += dt('Cedula', r.cedula) + dt('Estado conductor', r.estado_conductor);
-  detail += dt('Estado persona', r.estado_persona) + dt('Num. licencia', r.numero_licencia);
-  detail += dt('Estado licencia', r.estado_licencia) + dt('Categoria', r.categoria);
-  detail += dt('Expedicion', r.fecha_expedicion_cat);
-  detail += dt('Vencimiento', r.fecha_vencimiento_cat ? '<span class="' + (expired ? 'badge badge-expired' : '') + '">' + r.fecha_vencimiento_cat + (expired ? ' (VENCIDA)' : '') + '</span>' : '-');
-  detail += dt('Metodo', r.metodo) + dt('Error', r.error);
-  detail += '</dl>';
-  const sub = 'CC ' + esc(r.cedula) + ' &middot; Lic. ' + esc(r.numero_licencia);
-  return cardWrapRunt(name || 'Sin nombre', sub, r.success, expired, detail);
+// ========== RUNT sections embedded in cards ==========
+function renderRuntLicSection(conductor) {
+  const runt = runtLicCache[conductor.cedula];
+  let html = '<div class="runt-section" id="runt-lic-' + conductor.id + '">';
+  html += '<h4>Licencia RUNT ';
+
+  if (!runt) {
+    html += '<span class="badge badge-pending-runt">Pendiente</span></h4>';
+    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.5rem">No se ha consultado la licencia en RUNT.</p>';
+    html += '<button class="btn btn-runt" onclick="consultarRuntLic(' + conductor.id + ', \'' + esc(conductor.cedula) + '\', \'' + esc(conductor.primer_apellido) + '\')">Consultar RUNT</button>';
+  } else {
+    const expired = isExpired(runt.fecha_vencimiento_cat);
+    if (runt.success) {
+      html += '<span class="badge badge-success">OK</span>';
+      if (expired) html += ' <span class="badge badge-expired">VENCIDA</span>';
+    } else {
+      html += '<span class="badge badge-fail">FALLO</span>';
+    }
+    html += '</h4>';
+    html += '<dl class="detail-grid">';
+    html += dt('Estado conductor', runt.estado_conductor);
+    html += dt('Estado licencia', runt.estado_licencia);
+    html += dt('Categoria', runt.categoria);
+    html += dt('Vencimiento', runt.fecha_vencimiento_cat ? runt.fecha_vencimiento_cat + (expired ? ' <span class="badge badge-expired">VENCIDA</span>' : '') : '-');
+    html += dt('Restricciones', runt.restricciones || 'Ninguna');
+    html += dt('Num. licencia', runt.numero_licencia);
+    html += dt('Organismo transito', runt.organismo_transito);
+    html += dt('Consulta', fmtDate(runt.fecha_consulta));
+    if (runt.error) html += dt('Error', runt.error);
+    html += '</dl>';
+    html += '<div style="margin-top:.5rem"><button class="btn btn-runt" onclick="consultarRuntLic(' + conductor.id + ', \'' + esc(conductor.cedula) + '\', \'' + esc(conductor.primer_apellido) + '\')">Consultar RUNT</button></div>';
+  }
+  html += '</div>';
+  return html;
 }
 
-function cardRuntVeh(r) {
-  let detail = '<dl class="detail-grid">';
-  detail += dt('ID', r.id) + dt('Consulta', fmtDate(r.fecha_consulta));
-  detail += dt('Placa', r.placa) + dt('Cedula', r.cedula) + dt('Estado', r.estado);
-  detail += dt('Marca', r.marca) + dt('Linea', r.linea) + dt('Modelo', r.modelo) + dt('Color', r.color);
-  detail += dt('SOAT poliza', r.soat_poliza) + dt('SOAT vencimiento', r.soat_vencimiento) + dt('SOAT estado', r.soat_estado);
-  detail += dt('Metodo', r.metodo) + dt('Error', r.error);
-  detail += '</dl>';
-  const sub = esc(r.marca) + ' ' + esc(r.linea) + ' ' + esc(r.modelo) + ' &middot; ' + esc(r.color);
-  return cardWrapRunt('Placa ' + esc(r.placa), sub, r.success, false, detail);
+function renderRuntVehSection(vehiculo) {
+  const runt = runtVehCache[vehiculo.placa];
+  let html = '<div class="runt-section" id="runt-veh-' + vehiculo.id + '">';
+  html += '<h4>RUNT Vehiculo ';
+
+  if (!runt) {
+    html += '<span class="badge badge-pending-runt">Pendiente</span></h4>';
+    html += '<p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.5rem">No se ha consultado el vehiculo en RUNT.</p>';
+    html += '<button class="btn btn-runt" onclick="consultarRuntVeh(' + vehiculo.id + ', \'' + esc(vehiculo.placa) + '\')">Consultar RUNT</button>';
+  } else {
+    if (runt.success) {
+      html += '<span class="badge badge-success">OK</span>';
+    } else {
+      html += '<span class="badge badge-fail">FALLO</span>';
+    }
+    html += '</h4>';
+    html += '<dl class="detail-grid">';
+    html += dt('Estado', runt.estado);
+    html += dt('Tipo servicio', runt.tipo_servicio);
+    html += dt('Clase', runt.clase);
+    html += dt('Marca', runt.marca);
+    html += dt('Linea', runt.linea);
+    html += dt('Modelo', runt.modelo);
+    html += dt('Color', runt.color);
+    html += dt('Cilindraje', runt.cilindraje);
+    html += dt('SOAT poliza', runt.soat_poliza);
+    html += dt('SOAT aseguradora', runt.soat_aseguradora);
+    html += dt('SOAT vencimiento', runt.soat_vencimiento);
+    html += dt('SOAT estado', runt.soat_estado);
+    html += dt('Consulta', fmtDate(runt.fecha_consulta));
+    if (runt.error) html += dt('Error', runt.error);
+    html += '</dl>';
+    html += '<div style="margin-top:.5rem"><button class="btn btn-runt" onclick="consultarRuntVeh(' + vehiculo.id + ', \'' + esc(vehiculo.placa) + '\')">Consultar RUNT</button></div>';
+  }
+  html += '</div>';
+  return html;
 }
 
-// --- Helpers ---
+// ========== RUNT API calls ==========
+async function consultarRuntLic(condId, cedula, primerApellido) {
+  const section = document.getElementById('runt-lic-' + condId);
+  if (!section) return;
+  section.innerHTML = '<h4>Licencia RUNT <span class="spinner-sm"></span> Consultando...</h4>';
+
+  try {
+    const resp = await fetch(ENRICH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
+      body: JSON.stringify({ tabla: 'conductores', datos: { cedula: cedula, primer_apellido: primerApellido } })
+    });
+    const result = await resp.json();
+    // Refresh RUNT cache and re-render
+    await loadRuntLicencias();
+    delete cache[activeTab];
+    loadTab(activeTab, true);
+  } catch (err) {
+    section.innerHTML = '<h4>Licencia RUNT <span class="badge badge-fail">ERROR</span></h4><p style="font-size:.78rem;color:#C92A2A">' + err.message + '</p>';
+  }
+}
+
+async function consultarRuntVeh(vehId, placa) {
+  const section = document.getElementById('runt-veh-' + vehId);
+  if (!section) return;
+  section.innerHTML = '<h4>RUNT Vehiculo <span class="spinner-sm"></span> Consultando...</h4>';
+
+  try {
+    const resp = await fetch(ENRICH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
+      body: JSON.stringify({ tabla: 'vehiculos', datos: { placa: placa } })
+    });
+    const result = await resp.json();
+    await loadRuntVehiculos();
+    delete cache[activeTab];
+    loadTab(activeTab, true);
+  } catch (err) {
+    section.innerHTML = '<h4>RUNT Vehiculo <span class="badge badge-fail">ERROR</span></h4><p style="font-size:.78rem;color:#C92A2A">' + err.message + '</p>';
+  }
+}
+
+// ========== Edit / Delete / Actions ==========
+function renderActions(table, r, uid) {
+  let html = '<div class="card-actions" id="actions-' + uid + '">';
+  html += '<button class="btn btn-edit" onclick="startEdit(\'' + table + '\', ' + r.id + ', \'' + uid + '\')">Editar</button>';
+  html += '<button class="btn btn-delete" onclick="deleteRecord(\'' + table + '\', ' + r.id + ', \'' + uid + '\')">Eliminar</button>';
+  html += '</div>';
+  return html;
+}
+
+function startEdit(table, id, uid) {
+  const card = document.getElementById('card-' + uid);
+  if (!card) return;
+
+  // Convert display values to inputs
+  card.querySelectorAll('[data-edit-uid="' + uid + '"]').forEach(dd => {
+    const field = dd.dataset.field;
+    const val = dd.dataset.value || '';
+    dd.innerHTML = '<input class="edit-input" data-field="' + field + '" value="' + escAttr(val) + '">';
+  });
+
+  // Add estado dropdown
+  const estadoEl = card.querySelector('[data-estado-uid="' + uid + '"]');
+  if (estadoEl) {
+    const current = estadoEl.dataset.value || 'pendiente';
+    estadoEl.innerHTML = '<select class="edit-select" data-field="estado">' +
+      ['pendiente', 'revisado', 'aprobado', 'rechazado'].map(s =>
+        '<option value="' + s + '"' + (s === current.toLowerCase() ? ' selected' : '') + '>' + s.charAt(0).toUpperCase() + s.slice(1) + '</option>'
+      ).join('') + '</select>';
+  }
+
+  // Replace action buttons
+  const actions = document.getElementById('actions-' + uid);
+  actions.innerHTML = '<button class="btn btn-save" onclick="saveEdit(\'' + table + '\', ' + id + ', \'' + uid + '\')">Guardar</button>' +
+    '<button class="btn btn-cancel" onclick="cancelEdit(\'' + table + '\')">Cancelar</button>';
+}
+
+async function saveEdit(table, id, uid) {
+  const card = document.getElementById('card-' + uid);
+  if (!card) return;
+
+  const changes = {};
+
+  // Collect input values
+  card.querySelectorAll('.edit-input').forEach(input => {
+    changes[input.dataset.field] = input.value || null;
+  });
+
+  // Collect select values
+  card.querySelectorAll('.edit-select').forEach(select => {
+    changes[select.dataset.field] = select.value;
+  });
+
+  if (Object.keys(changes).length === 0) { cancelEdit(table); return; }
+
+  const { error } = await sb.from(table).update(changes).eq('id', id);
+  if (error) {
+    alert('Error guardando: ' + error.message);
+    return;
+  }
+
+  // Update cache
+  if (cache[table]) {
+    const idx = cache[table].findIndex(r => r.id === id);
+    if (idx >= 0) Object.assign(cache[table][idx], changes);
+  }
+
+  // Re-render
+  delete cache[table];
+  loadTab(table, true);
+}
+
+function cancelEdit(table) {
+  delete cache[table];
+  loadTab(table, true);
+}
+
+async function deleteRecord(table, id, uid) {
+  if (!confirm('Eliminar este registro?')) return;
+
+  const { error } = await sb.from(table).delete().eq('id', id);
+  if (error) {
+    alert('Error eliminando: ' + error.message);
+    return;
+  }
+
+  // Remove from cache
+  if (cache[table]) {
+    cache[table] = cache[table].filter(r => r.id !== id);
+    document.getElementById('count-' + table).textContent = cache[table].length;
+  }
+
+  // Remove card from DOM
+  const card = document.getElementById('card-' + uid);
+  if (card) card.remove();
+}
+
+// ========== Helpers ==========
 function dt(label, val) {
   return '<dt>' + label + '</dt><dd>' + (val != null && val !== '' ? val : '-') + '</dd>';
+}
+
+function dtEditable(uid, field, label, val) {
+  return '<dt>' + label + '</dt><dd data-edit-uid="' + uid + '" data-field="' + field + '" data-value="' + escAttr(val) + '">' + esc(val) + '</dd>';
 }
 
 function fmtDate(d) {
@@ -376,29 +718,52 @@ function fmtDate(d) {
   return dt.toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-function cardWrap(title, sub, estado, detail) {
-  return '<div class="card"><div class="card-header" onclick="toggleCard(this)"><div><div class="card-title">' + title + '</div><div class="card-sub">' + sub + '</div></div><div class="card-right">' + estadoBadge(estado) + ' <span class="expand-arrow">&#8250;</span></div></div><div class="card-detail">' + detail + '</div></div>';
+function esc(v) {
+  if (v == null) return '-';
+  if (typeof v === 'boolean') return v ? 'Si' : 'No';
+  return String(v);
 }
 
-function cardWrapRunt(title, sub, success, expired, detail) {
-  let badges = successBadge(success);
-  if (expired) badges += ' <span class="badge badge-expired">VENCIDA</span>';
-  return '<div class="card"><div class="card-header" onclick="toggleCard(this)"><div><div class="card-title">' + title + '</div><div class="card-sub">' + sub + '</div></div><div class="card-right">' + badges + ' <span class="expand-arrow">&#8250;</span></div></div><div class="card-detail">' + detail + '</div></div>';
+function escAttr(v) {
+  if (v == null) return '';
+  return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// Load counts for all tabs on init
+function isExpired(dateStr) {
+  if (!dateStr) return false;
+  return new Date(dateStr) < new Date();
+}
+
+function estadoBadge(v) {
+  if (!v) return '';
+  const cls = { pendiente: 'badge-pendiente', revisado: 'badge-revisado', aprobado: 'badge-aprobado', rechazado: 'badge-rechazado' }[v.toLowerCase()] || 'badge-pendiente';
+  return '<span class="badge ' + cls + '">' + v + '</span>';
+}
+
+function fileIndicator(val, label) {
+  if (!val) return '<span class="file-missing" title="No subido">&#10007; ' + label + '</span>';
+  const url = STORAGE_BASE + val;
+  return '<a class="file-link" href="' + url + '" target="_blank" rel="noopener">&#10003; ' + label + '</a>';
+}
+
+function toggleCard(el) {
+  el.closest('.card').classList.toggle('open');
+}
+
+function cardWrap(title, sub, estado, detail, uid) {
+  const estadoHtml = estado ? '<span data-estado-uid="' + uid + '" data-value="' + escAttr(estado) + '">' + estadoBadge(estado) + '</span>' : '';
+  return '<div class="card" id="card-' + uid + '"><div class="card-header" onclick="toggleCard(this)"><div><div class="card-title">' + title + '</div><div class="card-sub">' + sub + '</div></div><div class="card-right">' + estadoHtml + ' <span class="expand-arrow">&#8250;</span></div></div><div class="card-detail">' + detail + '</div></div>';
+}
+
+// Load counts
 async function loadAllCounts() {
-  const tables = ['conductores', 'propietarios', 'vehiculos', 'runt_licencias', 'runt_vehiculos'];
+  const tables = ['conductores', 'propietarios', 'vehiculos'];
   for (const t of tables) {
     const { count, error } = await sb.from(t).select('*', { count: 'exact', head: true });
     if (!error && count != null) {
       document.getElementById('count-' + t).textContent = count;
     }
   }
-}
-
-if (sessionStorage.getItem('cc_admin') === '1') {
-  loadAllCounts();
 }
 </script>
 </body>

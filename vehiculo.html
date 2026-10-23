@@ -70,6 +70,21 @@ header p{font-size:.8rem;color:var(--gray-500);letter-spacing:.04em}
 .success-view .check{width:72px;height:72px;border-radius:50%;background:var(--green);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.25rem}
 .success-view h2{color:var(--navy);font-size:1.25rem;margin-bottom:.5rem}
 .success-view p{color:var(--gray-500);font-size:.9rem}
+/* Progress bar */
+.progress-tracker{display:flex;align-items:center;justify-content:center;gap:0;max-width:420px;margin:0 auto 1rem;padding:.5rem 0;height:40px}
+.progress-step{display:flex;align-items:center;gap:0;font-size:.75rem;font-weight:600;color:var(--gray-400);white-space:nowrap}
+.progress-step .dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;border:2px solid var(--gray-300);background:var(--white);color:var(--gray-400);flex-shrink:0;transition:all .3s}
+.progress-step .dot.done{background:var(--green);border-color:var(--green);color:var(--white)}
+.progress-step .dot.current{background:var(--white);border-color:var(--gold);color:var(--gold)}
+.progress-step .step-label{margin-left:.3rem;font-size:.72rem;color:var(--gray-500)}
+.progress-step .step-label.current-label{color:var(--gold);font-weight:700}
+.progress-step .step-label.done-label{color:var(--green)}
+.progress-line{width:28px;height:2px;background:var(--gray-200);flex-shrink:0;margin:0 .25rem}
+.progress-line.done{background:var(--green)}
+/* Nav buttons */
+.btn-outline{display:block;width:100%;padding:.75rem;background:var(--white);color:var(--gold);border:2px solid var(--gold);border-radius:var(--radius);font-size:.95rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;transition:opacity .2s;margin-top:.5rem}
+.btn-outline:hover{opacity:.85}
+.nav-buttons{margin-top:1.25rem;display:flex;flex-direction:column;gap:.5rem}
 /* Footer */
 footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72rem;line-height:1.6}
 </style>
@@ -82,6 +97,13 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
 </header>
 
 <main class="container">
+  <div class="progress-tracker" id="progressTracker" style="display:none">
+    <div class="progress-step"><span class="dot" id="dotConductor">1</span><span class="step-label" id="lblConductor">Conductor</span></div>
+    <div class="progress-line" id="line1"></div>
+    <div class="progress-step"><span class="dot" id="dotPropietario">2</span><span class="step-label" id="lblPropietario">Propietario</span></div>
+    <div class="progress-line" id="line2"></div>
+    <div class="progress-step"><span class="dot current" id="dotVehiculo">3</span><span class="step-label current-label" id="lblVehiculo">Veh&iacute;culo</span></div>
+  </div>
   <!-- FORM -->
   <form id="vehiculoForm" novalidate>
     <div class="form-card">
@@ -221,6 +243,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
     <div class="check">&#10003;</div>
     <h2>¡Datos del vehículo enviados!</h2>
     <p>Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
+    <div class="nav-buttons" id="navButtons"></div>
   </div>
 </main>
 
@@ -236,6 +259,51 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const BUCKET = 'vinculacion-docs';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* --- Pre-fill placa from URL & progress tracker --- */
+var urlPlaca = new URLSearchParams(window.location.search).get('placa');
+if(urlPlaca){
+  var cleaned = urlPlaca.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  document.getElementById('placa').value = cleaned;
+  document.getElementById('placa').readOnly = true;
+  document.getElementById('placa').style.background = 'var(--gray-100)';
+  document.getElementById('progressTracker').style.display = 'flex';
+  (async function(){
+    try {
+      var results = await Promise.all([
+        sb.from('conductores').select('id').eq('vehiculo_placa', cleaned).limit(1),
+        sb.from('propietarios').select('id').eq('vehiculo_placa', cleaned).limit(1),
+        sb.from('vehiculos').select('id').eq('placa', cleaned).limit(1)
+      ]);
+      var cDone = results[0].data && results[0].data.length > 0;
+      var pDone = results[1].data && results[1].data.length > 0;
+      var vDone = results[2].data && results[2].data.length > 0;
+      if(cDone){
+        document.getElementById('dotConductor').classList.add('done');
+        document.getElementById('dotConductor').innerHTML = '&#10003;';
+        document.getElementById('lblConductor').classList.add('done-label');
+        document.getElementById('line1').classList.add('done');
+      }
+      if(pDone){
+        document.getElementById('dotPropietario').classList.add('done');
+        document.getElementById('dotPropietario').innerHTML = '&#10003;';
+        document.getElementById('lblPropietario').classList.add('done-label');
+        document.getElementById('line2').classList.add('done');
+      }
+      if(vDone){
+        document.getElementById('dotVehiculo').classList.remove('current');
+        document.getElementById('dotVehiculo').classList.add('done');
+        document.getElementById('dotVehiculo').innerHTML = '&#10003;';
+        document.getElementById('lblVehiculo').classList.remove('current-label');
+        document.getElementById('lblVehiculo').classList.add('done-label');
+      }
+      if(!vDone){
+        document.getElementById('dotVehiculo').classList.add('current');
+        document.getElementById('lblVehiculo').classList.add('current-label');
+      }
+    } catch(e){ console.warn('Progress check failed', e); }
+  })();
+}
 
 // DOM refs
 const form = document.getElementById('vehiculoForm');
@@ -471,6 +539,12 @@ form.addEventListener('submit', async function(e){
     overlay.classList.remove('active');
     form.style.display = 'none';
     successView.classList.add('active');
+    // Build nav buttons
+    var submittedPlaca = placaInput.value.trim().toUpperCase();
+    var navBtns = document.getElementById('navButtons');
+    navBtns.innerHTML =
+      '<a class="btn-outline" href="conductor.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Conductor</a>' +
+      '<a class="btn-outline" href="propietario.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Propietario</a>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch(err){
