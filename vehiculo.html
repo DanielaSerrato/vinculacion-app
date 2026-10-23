@@ -161,6 +161,10 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
             <option value="Otro">Otro</option>
           </select>
         </div>
+        <div class="field conditional" id="otroProveedorField">
+          <label for="satelital_proveedor_otro">¿Cuál?<span class="req">*</span></label>
+          <input type="text" id="satelital_proveedor_otro" name="satelital_proveedor_otro" placeholder="Nombre del proveedor" autocomplete="off">
+        </div>
         <div class="field">
           <label for="satelital_usuario">Usuario satelital</label>
           <input type="text" id="satelital_usuario" name="satelital_usuario" autocomplete="off">
@@ -340,10 +344,18 @@ placaInput.addEventListener('input', function(){
 });
 
 // --- Satelital toggle ---
+const otroProveedorField = document.getElementById('otroProveedorField');
+const proveedorSelect = document.getElementById('satelital_proveedor');
+
 document.querySelectorAll('input[name="satelital"]').forEach(function(r){
   r.addEventListener('change', function(){
     satelitalFields.classList.toggle('visible', this.value === 'si');
+    if(this.value !== 'si') otroProveedorField.classList.remove('visible');
   });
+});
+
+proveedorSelect.addEventListener('change', function(){
+  otroProveedorField.classList.toggle('visible', this.value === 'Otro');
 });
 
 // --- File uploads ---
@@ -459,11 +471,19 @@ function validate(){
     satField.classList.remove('has-error');
     // Proveedor required when satelital = sí
     var provSelect = document.getElementById('satelital_proveedor');
+    var otroInput = document.getElementById('satelital_proveedor_otro');
     if(satVal.value === 'si' && !provSelect.value){
       provSelect.classList.add('error');
       valid = false;
     } else {
       provSelect.classList.remove('error');
+    }
+    // "Otro" text required when Otro selected
+    if(satVal.value === 'si' && provSelect.value === 'Otro' && !otroInput.value.trim()){
+      otroInput.classList.add('error');
+      valid = false;
+    } else {
+      otroInput.classList.remove('error');
     }
   }
 
@@ -545,7 +565,7 @@ form.addEventListener('submit', async function(e){
     var row = {
       placa: placa,
       satelital: isSat,
-      satelital_proveedor: isSat ? (document.getElementById('satelital_proveedor').value || null) : null,
+      satelital_proveedor: isSat ? (proveedorSelect.value === 'Otro' ? document.getElementById('satelital_proveedor_otro').value.trim() : proveedorSelect.value) || null : null,
       satelital_usuario: isSat ? (document.getElementById('satelital_usuario').value.trim() || null) : null,
       satelital_password: isSat ? (document.getElementById('satelital_password').value.trim() || null) : null,
       tarjeta_frente: tarjetaFrentePath,
