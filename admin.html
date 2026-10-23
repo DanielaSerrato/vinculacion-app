@@ -900,7 +900,7 @@ function getTableColumns(table) {
       { label:'Nombre', val:r=>fullName(r), render:r=>'<span class="cell-name">'+esc(fullName(r))+'</span>' },
       { label:'Cedula', val:r=>r.cedula, render:r=>esc(r.cedula) },
       { label:'Placa', val:r=>r.vehiculo_placa, render:r=>r.vehiculo_placa?'<strong>'+esc(r.vehiculo_placa)+'</strong>':'-' },
-      { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(r.ciudad) },
+      { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(titleCase(r.ciudad)) },
       { label:'Telefono', val:r=>r.telefono, render:r=>esc(r.telefono) },
       { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
       { label:'Categorias RUNT', val:r=>{
@@ -928,7 +928,7 @@ function getTableColumns(table) {
       { label:'Nombre', val:r=>fullName(r), render:r=>'<span class="cell-name">'+esc(fullName(r))+'</span>' },
       { label:'Cedula', val:r=>r.cedula, render:r=>esc(r.cedula) },
       { label:'Placa', val:r=>r.vehiculo_placa, render:r=>r.vehiculo_placa?'<strong>'+esc(r.vehiculo_placa)+'</strong>':'-' },
-      { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(r.ciudad) },
+      { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(titleCase(r.ciudad)) },
       { label:'Telefono', val:r=>r.telefono, render:r=>esc(r.telefono) },
       { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
       { label:'Docs', val:r=>countDocs(r,table), render:r=>{
@@ -1640,8 +1640,12 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== Helpers =====
+function titleCase(s) {
+  if (!s) return '';
+  return s.toLowerCase().replace(/(?:^|\s)\S/g, c => c.toUpperCase());
+}
 function fullName(r) {
-  return [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).join(' ');
+  return [r.primer_nombre, r.segundo_nombre, r.primer_apellido, r.segundo_apellido].filter(Boolean).map(titleCase).join(' ');
 }
 function getInitials(r) {
   return ((r.primer_nombre || '').charAt(0) + (r.primer_apellido || '').charAt(0)).toUpperCase() || '?';
@@ -1702,11 +1706,13 @@ function fieldHTML(label, value) {
   const v = (value != null && value !== '' && value !== '-') ? esc(value) : null;
   return '<div class="field"><div class="field-label">'+label+'</div><div class="field-value'+(v?'':' empty')+'">'+(v||'Sin informacion')+'</div></div>';
 }
+const NAME_FIELDS = new Set(['primer_nombre','segundo_nombre','primer_apellido','segundo_apellido','ciudad','banco','ref_familiar_nombre','ref_empresa_nombre']);
 function editableField(field, label, value) {
+  const display = NAME_FIELDS.has(field) ? titleCase(value) : value;
   if (editMode) {
     return '<div class="field"><div class="field-label">'+label+'</div><input class="edit-input" data-field="'+field+'" value="'+escAttr(value)+'"></div>';
   }
-  return fieldHTML(label, value);
+  return fieldHTML(label, display);
 }
 function sectionStart(title) {
   return '<div class="section"><div class="section-heading">'+title+'</div>';
