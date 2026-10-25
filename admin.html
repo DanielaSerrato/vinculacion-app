@@ -652,7 +652,7 @@ let editMode = false;
 let confirmResolver = null;
 
 const DOC_FIELDS = {
-  conductores: ['foto_rostro','seguridad_social','cedula_pdf','pase_pdf','cert_bancaria'],
+  conductores: ['foto_rostro','seguridad_social','cedula_pdf','pase_pdf','cert_bancaria','antecedentes_procuraduria','antecedentes_policia','runt','comparendos','lista_clinton','antecedentes_fiscales','estudio_seguridad'],
   propietarios: ['cedula_pdf','rut','cert_bancaria','foto_rostro'],
   vehiculos: ['tarjeta_pdf','tecnomecanica','soat']
 };
@@ -664,6 +664,12 @@ const DOC_LABELS = {
   cedula_pdf:'Cédula (PDF validado)', pase_pdf:'Pase (PDF validado)',
   tarjeta_pdf:'Tarjeta de propiedad (PDF)',
   cert_bancaria:'Cert. Bancaria', rut:'RUT',
+  antecedentes_procuraduria:'Antecedentes Procuraduría',
+  antecedentes_policia:'Antecedentes Policía Nacional',
+  runt:'Consulta RUNT', comparendos:'Consulta de Comparendos',
+  lista_clinton:'Consulta Lista Clinton',
+  antecedentes_fiscales:'Antecedentes Fiscales',
+  estudio_seguridad:'Estudio de Seguridad',
   tarjeta_frente:'Tarjeta Frente', tarjeta_reverso:'Tarjeta Reverso',
   tecnomecanica:'Tecnomecanica', soat:'SOAT'
 };
@@ -671,7 +677,8 @@ const DOC_LABELS = {
 const DOC_GROUPS_CONDUCTOR = {
   'Identidad': ['cedula_pdf'],
   'Licencia': ['pase_pdf'],
-  'Otros': ['foto_rostro','seguridad_social','cert_bancaria']
+  'Vinculación': ['foto_rostro','seguridad_social','cert_bancaria'],
+  'Validaciones de seguridad': ['antecedentes_procuraduria','antecedentes_policia','runt','comparendos','lista_clinton','antecedentes_fiscales','estudio_seguridad']
 };
 const DOC_GROUPS_PROPIETARIO = {
   'Identidad': ['cedula_pdf','foto_rostro'],
@@ -905,6 +912,7 @@ function getTableColumns(table) {
       { label:'Ciudad', val:r=>r.ciudad, render:r=>esc(titleCase(r.ciudad)) },
       { label:'Telefono', val:r=>r.telefono, render:r=>esc(r.telefono) },
       { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
+      { label:'Systram', val:r=>r.systram_estado, render:r=>systramBadge(r.systram_estado) },
       { label:'Categorias RUNT', val:r=>{
         const runt = runtLicCache[r.cedula];
         return runt ? getAllLicenseCategories(runt).map(c=>c.categoria).join(',') : '';
@@ -1172,6 +1180,24 @@ function renderPanelDatos(body, table, r) {
     html += '<div class="field-grid">';
     html += fieldHTML('Ref. Familiar',((r.ref_familiar_nombre||'-')+' / '+(r.ref_familiar_telefono||'-')));
     html += fieldHTML('Ref. Empresa',((r.ref_empresa_nombre||'-')+' / '+(r.ref_empresa_telefono||'-')));
+    html += '</div>';
+    html += sectionStart('Licencia y Emergencia');
+    html += '<div class="field-grid">';
+    html += fieldHTML('Categoría licencia',r.licencia_categoria);
+    html += fieldHTML('Vencimiento licencia',fmtDateShort(r.licencia_vencimiento));
+    html += fieldHTML('Contacto de emergencia',(r.emergencia_nombre||'-')+' ('+(r.emergencia_parentesco||'-')+') / '+(r.emergencia_telefono||'-'));
+    html += '</div>';
+    html += sectionStart('Proceso Systram');
+    html += '<div class="field-grid">';
+    html += fieldHTML('Estado',systramLabel(r.systram_estado));
+    html += fieldHTML('Etapa',r.systram_etapa||'-');
+    html += fieldHTML('ID en Systram',r.systram_id||'-');
+    html += fieldHTML('Último intento',fmtDate(r.systram_ultimo_intento_en));
+    if (r.systram_error) html += '<div class="field field-full"><div class="field-label">Pendiente / error</div><div class="field-value" style="color:#991B1B">'+esc(r.systram_error)+'</div></div>';
+    if (Array.isArray(r.systram_historial) && r.systram_historial.length) {
+      const last = r.systram_historial[r.systram_historial.length - 1];
+      html += '<div class="field field-full"><div class="field-label">Último evento</div><div class="field-value">'+esc((last.etapa||'')+' · '+(last.resultado||'')+' · '+fmtDate(last.at))+'</div></div>';
+    }
     html += '</div>';
     html += sectionStart('Autorizaciones');
     html += '<div class="field-grid">';
@@ -1693,6 +1719,16 @@ function estadoBadge(v) {
   if (!v) return '';
   const cls = {pendiente:'badge-pendiente',revisado:'badge-revisado',aprobado:'badge-aprobado',rechazado:'badge-rechazado'}[v.toLowerCase()] || 'badge-pendiente';
   return '<span class="badge '+cls+'">'+esc(v)+'</span>';
+}
+function systramBadge(v) {
+  if (!v) return '';
+  const label = systramLabel(v);
+  const cls = { pendiente:'badge-pendiente', validando:'badge-revisado', sincronizado:'badge-aprobado', requiere_revision:'badge-rechazado', error:'badge-rechazado' }[String(v).toLowerCase()] || 'badge-pendiente';
+  return '<span class="badge '+cls+'">'+esc(label)+'</span>';
+}
+function systramLabel(v) {
+  if (!v) return '-';
+  return ({ pendiente:'Pendiente', validando:'Validando', sincronizado:'Sincronizado', requiere_revision:'Requiere revisión', error:'Error' })[String(v).toLowerCase()] || String(v);
 }
 function estadoRuntBadge(v) {
   if (!v) return '-';
