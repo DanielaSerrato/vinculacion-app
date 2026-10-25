@@ -187,7 +187,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
         <div class="file-drop">
           <div class="icon">&#128206;</div>
           <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+          <input type="file" accept="image/jpeg,image/png,image/webp">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es obligatorio.</div>
@@ -199,23 +199,23 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
         <div class="file-drop">
           <div class="icon">&#128206;</div>
           <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+          <input type="file" accept="image/jpeg,image/png,image/webp">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es obligatorio.</div>
       </div>
 
       <!-- Fotos del vehiculo -->
-      <div class="field" data-upload="fotos" data-max="6" data-required="true">
+      <div class="field" data-upload="fotos" data-max="6" data-min="4" data-required="true">
         <label>Fotos del vehículo (frente, lados, trasera, placas visibles)<span class="req">*</span></label>
         <div class="file-drop">
           <div class="icon">&#128247;</div>
           <div class="text">Arrastra o <strong>selecciona archivos</strong> (hasta 6)</div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" multiple>
+          <input type="file" accept="image/jpeg,image/png,image/webp" multiple>
         </div>
         <div class="file-preview"></div>
         <div class="file-count"></div>
-        <div class="error-msg">Sube al menos una foto del vehículo.</div>
+        <div class="error-msg">Sube al menos cuatro fotos del vehículo.</div>
       </div>
 
       <!-- Tecnomecánica -->
@@ -268,6 +268,8 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
 <footer>Capital Cargo Colombia · NIT 900491068-0 · gerencia@capitalcargocolombia.com</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="document-validation.js"></script>
 <script>
 (function(){
 'use strict';
@@ -362,6 +364,7 @@ proveedorSelect.addEventListener('change', function(){
 document.querySelectorAll('.field[data-upload]').forEach(function(field){
   const name = field.dataset.upload;
   const max = parseInt(field.dataset.max, 10);
+  const min = parseInt(field.dataset.min || '1', 10);
   const drop = field.querySelector('.file-drop');
   const input = drop.querySelector('input[type="file"]');
   const preview = field.querySelector('.file-preview');
@@ -374,6 +377,10 @@ document.querySelectorAll('.field[data-upload]').forEach(function(field){
       if(fileStore[name].length >= max) break;
       if(list[i].size > 10 * 1024 * 1024){
         alert('El archivo "' + list[i].name + '" supera los 10 MB.');
+        continue;
+      }
+      if(['tarjeta_frente','tarjeta_reverso','fotos'].includes(name) && !list[i].type.startsWith('image/')){
+        alert('Para ' + name.replace('_',' ') + ' debes subir una foto JPG, PNG o WebP.');
         continue;
       }
       fileStore[name].push(list[i]);
@@ -410,7 +417,7 @@ document.querySelectorAll('.field[data-upload]').forEach(function(field){
     // Update count for multi
     if(countEl){
       countEl.textContent = fileStore[name].length > 0
-        ? fileStore[name].length + ' de ' + max + ' archivo(s)'
+        ? fileStore[name].length + ' de ' + max + ' foto(s)' + (name === 'fotos' ? ' (mínimo ' + min + ')' : '')
         : '';
     }
     // Toggle drop zone visibility
@@ -490,7 +497,8 @@ function validate(){
   // File fields
   document.querySelectorAll('.field[data-upload][data-required="true"]').forEach(function(f){
     var name = f.dataset.upload;
-    if(!fileStore[name] || fileStore[name].length === 0){
+    var min = parseInt(f.dataset.min || '1', 10);
+    if(!fileStore[name] || fileStore[name].length < min){
       f.classList.add('has-error');
       valid = false;
     } else {
@@ -514,6 +522,12 @@ async function uploadFile(file, placa, fieldName){
   return path;
 }
 
+async function buildTarjetaPdf(placa){
+  var pdf = await DocumentValidation.createPdf(fileStore.tarjeta_frente[0], fileStore.tarjeta_reverso[0], 'Tarjeta de propiedad - ' + placa);
+  if(pdf.size > 10 * 1024 * 1024) throw new Error('El PDF de la tarjeta de propiedad supera 10 MB.');
+  return pdf;
+}
+
 // --- Submit ---
 form.addEventListener('submit', async function(e){
   e.preventDefault();
@@ -526,7 +540,7 @@ form.addEventListener('submit', async function(e){
 
   // Count total files
   var totalFiles = 0;
-  var uploadFields = ['tarjeta_frente','tarjeta_reverso','fotos','tecnomecanica','soat'];
+  var uploadFields = ['fotos','tecnomecanica','soat'];
   uploadFields.forEach(function(n){ totalFiles += fileStore[n].length; });
 
   var uploaded = 0;
@@ -541,12 +555,11 @@ form.addEventListener('submit', async function(e){
   progressFill.style.width = '0%';
 
   try {
-    // Upload all files
-    var tarjetaFrentePath = await uploadFile(fileStore['tarjeta_frente'][0], placa, 'tarjeta_frente');
-    updateProgress();
-
-    var tarjetaReversoPath = await uploadFile(fileStore['tarjeta_reverso'][0], placa, 'tarjeta_reverso');
-    updateProgress();
+    progressText.textContent = 'Creando PDF de tarjeta de propiedad...';
+    var tarjetaPdf = await buildTarjetaPdf(placa);
+    var tarjetaPdfPath = 'veh_' + placa + '/tarjeta_propiedad_' + Date.now() + '.pdf';
+    var pdfUpload = await sb.storage.from(BUCKET).upload(tarjetaPdfPath, tarjetaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
+    if(pdfUpload.error) throw new Error('Error subiendo PDF de tarjeta de propiedad: ' + pdfUpload.error.message);
 
     var fotosPaths = [];
     for(var i = 0; i < fileStore['fotos'].length; i++){
@@ -568,8 +581,9 @@ form.addEventListener('submit', async function(e){
       satelital_proveedor: isSat ? (proveedorSelect.value === 'Otro' ? document.getElementById('satelital_proveedor_otro').value.trim() : proveedorSelect.value) || null : null,
       satelital_usuario: isSat ? (document.getElementById('satelital_usuario').value.trim() || null) : null,
       satelital_password: isSat ? (document.getElementById('satelital_password').value.trim() || null) : null,
-      tarjeta_frente: tarjetaFrentePath,
-      tarjeta_reverso: tarjetaReversoPath,
+      tarjeta_frente: null,
+      tarjeta_reverso: null,
+      tarjeta_pdf: tarjetaPdfPath,
       fotos: fotosPaths,
       tecnomecanica: tecnomecanicaPath,
       soat: soatPath,

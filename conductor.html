@@ -179,8 +179,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   <div class="section-title"><span class="badge">4</span> Documentos</div>
   <div class="field">
     <label class="required">Cédula frente</label>
+    <div class="hint">Foto nítida en JPG, PNG o WebP. Se revisará antes de crear el PDF.</div>
     <div class="upload-area" id="drop_cedula_frente">
-      <input type="file" id="file_cedula_frente" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <input type="file" id="file_cedula_frente" accept="image/jpeg,image/png,image/webp" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -190,7 +191,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   <div class="field">
     <label class="required">Cédula reverso</label>
     <div class="upload-area" id="drop_cedula_reverso">
-      <input type="file" id="file_cedula_reverso" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <input type="file" id="file_cedula_reverso" accept="image/jpeg,image/png,image/webp" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -199,8 +200,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   </div>
   <div class="field">
     <label class="required">Pase de conducción frente</label>
+    <div class="hint">Foto nítida en JPG, PNG o WebP. Se revisará antes de crear el PDF.</div>
     <div class="upload-area" id="drop_pase_frente">
-      <input type="file" id="file_pase_frente" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <input type="file" id="file_pase_frente" accept="image/jpeg,image/png,image/webp" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -210,7 +212,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   <div class="field">
     <label class="required">Pase de conducción reverso</label>
     <div class="upload-area" id="drop_pase_reverso">
-      <input type="file" id="file_pase_reverso" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <input type="file" id="file_pase_reverso" accept="image/jpeg,image/png,image/webp" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -253,15 +255,15 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="error-text" id="err_cert_bancaria">Este documento es requerido</div>
   </div>
   <div class="field">
-    <label>Foto del rostro (cuello a medio cuerpo)</label>
-    <div class="hint">Dato biométrico sensible. Su entrega es facultativa.</div>
+    <label class="required">Foto del rostro (cuello a medio cuerpo)</label>
+    <div class="hint">Foto nítida del conductor, en JPG, PNG o WebP. Se registra en Fotografías de Systram.</div>
     <div class="upload-area" id="drop_foto_rostro">
-      <input type="file" id="file_foto_rostro" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+      <input type="file" id="file_foto_rostro" accept="image/jpeg,image/png,image/webp" required>
       <div class="upload-icon">&#128247;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
     <div class="preview-container" id="preview_foto_rostro"></div>
-    <div class="error-text" id="err_foto_rostro">Archivo muy grande (máx 10 MB)</div>
+    <div class="error-text" id="err_foto_rostro">La foto del conductor es requerida y no puede superar 10 MB</div>
   </div>
   <div class="field">
     <label>Seguridad social (EPS, pensión, ARL)</label>
@@ -274,9 +276,27 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="preview-container" id="preview_seguridad_social"></div>
     <div class="error-text" id="err_seguridad_social">Archivo muy grande (máx 10 MB)</div>
   </div>
+  <div class="field">
+    <label for="licencia_categoria" class="required">Categoría de la licencia</label>
+    <input type="text" id="licencia_categoria" name="licencia_categoria" placeholder="Ej. C2" required>
+    <div class="error-text" id="err_licencia_categoria">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="licencia_vencimiento" class="required">Vencimiento de la licencia</label>
+    <input type="date" id="licencia_vencimiento" name="licencia_vencimiento" required>
+    <div class="error-text" id="err_licencia_vencimiento">Campo requerido</div>
+  </div>
+
+  <div class="section-title"><span class="badge">5</span> Consultas y documentos obligatorios</div>
+  <div id="documentos_obligatorios"></div>
 
   <!-- Referencias -->
-  <div class="section-title"><span class="badge">5</span> Referencias</div>
+  <div class="section-title"><span class="badge">6</span> Teléfonos, referencias y emergencias</div>
+  <div class="field">
+    <label for="telefono_alterno">Teléfono alterno</label>
+    <input type="text" id="telefono_alterno" name="telefono_alterno" inputmode="tel" pattern="[0-9]{7,15}">
+    <div class="error-text" id="err_telefono_alterno">Ingresa entre 7 y 15 dígitos</div>
+  </div>
   <div class="field">
     <label for="ref_familiar_nombre" class="required">Nombre referencia familiar</label>
     <input type="text" id="ref_familiar_nombre" name="ref_familiar_nombre" required>
@@ -297,9 +317,24 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <input type="text" id="ref_empresa_telefono" name="ref_empresa_telefono" inputmode="tel" required>
     <div class="error-text" id="err_ref_empresa_telefono">Campo requerido</div>
   </div>
+  <div class="field">
+    <label for="emergencia_nombre" class="required">Contacto de emergencia</label>
+    <input type="text" id="emergencia_nombre" name="emergencia_nombre" required>
+    <div class="error-text" id="err_emergencia_nombre">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="emergencia_parentesco" class="required">Parentesco del contacto de emergencia</label>
+    <input type="text" id="emergencia_parentesco" name="emergencia_parentesco" required>
+    <div class="error-text" id="err_emergencia_parentesco">Campo requerido</div>
+  </div>
+  <div class="field">
+    <label for="emergencia_telefono" class="required">Teléfono de emergencia</label>
+    <input type="text" id="emergencia_telefono" name="emergencia_telefono" inputmode="tel" pattern="[0-9]{7,15}" required>
+    <div class="error-text" id="err_emergencia_telefono">Ingresa entre 7 y 15 dígitos</div>
+  </div>
 
   <!-- Consentimiento manejo de datos -->
-  <div class="section-title"><span class="badge">6</span> Consentimiento</div>
+  <div class="section-title"><span class="badge">7</span> Consentimiento</div>
   <div class="field">
     <label class="required">¿Autoriza el manejo de sus datos?</label>
     <div class="radio-group">
@@ -352,6 +387,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 <footer>Capital Cargo Colombia &middot; NIT 900491068-0 &middot; gerencia@capitalcargocolombia.com</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="document-validation.js"></script>
 <script>
 (function(){
   const SUPABASE_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
@@ -409,11 +447,17 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
   /* --- File state --- */
   const fileState = {};
-  const fileFields = [
-    'foto_rostro','seguridad_social',
-    'cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'
+  const consultationDocuments = [
+    ['antecedentes_procuraduria','Antecedentes Procuraduría'], ['antecedentes_policia','Antecedentes Policía Nacional'],
+    ['runt','Consulta RUNT'], ['comparendos','Consulta de comparendos'], ['lista_clinton','Consulta lista Clinton'],
+    ['antecedentes_fiscales','Antecedentes fiscales (Contraloría)'], ['estudio_seguridad','Estudio de seguridad']
   ];
-  const requiredFileFields = ['cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
+  const consultationFiles = consultationDocuments.map(item => item[0]);
+  document.getElementById('documentos_obligatorios').innerHTML = consultationDocuments.map(([id, label]) =>
+    '<div class="field"><label class="required">' + label + '</label><div class="upload-area" id="drop_' + id + '"><input type="file" id="file_' + id + '" accept="application/pdf,image/*" required><div class="upload-icon">&#128196;</div><div class="upload-text"><strong>Selecciona el certificado</strong></div></div><div class="preview-container" id="preview_' + id + '"></div><div class="error-text" id="err_' + id + '">Documento requerido</div></div>'
+  ).join('');
+  const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria', ...consultationFiles];
+  const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria', ...consultationFiles];
 
   /* --- DOM helpers --- */
   const $ = id => document.getElementById(id);
@@ -480,6 +524,11 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     const previewEl = $('preview_' + field);
 
     if(file.size > MAX_FILE_SIZE){
+      errEl.classList.add('visible');
+      return;
+    }
+    if(['cedula_frente','cedula_reverso','pase_frente','pase_reverso','foto_rostro'].includes(field) && !file.type.startsWith('image/')){
+      errEl.textContent = 'Para validar este documento, sube una foto JPG, PNG o WebP.';
       errEl.classList.add('visible');
       return;
     }
@@ -571,8 +620,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
     // Text fields
     const textReq = ['primer_nombre','primer_apellido','cedula','direccion','ciudad','telefono',
-                     'numero_cuenta','banco',
-                     'ref_familiar_nombre','ref_familiar_telefono','ref_empresa_nombre','ref_empresa_telefono'];
+                     'numero_cuenta','banco','licencia_categoria','licencia_vencimiento',
+                     'ref_familiar_nombre','ref_familiar_telefono','ref_empresa_nombre','ref_empresa_telefono',
+                     'emergencia_nombre','emergencia_parentesco','emergencia_telefono'];
     textReq.forEach(id => {
       const v = $(id).value.trim();
       if(!v) fail(id);
@@ -585,6 +635,10 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     // Telefono pattern
     const tel = $('telefono').value.trim();
     if(tel && !/^[0-9]{7,15}$/.test(tel)) fail('telefono');
+    ['telefono_alterno','ref_familiar_telefono','ref_empresa_telefono','emergencia_telefono'].forEach(id => {
+      const value = $(id).value.trim();
+      if(value && !/^[0-9]{7,15}$/.test(value)) fail(id);
+    });
 
     // Tipo de cuenta
     const tipoCuenta = document.querySelector('input[name="tipo_cuenta"]:checked');
@@ -616,6 +670,34 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     return path;
   }
 
+  async function uploadPdf(cedula, fieldName, blob){
+    const path = cedula + '/' + fieldName + '_' + Date.now() + '.pdf';
+    const { error } = await sb.storage.from(BUCKET).upload(path, blob, {
+      cacheControl: '3600', upsert: false, contentType: 'application/pdf'
+    });
+    if(error) throw new Error('Error subiendo el PDF de ' + fieldName + ': ' + error.message);
+    return path;
+  }
+
+  async function validateAndBuildPdfs(cedula){
+    const pairs = [
+      { type: 'cedula', front: 'cedula_frente', back: 'cedula_reverso', label: 'la cédula', title: 'Cédula de ciudadanía - ' + cedula },
+      { type: 'pase', front: 'pase_frente', back: 'pase_reverso', label: 'el pase', title: 'Licencia de conducción - ' + cedula }
+    ];
+    const pdfs = {};
+    for(const pair of pairs){
+      progressText.textContent = 'Validando ' + pair.label + '…';
+      const result = await DocumentValidation.validatePair(fileState[pair.front], fileState[pair.back], pair.type, cedula, text => { progressText.textContent = text; });
+      if(!result.ok) throw new Error(result.message);
+      progressText.textContent = 'Creando PDF de ' + pair.label + '…';
+      pdfs[pair.type + '_pdf'] = await DocumentValidation.createPdf(fileState[pair.front], fileState[pair.back], pair.title);
+      if(pdfs[pair.type + '_pdf'].size > MAX_FILE_SIZE) {
+        throw new Error('El PDF de ' + pair.label + ' supera 10 MB. Vuelve a tomar las fotos con menor resolución.');
+      }
+    }
+    return pdfs;
+  }
+
   /* --- Submit --- */
   form.addEventListener('submit', async function(e){
     e.preventDefault();
@@ -626,12 +708,13 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
     try {
       const cedula = $('cedula').value.trim();
+      const pdfs = await validateAndBuildPdfs(cedula);
 
       const paths = {};
       const uploadQueue = [];
 
-      // Required files
-      requiredFileFields.forEach(f => {
+      // Cédula y pase se retienen únicamente como sus PDFs de dos páginas.
+      ['cert_bancaria', ...consultationFiles].forEach(f => {
         if(fileState[f]) uploadQueue.push({field: f, file: fileState[f]});
       });
 
@@ -646,6 +729,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         paths[item.field] = await uploadFile(cedula, item.field, item.file);
         uploaded++;
       }
+      progressText.textContent = 'Subiendo PDFs validados…';
+      paths.cedula_pdf = await uploadPdf(cedula, 'cedula', pdfs.cedula_pdf);
+      paths.pase_pdf = await uploadPdf(cedula, 'pase', pdfs.pase_pdf);
 
       progressText.textContent = 'Guardando datos...';
 
@@ -661,20 +747,35 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         direccion: $('direccion').value.trim(),
         ciudad: $('ciudad').value.trim(),
         telefono: $('telefono').value.trim(),
+        telefono_alterno: $('telefono_alterno').value.trim() || null,
         numero_cuenta: $('numero_cuenta').value.trim(),
         banco: $('banco').value.trim(),
         tipo_cuenta: (document.querySelector('input[name="tipo_cuenta"]:checked') || {}).value || null,
         foto_rostro: paths.foto_rostro || null,
         seguridad_social: paths.seguridad_social || null,
-        cedula_frente: paths.cedula_frente,
-        cedula_reverso: paths.cedula_reverso,
-        pase_frente: paths.pase_frente,
-        pase_reverso: paths.pase_reverso,
+        licencia_categoria: $('licencia_categoria').value.trim().toUpperCase(),
+        licencia_vencimiento: $('licencia_vencimiento').value,
+        cedula_frente: null,
+        cedula_reverso: null,
+        pase_frente: null,
+        pase_reverso: null,
+        cedula_pdf: paths.cedula_pdf,
+        pase_pdf: paths.pase_pdf,
         cert_bancaria: paths.cert_bancaria,
+        antecedentes_procuraduria: paths.antecedentes_procuraduria,
+        antecedentes_policia: paths.antecedentes_policia,
+        runt: paths.runt,
+        comparendos: paths.comparendos,
+        lista_clinton: paths.lista_clinton,
+        antecedentes_fiscales: paths.antecedentes_fiscales,
+        estudio_seguridad: paths.estudio_seguridad,
         ref_familiar_nombre: $('ref_familiar_nombre').value.trim(),
         ref_familiar_telefono: $('ref_familiar_telefono').value.trim(),
         ref_empresa_nombre: $('ref_empresa_nombre').value.trim(),
-        ref_empresa_telefono: $('ref_empresa_telefono').value.trim()
+        ref_empresa_telefono: $('ref_empresa_telefono').value.trim(),
+        emergencia_nombre: $('emergencia_nombre').value.trim(),
+        emergencia_parentesco: $('emergencia_parentesco').value.trim(),
+        emergencia_telefono: $('emergencia_telefono').value.trim()
       };
 
       const { error } = await sb.from('conductores').insert([row]);

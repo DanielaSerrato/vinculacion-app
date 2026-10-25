@@ -193,7 +193,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cedula_frente" data-required="true">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+          <input type="file" accept="image/jpeg,image/png,image/webp">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -204,7 +204,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cedula_reverso" data-required="true">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+          <input type="file" accept="image/jpeg,image/png,image/webp">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -252,6 +252,48 @@ footer a{color:var(--gold)}
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
+      </div>
+
+      <div class="field" data-upload="foto_rostro">
+        <label>Foto del propietario <span class="req">*</span></label>
+        <p class="hint">Foto nítida de rostro, en JPG, PNG o WebP.</p>
+        <div class="file-drop" data-field="foto_rostro" data-required="true">
+          <div class="icon">&#128247;</div>
+          <div class="text">Arrastra aquí o <strong>selecciona la foto</strong></div>
+          <input type="file" accept="image/jpeg,image/png,image/webp">
+        </div>
+        <div class="file-preview"></div><div class="error-msg">La foto del propietario es requerida.</div>
+      </div>
+
+      <div class="field">
+        <label for="telefono_alterno">Teléfono alterno</label>
+        <input type="text" id="telefono_alterno" name="telefono_alterno" inputmode="tel" pattern="[0-9]{7,15}">
+        <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
+      </div>
+      <div class="field">
+        <label for="referencia_nombre">Referencia personal <span class="req">*</span></label>
+        <input type="text" id="referencia_nombre" name="referencia_nombre" required>
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+      <div class="field">
+        <label for="referencia_telefono">Teléfono de referencia <span class="req">*</span></label>
+        <input type="text" id="referencia_telefono" name="referencia_telefono" inputmode="tel" pattern="[0-9]{7,15}" required>
+        <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
+      </div>
+      <div class="field">
+        <label for="emergencia_nombre">Contacto de emergencia <span class="req">*</span></label>
+        <input type="text" id="emergencia_nombre" name="emergencia_nombre" required>
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+      <div class="field">
+        <label for="emergencia_parentesco">Parentesco <span class="req">*</span></label>
+        <input type="text" id="emergencia_parentesco" name="emergencia_parentesco" required>
+        <div class="error-msg">Campo requerido.</div>
+      </div>
+      <div class="field">
+        <label for="emergencia_telefono">Teléfono de emergencia <span class="req">*</span></label>
+        <input type="text" id="emergencia_telefono" name="emergencia_telefono" inputmode="tel" pattern="[0-9]{7,15}" required>
+        <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
       </div>
 
       <div class="field">
@@ -312,6 +354,9 @@ footer a{color:var(--gold)}
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="document-validation.js"></script>
 <script>
 (function(){
   'use strict';
@@ -424,6 +469,10 @@ footer a{color:var(--gold)}
         alert('El archivo "' + file.name + '" excede 10 MB. Por favor sube un archivo mas pequeno.');
         continue;
       }
+      if (['cedula_frente','cedula_reverso','foto_rostro'].includes(fieldName) && !file.type.startsWith('image/')){
+        alert('Para ' + fieldName.replace('_',' ') + ' debes subir una imagen JPG, PNG o WebP.');
+        continue;
+      }
       fileStore[fieldName] = [file]; // single file per field
     }
     renderPreviews(fieldName, previewContainer);
@@ -472,6 +521,10 @@ footer a{color:var(--gold)}
       var ok = inp.value.trim() !== '' && (!inp.pattern || new RegExp('^' + inp.pattern + '$').test(inp.value.trim()));
       inp.classList.toggle('error', !ok);
       if (!ok) valid = false;
+    });
+    ['telefono_alterno','referencia_telefono','emergencia_telefono'].forEach(function(id){
+      var inp = document.getElementById(id), ok = !inp.value.trim() || /^[0-9]{7,15}$/.test(inp.value.trim());
+      inp.classList.toggle('error', !ok); if(!ok) valid = false;
     });
 
     // Radio group — factura_electronica
@@ -533,6 +586,14 @@ footer a{color:var(--gold)}
   /* ── Submit ── */
   var submitting = false;
 
+  async function buildCedulaPdf(cedula){
+    var result = await DocumentValidation.validatePair(fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'cedula', cedula, function(text){ document.getElementById('overlayStatus').textContent = text; });
+    if(!result.ok) throw new Error(result.message);
+    var pdf = await DocumentValidation.createPdf(fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'Cédula de ciudadanía - ' + cedula);
+    if(pdf.size > MAX_FILE_SIZE) throw new Error('El PDF de la cédula supera 10 MB.');
+    return pdf;
+  }
+
   window.submitForm = async function(){
     if (submitting) return;
     if (!validate()) return;
@@ -551,10 +612,13 @@ footer a{color:var(--gold)}
       var cedula = document.getElementById('cedula').value.trim();
       var ts = Date.now();
       var uploadedPaths = {};
+      statusEl.textContent = 'Validando y creando PDF de cédula...';
+      var cedulaPdf = await buildCedulaPdf(cedula);
 
       // Collect all files to upload
       var uploadQueue = [];
       for (var fieldName in fileStore){
+        if(fieldName === 'cedula_frente' || fieldName === 'cedula_reverso') continue;
         var files = fileStore[fieldName];
         if (!files || files.length === 0) continue;
         files.forEach(function(file){
@@ -563,6 +627,11 @@ footer a{color:var(--gold)}
           uploadQueue.push({fieldName: fieldName, file: file, path: path});
         });
       }
+
+      statusEl.textContent = 'Subiendo PDF de cédula...';
+      var cedulaPdfPath = 'prop_' + cedula + '/cedula_' + ts + '.pdf';
+      var pdfResult = await supabase.storage.from(BUCKET).upload(cedulaPdfPath, cedulaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
+      if(pdfResult.error) throw new Error('Error subiendo PDF de cédula: ' + pdfResult.error.message);
 
       // Upload files
       var totalUploads = uploadQueue.length;
@@ -602,10 +671,18 @@ footer a{color:var(--gold)}
         banco: document.getElementById('banco').value.trim(),
         tipo_cuenta: (document.querySelector('input[name="tipo_cuenta"]:checked') || {}).value || null,
         factura_electronica: factura ? factura.value === 'Si' : false,
-        cedula_frente: uploadedPaths['cedula_frente'] || null,
-        cedula_reverso: uploadedPaths['cedula_reverso'] || null,
+        cedula_frente: null,
+        cedula_reverso: null,
+        cedula_pdf: cedulaPdfPath,
         rut: uploadedPaths['rut'] || null,
         cert_bancaria: uploadedPaths['cert_bancaria'] || null,
+        foto_rostro: uploadedPaths['foto_rostro'] || null,
+        telefono_alterno: document.getElementById('telefono_alterno').value.trim() || null,
+        referencia_nombre: document.getElementById('referencia_nombre').value.trim(),
+        referencia_telefono: document.getElementById('referencia_telefono').value.trim(),
+        emergencia_nombre: document.getElementById('emergencia_nombre').value.trim(),
+        emergencia_parentesco: document.getElementById('emergencia_parentesco').value.trim(),
+        emergencia_telefono: document.getElementById('emergencia_telefono').value.trim(),
         autoriza_sensibles: (document.querySelector('input[name="autoriza_sensibles"]:checked') || {}).value === 'si'
       };
 
