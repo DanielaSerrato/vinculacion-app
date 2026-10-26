@@ -641,6 +641,9 @@ let runtLicAll = [];
 let runtLicCache = {};
 let runtVehAll = [];
 let runtVehCache = {};
+let personasAll = [];
+let relacionesAll = [];
+let documentosAll = [];
 let searchQuery = '';
 let estadoFilter = '';
 let tableSortCol = null;
@@ -671,7 +674,7 @@ const DOC_LABELS = {
   antecedentes_fiscales:'Antecedentes Fiscales',
   estudio_seguridad:'Estudio de Seguridad',
   tarjeta_frente:'Tarjeta Frente', tarjeta_reverso:'Tarjeta Reverso',
-  tecnomecanica:'Tecnomecanica', soat:'SOAT'
+  tecnomecanica:'Tecnomecanica', soat:'SOAT', foto_vehiculo:'Foto del vehículo'
 };
 
 const DOC_GROUPS_CONDUCTOR = {
@@ -750,9 +753,11 @@ async function loadAllData() {
     loadTable('conductores'),
     loadTable('propietarios'),
     loadTable('vehiculos'),
+    loadVinculacionUnificada(),
     loadRuntLicencias(),
     loadRuntVehiculos()
   ]);
+  mergeVinculacionUnificada();
   updateCounts();
   updateKPIs();
   renderCurrentTab();
@@ -761,6 +766,63 @@ async function loadAllData() {
 async function loadTable(table) {
   const { data, error } = await sb.from(table).select('*').order('created_at', { ascending: false });
   if (!error) cache[table] = data || [];
+}
+
+// El formulario nuevo usa tablas normalizadas. Se piden solo los campos que
+// el panel necesita; no se descargan tokens de edición ni campos no usados.
+async function loadVinculacionUnificada() {
+  const [personas, relaciones, documentos] = await Promise.all([
+    sb.from('personas').select('id,cedula,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,direccion,ciudad,telefono,banco,tipo_cuenta,numero_cuenta,factura_electronica,ref_familiar_nombre,ref_familiar_telefono,ref_empresa_nombre,ref_empresa_telefono,autoriza_datos,autoriza_sensibles,created_at').order('created_at', { ascending: false }),
+    sb.from('persona_vehiculo').select('id,persona_id,vehiculo_id,rol,estado,created_at,runt_validado,runt_nombre_coincide,runt_propietario_coincide,runt_nota,runt_validado_en').order('created_at', { ascending: false }),
+    sb.from('documentos').select('id,persona_id,vehiculo_id,tipo,path,estado,fecha_vencimiento,nota_rechazo,created_at').order('created_at', { ascending: false })
+  ]);
+  personasAll = personas.error ? [] : (personas.data || []);
+  relacionesAll = relaciones.error ? [] : (relaciones.data || []);
+  documentosAll = documentos.error ? [] : (documentos.data || []);
+}
+
+function mergeVinculacionUnificada() {
+  const vehiculos = cache.vehiculos || [];
+  const vehiculoPorId = new Map(vehiculos.map(v => [v.id, v]));
+  const personaPorId = new Map(personasAll.map(p => [p.id, p]));
+  const documentosPersona = new Map();
+  const documentosVehiculo = new Map();
+  documentosAll.forEach(doc => {
+    if (!doc.path) return;
+    if (doc.persona_id) {
+      if (!documentosPersona.has(doc.persona_id)) documentosPersona.set(doc.persona_id, []);
+      documentosPersona.get(doc.persona_id).push(doc);
+    }
+    if (doc.vehiculo_id) {
+      if (!documentosVehiculo.has(doc.vehiculo_id)) documentosVehiculo.set(doc.vehiculo_id, []);
+      documentosVehiculo.get(doc.vehiculo_id).push(doc);
+    }
+  });
+  cache.vehiculos = vehiculos.map(v => {
+    const soportes = documentosVehiculo.get(v.id);
+    return soportes && soportes.length ? { ...v, _documentos: soportes } : v;
+  });
+
+  const nuevosConductores = [];
+  const nuevosPropietarios = [];
+  relacionesAll.forEach(rel => {
+    const persona = personaPorId.get(rel.persona_id);
+    const vehiculo = vehiculoPorId.get(rel.vehiculo_id);
+    if (!persona || !vehiculo) return;
+    const registro = {
+      ...persona,
+      id: 'unificada-' + rel.id,
+      estado: rel.estado || 'pendiente',
+      created_at: rel.created_at || persona.created_at,
+      vehiculo_placa: vehiculo.placa,
+      _origen_unificado: true,
+      _documentos: [...(documentosPersona.get(persona.id) || []), ...(documentosVehiculo.get(vehiculo.id) || [])]
+    };
+    if (rel.rol === 'conductor') nuevosConductores.push(registro);
+    if (rel.rol === 'propietario') nuevosPropietarios.push(registro);
+  });
+  cache.conductores = [...(cache.conductores || []), ...nuevosConductores];
+  cache.propietarios = [...(cache.propietarios || []), ...nuevosPropietarios];
 }
 
 async function loadRuntLicencias() {
@@ -797,8 +859,7 @@ function updateKPIs() {
   document.getElementById('kpi-total').textContent = conds.length;
   document.getElementById('kpi-pendientes').textContent = conds.filter(c => c.estado && c.estado.toLowerCase() === 'pendiente').length;
 
-  const docFields = DOC_FIELDS.conductores;
-  const incomplete = conds.filter(c => docFields.some(f => !c[f])).length;
+  const incomplete = conds.filter(c => countDocs(c, 'conductores') < documentTotal(c, 'conductores')).length;
   document.getElementById('kpi-docs').textContent = incomplete;
 
   let runtIssues = 0;
@@ -927,7 +988,7 @@ function getTableColumns(table) {
         }).join(' ');
       }},
       { label:'Docs', val:r=>countDocs(r,table), render:r=>{
-        const c = countDocs(r,table), t = DOC_FIELDS.conductores.length;
+        const c = countDocs(r,table), t = documentTotal(r,table);
         const cls = c>=t?'complete':'partial';
         return '<span class="doc-fraction '+cls+'">'+c+'/'+t+'</span>';
       }}
@@ -942,7 +1003,7 @@ function getTableColumns(table) {
       { label:'Telefono', val:r=>r.telefono, render:r=>esc(r.telefono) },
       { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
       { label:'Docs', val:r=>countDocs(r,table), render:r=>{
-        const c = countDocs(r,table), t = DOC_FIELDS.propietarios.length;
+        const c = countDocs(r,table), t = documentTotal(r,table);
         const cls = c>=t?'complete':'partial';
         return '<span class="doc-fraction '+cls+'">'+c+'/'+t+'</span>';
       }}
@@ -960,8 +1021,7 @@ function getTableColumns(table) {
       return rv.success?estadoRuntBadge(rv.estado):'<span class="badge badge-fail">Fallo</span>';
     }},
     { label:'Docs', val:r=>countDocs(r,table), render:r=>{
-      const c=countDocs(r,table),t=DOC_FIELDS.vehiculos.length+(r.fotos&&Array.isArray(r.fotos)?r.fotos.length:0);
-      const total=DOC_FIELDS.vehiculos.length;
+      const c=countDocs(r,table), total=documentTotal(r,table);
       const cls=c>=total?'complete':'partial';
       return '<span class="doc-fraction '+cls+'">'+c+'/'+total+'</span>';
     }}
@@ -1061,9 +1121,9 @@ function renderExpedientes() {
 
 function checkExpedienteDocs(g) {
   let complete = true;
-  g.conductores.forEach(r => { if(DOC_FIELDS.conductores.some(f=>!r[f])) complete=false; });
-  g.propietarios.forEach(r => { if(DOC_FIELDS.propietarios.some(f=>!r[f])) complete=false; });
-  g.vehiculos.forEach(r => { if(DOC_FIELDS.vehiculos.some(f=>!r[f])) complete=false; });
+  g.conductores.forEach(r => { if(countDocs(r,'conductores') < documentTotal(r,'conductores')) complete=false; });
+  g.propietarios.forEach(r => { if(countDocs(r,'propietarios') < documentTotal(r,'propietarios')) complete=false; });
+  g.vehiculos.forEach(r => { if(countDocs(r,'vehiculos') < documentTotal(r,'vehiculos')) complete=false; });
   return complete;
 }
 function checkLicenseValid(cedula) {
@@ -1142,10 +1202,10 @@ function renderPanel() {
 
   // Footer
   const footer = document.getElementById('panelFooter');
-  if (openPanelTab === 'datos' && !editMode) {
+  if (openPanelTab === 'datos' && !editMode && !r._origen_unificado) {
     footer.innerHTML = '<button class="btn btn-primary" onclick="startEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>'+
       '<div class="panel-footer-right"><button class="btn btn-danger-subtle btn-sm" onclick="deactivateRecord()">Desactivar</button></div>';
-  } else if (openPanelTab === 'datos' && editMode) {
+  } else if (openPanelTab === 'datos' && editMode && !r._origen_unificado) {
     footer.innerHTML = '<button class="btn btn-primary" id="saveBtn" onclick="saveEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Guardar</button>'+
       '<button class="btn btn-outline" onclick="cancelEdit()">Cancelar</button>';
   } else {
@@ -1263,9 +1323,28 @@ function renderPanelDatos(body, table, r) {
 
 function renderPanelDocs(body, table, r) {
   let html = '';
+  // Documentos recibidos mediante el formulario unificado. Se conservan por
+  // fila y no se fuerzan a las columnas antiguas de cada tabla.
+  if (Array.isArray(r._documentos)) {
+    const docs = r._documentos.filter(d => d && d.path);
+    html += '<div style="margin-bottom:16px;font-size:.82rem;color:var(--gray-600)">Documentos recibidos: <span class="doc-fraction complete">'+docs.length+'/'+docs.length+'</span></div>';
+    if (!docs.length) {
+      body.innerHTML = html + '<div class="empty-state">No hay documentos recibidos para este registro.</div>';
+      return;
+    }
+    const porTipo = {};
+    docs.forEach(d => { (porTipo[d.tipo] ||= []).push(d); });
+    Object.keys(porTipo).forEach(tipo => {
+      html += '<div class="doc-group"><div class="doc-group-label">'+esc(DOC_LABELS[tipo] || tipo.replace(/_/g, ' '))+'</div><div class="docs-grid">';
+      porTipo[tipo].forEach((doc, index) => { html += docThumb(doc.path, (DOC_LABELS[tipo] || tipo) + (porTipo[tipo].length > 1 ? ' '+(index+1) : '')); });
+      html += '</div></div>';
+    });
+    body.innerHTML = html;
+    return;
+  }
   const groups = table === 'conductores' ? DOC_GROUPS_CONDUCTOR : table === 'propietarios' ? DOC_GROUPS_PROPIETARIO : DOC_GROUPS_VEHICULO;
   const uploaded = countDocs(r, table);
-  const total = DOC_FIELDS[table].length;
+  const total = documentTotal(r, table);
   const cls = uploaded >= total ? 'complete' : 'partial';
   html += '<div style="margin-bottom:16px;font-size:.82rem;color:var(--gray-600)">Documentos cargados: <span class="doc-fraction '+cls+'">'+uploaded+'/'+total+'</span></div>';
 
@@ -1750,6 +1829,7 @@ function getAllLicenseCategories(runtRecord) {
   return lic && lic.categorias ? lic.categorias : [];
 }
 function countDocs(r, table) {
+  if (Array.isArray(r._documentos)) return r._documentos.filter(d => d && d.path).length;
   if (table === 'conductores') {
     let count = ['foto_rostro','seguridad_social','cert_bancaria'].filter(f => r[f]).length;
     if (r.cedula_pdf || r.cedula_frente || r.cedula_reverso) count++;
@@ -1760,6 +1840,10 @@ function countDocs(r, table) {
   let count = fields.filter(f => r[f]).length;
   if (table === 'vehiculos' && r.fotos && Array.isArray(r.fotos)) count += r.fotos.length;
   return count;
+}
+function documentTotal(r, table) {
+  if (Array.isArray(r._documentos)) return r._documentos.filter(d => d && d.path).length;
+  return DOC_FIELDS[table] ? DOC_FIELDS[table].length : 0;
 }
 
 function fieldHTML(label, value) {
