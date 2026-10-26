@@ -691,9 +691,11 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     ];
     const pdfs = {};
     for(const pair of pairs){
-      progressText.textContent = 'Validando ' + pair.label + '…';
-      const result = await DocumentValidation.validatePair(fileState[pair.front], fileState[pair.back], pair.type, cedula, text => { progressText.textContent = text; });
-      if(!result.ok) throw new Error(result.message);
+      progressText.textContent = pair.type === 'cedula' ? 'Preparando ' + pair.label + '…' : 'Validando ' + pair.label + '…';
+      if (pair.type !== 'cedula') {
+        const result = await DocumentValidation.validatePair(fileState[pair.front], fileState[pair.back], pair.type, cedula, text => { progressText.textContent = text; });
+        if(!result.ok) throw new Error(result.message);
+      }
       progressText.textContent = 'Creando PDF de ' + pair.label + '…';
       pdfs[pair.type + '_pdf'] = await DocumentValidation.createPdf(fileState[pair.front], fileState[pair.back], pair.title);
       if(pdfs[pair.type + '_pdf'].size > MAX_FILE_SIZE) {

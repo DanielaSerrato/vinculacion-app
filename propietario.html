@@ -587,8 +587,6 @@ footer a{color:var(--gold)}
   var submitting = false;
 
   async function buildCedulaPdf(cedula){
-    var result = await DocumentValidation.validatePair(fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'cedula', cedula, function(text){ document.getElementById('overlayStatus').textContent = text; });
-    if(!result.ok) throw new Error(result.message);
     var pdf = await DocumentValidation.createPdf(fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'Cédula de ciudadanía - ' + cedula);
     if(pdf.size > MAX_FILE_SIZE) throw new Error('El PDF de la cédula supera 10 MB.');
     return pdf;

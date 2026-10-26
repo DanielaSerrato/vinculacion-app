@@ -1173,11 +1173,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     setOverlay('Validando documentos...', 'Revisando identidad y licencia');
 
     try {
-      const cedulaCheck = await DocumentValidation.validatePair(
-        fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'cedula', cedula,
-        message => setOverlay('Validando c&eacute;dula...', message)
-      );
-      if(!cedulaCheck.ok) throw new Error(cedulaCheck.message);
       const isConductor = role === 'conductor' || role === 'ambos';
       if(isConductor){
         const paseCheck = await DocumentValidation.validatePair(
