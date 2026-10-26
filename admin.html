@@ -779,6 +779,17 @@ async function loadVinculacionUnificada() {
   personasAll = personas.error ? [] : (personas.data || []);
   relacionesAll = relaciones.error ? [] : (relaciones.data || []);
   documentosAll = documentos.error ? [] : (documentos.data || []);
+
+  // La ampliación es opcional mientras se ejecuta la migración de Systram.
+  // Así el panel sigue mostrando solicitudes ya existentes durante el despliegue.
+  if (relacionesAll.length) {
+    const { data: extras, error: extrasError } = await sb.from('persona_vehiculo')
+      .select('id,licencia_categoria,licencia_vencimiento,systram_estado,systram_etapa,systram_id,systram_error,systram_ultimo_intento_en,systram_verificado_en');
+    if (!extrasError && extras) {
+      const byId = new Map(extras.map(extra => [extra.id, extra]));
+      relacionesAll = relacionesAll.map(rel => ({ ...rel, ...(byId.get(rel.id) || {}) }));
+    }
+  }
 }
 
 function mergeVinculacionUnificada() {
@@ -815,6 +826,15 @@ function mergeVinculacionUnificada() {
       estado: rel.estado || 'pendiente',
       created_at: rel.created_at || persona.created_at,
       vehiculo_placa: vehiculo.placa,
+      licencia_categoria: rel.licencia_categoria,
+      licencia_vencimiento: rel.licencia_vencimiento,
+      systram_estado: rel.systram_estado || 'pendiente',
+      systram_etapa: rel.systram_etapa,
+      systram_id: rel.systram_id,
+      systram_error: rel.systram_error,
+      systram_ultimo_intento_en: rel.systram_ultimo_intento_en,
+      systram_verificado_en: rel.systram_verificado_en,
+      _relacion_id: rel.id,
       _origen_unificado: true,
       _documentos: [...(documentosPersona.get(persona.id) || []), ...(documentosVehiculo.get(vehiculo.id) || [])]
     };

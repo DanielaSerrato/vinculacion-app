@@ -34,7 +34,7 @@ main{flex:1;max-width:640px;margin:0 auto;padding:1rem;width:100%}
 .field label{display:block;font-weight:600;font-size:.88rem;margin-bottom:.35rem;color:var(--gray-700)}
 .field label .req{color:var(--red);margin-left:2px}
 .field .hint{font-size:.75rem;color:var(--gray-500);margin-top:2px;font-style:italic}
-.field input[type="text"],.field input[type="tel"],.field select{width:100%;padding:.75rem .85rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:1rem;background:var(--white);transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none}
+.field input[type="text"],.field input[type="tel"],.field input[type="date"],.field select{width:100%;padding:.75rem .85rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:1rem;background:var(--white);transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none}
 .field input:focus,.field select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(227,37,38,.15)}
 .field input.invalid,.field select.invalid{border-color:var(--red)!important}
 .field .error-msg{color:var(--red);font-size:.76rem;margin-top:.25rem;display:none}
@@ -234,6 +234,42 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="error-msg" id="err_telefono">Ingresa un tel&eacute;fono v&aacute;lido (m&iacute;nimo 7 d&iacute;gitos)</div>
         </div>
 
+        <div class="cond" id="cond_contacto_vinculacion">
+          <div class="field">
+            <label for="telefono_alterno">Tel&eacute;fono alterno <span class="req">*</span></label>
+            <input type="tel" id="telefono_alterno" name="telefono_alterno" inputmode="tel">
+            <div class="error-msg" id="err_telefono_alterno">Ingresa un tel&eacute;fono alterno v&aacute;lido</div>
+          </div>
+          <div class="field">
+            <label for="emergencia_nombre">Contacto de emergencia <span class="req">*</span></label>
+            <input type="text" id="emergencia_nombre" name="emergencia_nombre" autocomplete="name">
+            <div class="error-msg" id="err_emergencia_nombre">Campo requerido</div>
+          </div>
+          <div class="field">
+            <label for="emergencia_parentesco">Parentesco <span class="req">*</span></label>
+            <input type="text" id="emergencia_parentesco" name="emergencia_parentesco" placeholder="Ej. Madre, pareja, hermano">
+            <div class="error-msg" id="err_emergencia_parentesco">Campo requerido</div>
+          </div>
+          <div class="field">
+            <label for="emergencia_telefono">Tel&eacute;fono de emergencia <span class="req">*</span></label>
+            <input type="tel" id="emergencia_telefono" name="emergencia_telefono" inputmode="tel">
+            <div class="error-msg" id="err_emergencia_telefono">Ingresa un tel&eacute;fono v&aacute;lido</div>
+          </div>
+        </div>
+
+        <div class="cond" id="cond_licencia">
+          <div class="field">
+            <label for="licencia_categoria">Categor&iacute;a de licencia <span class="req">*</span></label>
+            <input type="text" id="licencia_categoria" name="licencia_categoria" placeholder="Ej. C3">
+            <div class="error-msg" id="err_licencia_categoria">Campo requerido</div>
+          </div>
+          <div class="field">
+            <label for="licencia_vencimiento">Fecha de vencimiento de la licencia <span class="req">*</span></label>
+            <input type="date" id="licencia_vencimiento" name="licencia_vencimiento">
+            <div class="error-msg" id="err_licencia_vencimiento">Campo requerido</div>
+          </div>
+        </div>
+
         <div class="nav-btns">
           <button type="button" class="btn-back" id="btn2Back">&larr; Atr&aacute;s</button>
           <button type="button" class="btn-next" id="btn2Next">Siguiente &rarr;</button>
@@ -293,7 +329,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         <div class="field">
           <label>C&eacute;dula Frente <span class="req">*</span></label>
           <div class="file-drop" id="drop_cedula_frente">
-            <input type="file" id="file_cedula_frente" accept="image/*,application/pdf,.doc,.docx">
+            <input type="file" id="file_cedula_frente" accept="image/jpeg,image/png,image/webp">
             <div class="icon">&#128196;</div>
             <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
           </div>
@@ -303,7 +339,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         <div class="field">
           <label>C&eacute;dula Reverso <span class="req">*</span></label>
           <div class="file-drop" id="drop_cedula_reverso">
-            <input type="file" id="file_cedula_reverso" accept="image/*,application/pdf,.doc,.docx">
+            <input type="file" id="file_cedula_reverso" accept="image/jpeg,image/png,image/webp">
             <div class="icon">&#128196;</div>
             <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
           </div>
@@ -327,7 +363,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="field">
             <label>Pase de Conducci&oacute;n Frente <span class="req">*</span></label>
             <div class="file-drop" id="drop_pase_frente">
-              <input type="file" id="file_pase_frente" accept="image/*,application/pdf,.doc,.docx">
+            <input type="file" id="file_pase_frente" accept="image/jpeg,image/png,image/webp">
               <div class="icon">&#128196;</div>
               <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
             </div>
@@ -337,7 +373,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="field">
             <label>Pase de Conducci&oacute;n Reverso <span class="req">*</span></label>
             <div class="file-drop" id="drop_pase_reverso">
-              <input type="file" id="file_pase_reverso" accept="image/*,application/pdf,.doc,.docx">
+            <input type="file" id="file_pase_reverso" accept="image/jpeg,image/png,image/webp">
               <div class="icon">&#128196;</div>
               <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
             </div>
@@ -370,6 +406,17 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
         <!-- Solo propietario/ambos -->
         <div class="cond" id="cond_docs_propietario">
+          <div class="field">
+            <label>Foto del propietario <span class="req">*</span></label>
+            <div class="hint">Foto clara de rostro, de cuello a medio cuerpo.</div>
+            <div class="file-drop" id="drop_foto_rostro_propietario">
+              <input type="file" id="file_foto_rostro_propietario" accept="image/*">
+              <div class="icon">&#128247;</div>
+              <div class="text"><strong>Toca para seleccionar</strong> o arrastra una imagen</div>
+            </div>
+            <div class="file-preview" id="prev_foto_rostro_propietario"></div>
+            <div class="error-msg" id="err_foto_rostro_propietario">Este documento es requerido</div>
+          </div>
           <div class="field" id="field_cert_bancaria_prop">
             <label>Certificaci&oacute;n Bancaria <span class="req">*</span></label>
             <div class="hint">El saldo se consigna &uacute;nicamente al propietario del veh&iacute;culo.</div>
@@ -626,6 +673,9 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 <footer>Capital Cargo Colombia &middot; NIT 900491068-0 &middot; gerencia@capitalcargocolombia.com</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="document-validation.js"></script>
 <script>
 (function(){
   'use strict';
@@ -725,6 +775,8 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     toggleCond('cond_factura', isPropietario);
     toggleCond('cond_docs_conductor', isConductor);
     toggleCond('cond_docs_propietario', isPropietario);
+    toggleCond('cond_contacto_vinculacion', role && role !== 'tenedor');
+    toggleCond('cond_licencia', isConductor);
 
     // Satelital sub-fields
     const satVal = document.querySelector('input[name="satelital"]:checked');
@@ -781,7 +833,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
   const allDropFields = [
     'cedula_frente','cedula_reverso',
-    'foto_rostro','pase_frente','pase_reverso','seguridad_social','cert_bancaria_conductor',
+    'foto_rostro','foto_rostro_propietario','pase_frente','pase_reverso','seguridad_social','cert_bancaria_conductor',
     'cert_bancaria_propietario','rut',
     'tarjeta_frente','tarjeta_reverso','tecnomecanica','soat','fotos_vehiculo'
   ];
@@ -940,6 +992,18 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       if(!ced || !/^[0-9]{5,12}$/.test(ced)){ showErr('cedula'); ok = false; }
       const tel = $('telefono').value.trim();
       if(!tel || !/^[0-9]{7,15}$/.test(tel)){ showErr('telefono'); ok = false; }
+      if(selectedRole !== 'tenedor'){
+        ['telefono_alterno','emergencia_nombre','emergencia_parentesco','emergencia_telefono'].forEach(id => {
+          if(!requireText(id)) ok = false;
+        });
+        ['telefono_alterno','emergencia_telefono'].forEach(id => {
+          if($(id).value.trim() && !/^[0-9]{7,15}$/.test($(id).value.trim())){ showErr(id); ok = false; }
+        });
+      }
+      if(selectedRole === 'conductor' || selectedRole === 'ambos'){
+        if(!requireText('licencia_categoria')) ok = false;
+        if(!requireText('licencia_vencimiento')) ok = false;
+      }
     }
 
     if(n === 3){
@@ -965,6 +1029,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         if(!requireFile('cert_bancaria_conductor')) ok = false;
       }
       if(isProp){
+        if(!requireFile('foto_rostro_propietario')) ok = false;
         if(!requireFile('cert_bancaria_propietario')) ok = false;
         if(!requireFile('rut')) ok = false;
       }
@@ -1065,7 +1130,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     // Build upload queue
     const personaUploads = [
       'cedula_frente','cedula_reverso',
-      'foto_rostro','pase_frente','pase_reverso','seguridad_social',
+      'foto_rostro','foto_rostro_propietario','pase_frente','pase_reverso','seguridad_social',
       'cert_bancaria_conductor','cert_bancaria_propietario','rut'
     ];
     const vehiculoUploads = ['tarjeta_frente','tarjeta_reverso','tecnomecanica','soat'];
@@ -1077,9 +1142,24 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     multiUploads.forEach(f => { if(fileStore[f] && fileStore[f].length) totalFiles += fileStore[f].length; });
 
     let uploaded = 0;
-    setOverlay('Subiendo documentos...', '0 de ' + totalFiles);
+    setOverlay('Validando documentos...', 'Revisando identidad y licencia');
 
     try {
+      const cedulaCheck = await DocumentValidation.validatePair(
+        fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'cedula', cedula,
+        message => setOverlay('Validando c&eacute;dula...', message)
+      );
+      if(!cedulaCheck.ok) throw new Error(cedulaCheck.message);
+      const isConductor = role === 'conductor' || role === 'ambos';
+      if(isConductor){
+        const paseCheck = await DocumentValidation.validatePair(
+          fileStore.pase_frente[0], fileStore.pase_reverso[0], 'pase', cedula,
+          message => setOverlay('Validando licencia...', message)
+        );
+        if(!paseCheck.ok) throw new Error(paseCheck.message);
+      }
+
+      setOverlay('Subiendo documentos...', '0 de ' + (totalFiles + 1 + (isConductor ? 1 : 0)));
       const paths = {};
 
       // Upload persona docs
@@ -1089,6 +1169,20 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           paths[field] = await uploadFile(cedula, field, fileStore[field][0]);
           uploaded++;
         }
+      }
+      setOverlay('Creando PDF de c&eacute;dula...', 'Uniendo frente y reverso');
+      const cedulaPdf = new File([
+        await DocumentValidation.createPdf(fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'C&eacute;dula de ciudadan&iacute;a')
+      ], 'cedula_' + cedula + '.pdf', {type:'application/pdf'});
+      paths.cedula_pdf = await uploadFile(cedula, 'cedula_pdf', cedulaPdf);
+      uploaded++;
+      if(isConductor){
+        setOverlay('Creando PDF de licencia...', 'Uniendo frente y reverso');
+        const pasePdf = new File([
+          await DocumentValidation.createPdf(fileStore.pase_frente[0], fileStore.pase_reverso[0], 'Licencia de conducci&oacute;n')
+        ], 'licencia_' + cedula + '.pdf', {type:'application/pdf'});
+        paths.pase_pdf = await uploadFile(cedula, 'pase_pdf', pasePdf);
+        uploaded++;
       }
       // Upload vehiculo docs
       for(const field of vehiculoUploads){
@@ -1122,6 +1216,10 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         direccion: $('direccion').value.trim(),
         ciudad: $('ciudad').value.trim(),
         telefono: $('telefono').value.trim(),
+        telefono_alterno: $('telefono_alterno').value.trim() || null,
+        emergencia_nombre: $('emergencia_nombre').value.trim() || null,
+        emergencia_parentesco: $('emergencia_parentesco').value.trim() || null,
+        emergencia_telefono: $('emergencia_telefono').value.trim() || null,
         autoriza_datos: true,
         autoriza_sensibles: true
       };
@@ -1184,7 +1282,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
             persona_id: persona.id,
             vehiculo_id: vehiculo.id,
             rol: r,
-            estado: 'pendiente'
+            estado: 'pendiente',
+            licencia_categoria: (r === 'conductor' ? $('licencia_categoria').value.trim() || null : null),
+            licencia_vencimiento: (r === 'conductor' ? $('licencia_vencimiento').value || null : null),
+            systram_estado: 'pendiente',
+            systram_etapa: 'preparado'
           }, { onConflict: 'persona_id,vehiculo_id,rol' });
         if(pvErr) throw new Error('Error registrando relación: ' + pvErr.message);
       }
@@ -1195,7 +1297,9 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       const docRows = [];
       const personaDocMap = {
         cedula_frente: 'cedula_frente', cedula_reverso: 'cedula_reverso',
-        foto_rostro: 'foto_rostro', pase_frente: 'pase_frente', pase_reverso: 'pase_reverso',
+        cedula_pdf: 'cedula_pdf',
+        foto_rostro: 'foto_rostro', foto_rostro_propietario: 'foto_rostro', pase_frente: 'pase_frente', pase_reverso: 'pase_reverso',
+        pase_pdf: 'pase_pdf',
         seguridad_social: 'seguridad_social', cert_bancaria_conductor: 'cert_bancaria',
         cert_bancaria_propietario: 'cert_bancaria', rut: 'rut'
       };
@@ -1220,7 +1324,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       }
       if(docRows.length){
         const { error: docErr } = await sb.from('documentos').insert(docRows);
-        if(docErr) console.warn('Error guardando documentos:', docErr.message);
+        if(docErr) throw new Error('Error guardando documentos: ' + docErr.message);
       }
 
       hideOverlay();
