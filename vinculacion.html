@@ -1113,6 +1113,41 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     return paths;
   }
 
+  // RUNT de vehículos aún consulta la ficha operativa de propietarios por
+  // placa. El formulario unificado conserva la fuente de verdad normalizada,
+  // pero mantiene esa ficha espejo para que la consulta automática siga
+  // funcionando hasta que la Edge Function se migre por completo.
+  async function saveLegacyRow(table, cedula, row){
+    const { data: existing, error: lookupError } = await sb
+      .from(table).select('id').eq('cedula', cedula).limit(1);
+    if(lookupError) throw new Error('No fue posible revisar la ficha operativa: ' + lookupError.message);
+    const id = existing && existing[0] && existing[0].id;
+    const result = id
+      ? await sb.from(table).update(row).eq('id', id)
+      : await sb.from(table).insert(row);
+    if(result.error) throw new Error('No fue posible sincronizar la ficha operativa: ' + result.error.message);
+  }
+
+  async function requestRunt(tabla, datos){
+    const response = await fetch(SUPABASE_URL + '/functions/v1/enrich-runt', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify({ tabla, datos })
+    });
+    if(!response.ok){
+      let detail = '';
+      try { detail = (await response.json()).error || ''; } catch (_) {}
+      throw new Error(detail || 'RUNT respondió ' + response.status);
+    }
+  }
+
+  async function updateQueue(relations, patch){
+    const ids = relations.map(r => r && r.id).filter(Boolean);
+    if(!ids.length) return;
+    const { error } = await sb.from('persona_vehiculo').update(patch).in('id', ids);
+    if(error) console.warn('No fue posible actualizar el estado de la cola:', error.message);
+  }
+
   async function doSubmit(){
     const cedula = $('cedula').value.trim();
     const placa = $('placa').value.trim().toUpperCase();
@@ -1266,8 +1301,9 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
       // ── UPSERT persona_vehiculo ──
       const roles = role === 'ambos' ? ['conductor','propietario'] : [role];
+      const relations = [];
       for(const r of roles){
-        const { error: pvErr } = await sb
+        const { data: relation, error: pvErr } = await sb
           .from('persona_vehiculo')
           .upsert({
             persona_id: persona.id,
@@ -1278,8 +1314,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
             licencia_vencimiento: (r === 'conductor' ? $('licencia_vencimiento').value || null : null),
             systram_estado: 'pendiente',
             systram_etapa: 'preparado'
-          }, { onConflict: 'persona_id,vehiculo_id,rol' });
+          }, { onConflict: 'persona_id,vehiculo_id,rol' })
+          .select('id')
+          .single();
         if(pvErr) throw new Error('Error registrando relación: ' + pvErr.message);
+        relations.push(relation);
       }
 
       setOverlay('Guardando datos...', 'Registrando documentos...');
@@ -1316,6 +1355,82 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       if(docRows.length){
         const { error: docErr } = await sb.from('documentos').insert(docRows);
         if(docErr) throw new Error('Error guardando documentos: ' + docErr.message);
+      }
+
+      // Puente temporal hacia las tablas que consume enrich-runt. Nunca es la
+      // fuente de verdad de la solicitud; permite que el RUNT de vehículo
+      // encuentre al propietario por placa sin intervención manual.
+      try {
+        if(role === 'conductor' || role === 'ambos'){
+          await saveLegacyRow('conductores', cedula, {
+            vehiculo_placa: placa,
+            cedula,
+            primer_nombre: personaData.primer_nombre,
+            segundo_nombre: personaData.segundo_nombre,
+            primer_apellido: personaData.primer_apellido,
+            segundo_apellido: personaData.segundo_apellido,
+            direccion: personaData.direccion,
+            ciudad: personaData.ciudad,
+            telefono: personaData.telefono,
+            telefono_alterno: personaData.telefono_alterno,
+            banco: personaData.banco || null,
+            tipo_cuenta: personaData.tipo_cuenta || null,
+            numero_cuenta: personaData.numero_cuenta || null,
+            foto_rostro: paths.foto_rostro || null,
+            cedula_pdf: paths.cedula_pdf,
+            pase_pdf: paths.pase_pdf,
+            seguridad_social: paths.seguridad_social || null,
+            cert_bancaria: paths.cert_bancaria_conductor || null,
+            licencia_categoria: $('licencia_categoria').value.trim() || null,
+            licencia_vencimiento: $('licencia_vencimiento').value || null,
+            ref_familiar_nombre: personaData.ref_familiar_nombre || null,
+            ref_familiar_telefono: personaData.ref_familiar_telefono || null,
+            ref_empresa_nombre: personaData.ref_empresa_nombre || null,
+            ref_empresa_telefono: personaData.ref_empresa_telefono || null,
+            emergencia_nombre: personaData.emergencia_nombre,
+            emergencia_parentesco: personaData.emergencia_parentesco,
+            emergencia_telefono: personaData.emergencia_telefono,
+            autoriza_datos: true,
+            autoriza_sensibles: true
+          });
+          await requestRunt('conductores', { cedula, primer_apellido: personaData.primer_apellido });
+        }
+        if(role === 'propietario' || role === 'ambos'){
+          await saveLegacyRow('propietarios', cedula, {
+            vehiculo_placa: placa,
+            cedula,
+            primer_nombre: personaData.primer_nombre,
+            segundo_nombre: personaData.segundo_nombre,
+            primer_apellido: personaData.primer_apellido,
+            segundo_apellido: personaData.segundo_apellido,
+            direccion: personaData.direccion,
+            ciudad: personaData.ciudad,
+            telefono: personaData.telefono,
+            telefono_alterno: personaData.telefono_alterno,
+            banco: personaData.banco || null,
+            tipo_cuenta: personaData.tipo_cuenta || null,
+            numero_cuenta: personaData.numero_cuenta || null,
+            factura_electronica: !!personaData.factura_electronica,
+            foto_rostro: paths.foto_rostro_propietario || null,
+            cedula_pdf: paths.cedula_pdf,
+            rut: paths.rut || null,
+            cert_bancaria: paths.cert_bancaria_propietario || null,
+            emergencia_nombre: personaData.emergencia_nombre,
+            emergencia_parentesco: personaData.emergencia_parentesco,
+            emergencia_telefono: personaData.emergencia_telefono,
+            autoriza_sensibles: true
+          });
+          await requestRunt('vehiculos', { placa });
+        }
+        await updateQueue(relations, { systram_estado: 'pendiente', systram_etapa: 'runt_solicitado', systram_error: null });
+      } catch(runtError) {
+        // La solicitud y sus documentos ya están almacenados. Una falla de RUNT
+        // pasa a revisión, no borra ni bloquea el expediente.
+        await updateQueue(relations, {
+          systram_estado: 'requiere_revision',
+          systram_etapa: 'runt_fallido',
+          systram_error: 'RUNT: ' + String(runtError.message || runtError).slice(0, 700)
+        });
       }
 
       hideOverlay();

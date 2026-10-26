@@ -838,8 +838,21 @@ function mergeVinculacionUnificada() {
       _origen_unificado: true,
       _documentos: [...(documentosPersona.get(persona.id) || []), ...(documentosVehiculo.get(vehiculo.id) || [])]
     };
-    if (rel.rol === 'conductor') nuevosConductores.push(registro);
-    if (rel.rol === 'propietario') nuevosPropietarios.push(registro);
+    const table = rel.rol === 'conductor' ? 'conductores' : (rel.rol === 'propietario' ? 'propietarios' : null);
+    if (!table) return;
+    // Las fichas operativas se sincronizan para conservar compatibilidad con
+    // RUNT. En el panel se presentan como un solo expediente, no dos filas.
+    const existingIndex = (cache[table] || []).findIndex(item =>
+      String(item.cedula || '').trim() === String(persona.cedula || '').trim() &&
+      String(item.vehiculo_placa || '').trim().toUpperCase() === String(vehiculo.placa || '').trim().toUpperCase()
+    );
+    if (existingIndex >= 0) {
+      cache[table][existingIndex] = { ...cache[table][existingIndex], ...registro };
+    } else if (rel.rol === 'conductor') {
+      nuevosConductores.push(registro);
+    } else {
+      nuevosPropietarios.push(registro);
+    }
   });
   cache.conductores = [...(cache.conductores || []), ...nuevosConductores];
   cache.propietarios = [...(cache.propietarios || []), ...nuevosPropietarios];
