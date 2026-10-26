@@ -783,7 +783,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         emergencia_telefono: $('emergencia_telefono').value.trim()
       };
 
-      const { data: persona, error: personaError } = await sb.from('personas').insert([{
+      const { data: persona, error: personaError } = await sb.from('personas').upsert([{
         cedula: row.cedula, primer_nombre: row.primer_nombre, segundo_nombre: row.segundo_nombre,
         primer_apellido: row.primer_apellido, segundo_apellido: row.segundo_apellido,
         direccion: row.direccion, ciudad: row.ciudad, telefono: row.telefono,
@@ -793,7 +793,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         ref_familiar_telefono: row.ref_familiar_telefono, ref_empresa_nombre: row.ref_empresa_nombre,
         ref_empresa_telefono: row.ref_empresa_telefono, emergencia_nombre: row.emergencia_nombre,
         emergencia_parentesco: row.emergencia_parentesco, emergencia_telefono: row.emergencia_telefono
-      }]).select('id').single();
+      }], { onConflict: 'cedula' }).select('id').single();
       if (personaError) throw new Error('Error guardando persona: ' + personaError.message);
       const { data: vehiculo, error: vehiculoError } = await sb.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
       if (vehiculoError) throw new Error('Error buscando vehículo: ' + vehiculoError.message);
