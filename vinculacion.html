@@ -236,22 +236,22 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
         <div class="cond" id="cond_contacto_vinculacion">
           <div class="field">
-            <label for="telefono_alterno">Tel&eacute;fono alterno <span class="req">*</span></label>
+            <label for="telefono_alterno">Tel&eacute;fono alterno</label>
             <input type="tel" id="telefono_alterno" name="telefono_alterno" inputmode="tel">
             <div class="error-msg" id="err_telefono_alterno">Ingresa un tel&eacute;fono alterno v&aacute;lido</div>
           </div>
           <div class="field">
-            <label for="emergencia_nombre">Contacto de emergencia <span class="req">*</span></label>
+            <label for="emergencia_nombre">Contacto de emergencia</label>
             <input type="text" id="emergencia_nombre" name="emergencia_nombre" autocomplete="name">
             <div class="error-msg" id="err_emergencia_nombre">Campo requerido</div>
           </div>
           <div class="field">
-            <label for="emergencia_parentesco">Parentesco <span class="req">*</span></label>
+            <label for="emergencia_parentesco">Relaci&oacute;n con el contacto</label>
             <input type="text" id="emergencia_parentesco" name="emergencia_parentesco" placeholder="Ej. Madre, pareja, hermano">
             <div class="error-msg" id="err_emergencia_parentesco">Campo requerido</div>
           </div>
           <div class="field">
-            <label for="emergencia_telefono">Tel&eacute;fono de emergencia <span class="req">*</span></label>
+            <label for="emergencia_telefono">Tel&eacute;fono de emergencia</label>
             <input type="tel" id="emergencia_telefono" name="emergencia_telefono" inputmode="tel">
             <div class="error-msg" id="err_emergencia_telefono">Ingresa un tel&eacute;fono v&aacute;lido</div>
           </div>
@@ -259,14 +259,14 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
         <div class="cond" id="cond_licencia">
           <div class="field">
-            <label for="licencia_categoria">Categor&iacute;a de licencia <span class="req">*</span></label>
-            <input type="text" id="licencia_categoria" name="licencia_categoria" placeholder="Ej. C3">
-            <div class="error-msg" id="err_licencia_categoria">Campo requerido</div>
+            <label for="licencia_categoria">Categor&iacute;a de licencia</label>
+            <input type="text" id="licencia_categoria" name="licencia_categoria" placeholder="Se confirma autom&aacute;ticamente en RUNT">
+            <div class="hint">Si no la conoces, la confirmaremos en la consulta RUNT.</div>
           </div>
           <div class="field">
-            <label for="licencia_vencimiento">Fecha de vencimiento de la licencia <span class="req">*</span></label>
+            <label for="licencia_vencimiento">Fecha de vencimiento de la licencia</label>
             <input type="date" id="licencia_vencimiento" name="licencia_vencimiento">
-            <div class="error-msg" id="err_licencia_vencimiento">Campo requerido</div>
+            <div class="hint">Se valida contra RUNT antes de completar la vinculaci&oacute;n.</div>
           </div>
         </div>
 
@@ -992,18 +992,9 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       if(!ced || !/^[0-9]{5,12}$/.test(ced)){ showErr('cedula'); ok = false; }
       const tel = $('telefono').value.trim();
       if(!tel || !/^[0-9]{7,15}$/.test(tel)){ showErr('telefono'); ok = false; }
-      if(selectedRole !== 'tenedor'){
-        ['telefono_alterno','emergencia_nombre','emergencia_parentesco','emergencia_telefono'].forEach(id => {
-          if(!requireText(id)) ok = false;
-        });
-        ['telefono_alterno','emergencia_telefono'].forEach(id => {
-          if($(id).value.trim() && !/^[0-9]{7,15}$/.test($(id).value.trim())){ showErr(id); ok = false; }
-        });
-      }
-      if(selectedRole === 'conductor' || selectedRole === 'ambos'){
-        if(!requireText('licencia_categoria')) ok = false;
-        if(!requireText('licencia_vencimiento')) ok = false;
-      }
+      ['telefono_alterno','emergencia_telefono'].forEach(id => {
+        if($(id).value.trim() && !/^[0-9]{7,15}$/.test($(id).value.trim())){ showErr(id); ok = false; }
+      });
     }
 
     if(n === 3){
