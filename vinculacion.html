@@ -572,8 +572,48 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       </div>
     </div>
 
-    <!-- ========== STEP 6: Referencias ========== -->
+    <!-- ========== STEP 6: Propietario del vehículo ========== -->
     <div class="step-panel" id="step6">
+      <div class="form-card">
+        <h2>&#128273; Propietario del veh&iacute;culo</h2>
+        <p class="section-desc">El veh&iacute;culo debe tener un propietario registrado para poder continuar.</p>
+        <div class="field">
+          <label>Selecciona el propietario <span class="req">*</span></label>
+          <div class="radio-group" id="propietarioVehiculoOpciones">
+            <label><input type="radio" name="propietario_vehiculo" value="yo_mismo"> Yo mismo</label>
+            <label><input type="radio" name="propietario_vehiculo" value="otra_persona"> Otra persona</label>
+            <label><input type="radio" name="propietario_vehiculo" value="capital_cargo"> Capital Cargo</label>
+          </div>
+          <div class="error-msg" id="err_propietario_vehiculo">Selecciona el propietario del veh&iacute;culo</div>
+        </div>
+        <div class="cond" id="cond_otra_persona">
+          <div class="field-grid">
+            <div class="field"><label for="prop_cedula">C&eacute;dula <span class="req">*</span></label><input id="prop_cedula" inputmode="numeric"><div class="error-msg" id="err_prop_cedula">C&eacute;dula requerida</div></div>
+            <div class="field"><label for="prop_primer_nombre">Primer nombre <span class="req">*</span></label><input id="prop_primer_nombre"><div class="error-msg" id="err_prop_primer_nombre">Campo requerido</div></div>
+            <div class="field"><label for="prop_segundo_nombre">Segundo nombre</label><input id="prop_segundo_nombre"></div>
+            <div class="field"><label for="prop_primer_apellido">Primer apellido <span class="req">*</span></label><input id="prop_primer_apellido"><div class="error-msg" id="err_prop_primer_apellido">Campo requerido</div></div>
+            <div class="field"><label for="prop_segundo_apellido">Segundo apellido</label><input id="prop_segundo_apellido"></div>
+            <div class="field"><label for="prop_telefono">Tel&eacute;fono <span class="req">*</span></label><input id="prop_telefono" inputmode="tel"><div class="error-msg" id="err_prop_telefono">Tel&eacute;fono requerido</div></div>
+            <div class="field"><label for="prop_direccion">Direcci&oacute;n <span class="req">*</span></label><input id="prop_direccion"><div class="error-msg" id="err_prop_direccion">Campo requerido</div></div>
+            <div class="field"><label for="prop_ciudad">Ciudad <span class="req">*</span></label><input id="prop_ciudad"><div class="error-msg" id="err_prop_ciudad">Campo requerido</div></div>
+          </div>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="vehiculo_arrendado"> El veh&iacute;culo es arrendado</label>
+        </div>
+        <div class="cond" id="cond_tenedor">
+          <p class="hint">Registra el tenedor que opera el veh&iacute;culo.</p>
+          <div class="field-grid">
+            <div class="field"><label for="ten_cedula">C&eacute;dula <span class="req">*</span></label><input id="ten_cedula" inputmode="numeric"><div class="error-msg" id="err_ten_cedula">C&eacute;dula requerida</div></div>
+            <div class="field"><label for="ten_nombre">Nombre completo <span class="req">*</span></label><input id="ten_nombre"><div class="error-msg" id="err_ten_nombre">Nombre requerido</div></div>
+          </div>
+        </div>
+        <div class="nav-btns"><button type="button" class="btn-back" id="btn6Back">&larr; Atr&aacute;s</button><button type="button" class="btn-next" id="btn6Next">Siguiente &rarr;</button></div>
+      </div>
+    </div>
+
+    <!-- ========== STEP 7: Referencias ========== -->
+    <div class="step-panel" id="step7">
       <div class="form-card">
         <h2>&#128100; Referencias</h2>
         <p class="section-desc">Proporciona dos referencias de contacto.</p>
@@ -600,14 +640,14 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         </div>
 
         <div class="nav-btns">
-          <button type="button" class="btn-back" id="btn6Back">&larr; Atr&aacute;s</button>
-          <button type="button" class="btn-next" id="btn6Next">Siguiente &rarr;</button>
+          <button type="button" class="btn-back" id="btn7Back">&larr; Atr&aacute;s</button>
+          <button type="button" class="btn-next" id="btn7Next">Siguiente &rarr;</button>
         </div>
       </div>
     </div>
 
     <!-- ========== STEP 7: Autorización + Submit ========== -->
-    <div class="step-panel" id="step7">
+    <div class="step-panel" id="step8">
       <div class="form-card">
         <h2>&#128274; Autorizaci&oacute;n y Privacidad</h2>
         <p class="section-desc">Lee y acepta las autorizaciones para finalizar.</p>
@@ -638,7 +678,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         </div>
 
         <div class="nav-btns" style="margin-bottom:.75rem">
-          <button type="button" class="btn-back" id="btn7Back">&larr; Atr&aacute;s</button>
+          <button type="button" class="btn-back" id="btn8Back">&larr; Atr&aacute;s</button>
         </div>
         <button type="submit" class="btn-primary" id="btnSubmit">Enviar Vinculaci&oacute;n</button>
       </div>
@@ -652,10 +692,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       <div class="check">&#10003;</div>
       <h2>&iexcl;Vinculaci&oacute;n enviada!</h2>
       <p class="sub-msg">Tu informaci&oacute;n fue recibida. Nos comunicaremos contigo pronto.</p>
-      <p style="font-size:.88rem;color:var(--gray-600);margin-bottom:.65rem">Tu enlace personal para consultar o actualizar tus datos:</p>
-      <div class="magic-link-box" id="magicLinkBox"></div>
-      <button class="copy-btn" id="copyBtn">&#128203; Copiar enlace</button>
-      <p class="copy-note">Guarda este enlace. Con &eacute;l puedes ver y actualizar tu informaci&oacute;n.</p>
+      <p class="copy-note">Si necesitas corregir o completar algo, nos comunicaremos contigo y te enviaremos un enlace personal de acceso.</p>
     </div>
   </div>
 
@@ -703,13 +740,14 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     if(selectedRole !== 'tenedor') base.push(3); // bancarios
     base.push(4); // documentos
     base.push(5); // vehiculo
-    if(selectedRole === 'conductor' || selectedRole === 'ambos') base.push(6); // referencias
-    base.push(7); // autorizacion
+    base.push(6); // propietario del vehiculo
+    if(selectedRole === 'conductor' || selectedRole === 'ambos') base.push(7); // referencias
+    base.push(8); // autorizacion
     return base;
   }
 
   function getStepLabel(n){
-    const labels = {1:'Rol',2:'Personales',3:'Bancarios',4:'Documentos',5:'Vehículo',6:'Referencias',7:'Autorización'};
+    const labels = {1:'Rol',2:'Personales',3:'Bancarios',4:'Documentos',5:'Vehículo',6:'Propietario',7:'Referencias',8:'Autorización'};
     return labels[n] || '';
   }
 
@@ -819,6 +857,12 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
   /* ── Proveedor otro toggle ── */
   $('satelital_proveedor').addEventListener('change', updateConditionals);
+
+  document.querySelectorAll('input[name="propietario_vehiculo"]').forEach(r => r.addEventListener('change', () => {
+    toggleCond('cond_otra_persona', r.value === 'otra_persona' && r.checked);
+    updateConditionals();
+  }));
+  $('vehiculo_arrendado').addEventListener('change', () => toggleCond('cond_tenedor', $('vehiculo_arrendado').checked));
 
   /* ── Privacy toggle ── */
   $('privacyToggle').addEventListener('click', function(){
@@ -1045,12 +1089,24 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     }
 
     if(n === 6){
+      const owner = document.querySelector('input[name="propietario_vehiculo"]:checked');
+      if(!owner){ showErr('propietario_vehiculo'); ok = false; }
+      if(owner && owner.value === 'otra_persona'){
+        ['prop_cedula','prop_primer_nombre','prop_primer_apellido','prop_telefono','prop_direccion','prop_ciudad'].forEach(id => { if(!requireText(id)) ok = false; });
+      }
+      if($('vehiculo_arrendado').checked){
+        if(!requireText('ten_cedula')) ok = false;
+        if(!requireText('ten_nombre')) ok = false;
+      }
+    }
+
+    if(n === 7){
       ['ref_familiar_nombre','ref_familiar_telefono','ref_empresa_nombre','ref_empresa_telefono'].forEach(id => {
         if(!requireText(id)) ok = false;
       });
     }
 
-    if(n === 7){
+    if(n === 8){
       if(!$('autoriza_datos').checked){
         $('err_autoriza_datos').classList.add('visible');
         $('checkField_autoriza_datos').classList.add('invalid-check');
@@ -1077,9 +1133,9 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
   $('btn4Next').addEventListener('click', () => { if(validateStep(4)) nextStep(); });
   $('btn5Back').addEventListener('click', prevStep);
   $('btn5Next').addEventListener('click', () => { if(validateStep(5)) nextStep(); });
-  $('btn6Back').addEventListener('click', prevStep);
-  $('btn6Next').addEventListener('click', () => { if(validateStep(6)) nextStep(); });
   $('btn7Back').addEventListener('click', prevStep);
+  $('btn7Next').addEventListener('click', () => { if(validateStep(7)) nextStep(); });
+  $('btn8Back').addEventListener('click', prevStep);
 
   /* ── Submit ── */
   $('mainForm').addEventListener('submit', async function(e){
@@ -1279,6 +1335,9 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         satelital_usuario: satelitalBool ? ($('satelital_usuario').value.trim() || null) : null,
         satelital_password: satelitalBool ? ($('satelital_password').value.trim() || null) : null
       };
+      const ownerChoice = document.querySelector('input[name="propietario_vehiculo"]:checked').value;
+      // This column is already present in deployments that support corporate ownership.
+      if(ownerChoice === 'capital_cargo') vehiculoData.propietario_nit = '900491068-0';
 
       const { data: vehiculo, error: vehiculoErr } = await sb
         .from('vehiculos')
@@ -1309,6 +1368,41 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           .single();
         if(pvErr) throw new Error('Error registrando relación: ' + pvErr.message);
         relations.push(relation);
+      }
+
+      // The vehicle owner is always explicit, even when the main applicant has another role.
+      let ownerPersonaId = persona.id;
+      if(ownerChoice === 'otra_persona'){
+        const ownerData = {
+          cedula: $('prop_cedula').value.trim(), primer_nombre: $('prop_primer_nombre').value.trim(),
+          segundo_nombre: $('prop_segundo_nombre').value.trim() || null, primer_apellido: $('prop_primer_apellido').value.trim(),
+          segundo_apellido: $('prop_segundo_apellido').value.trim() || null, telefono: $('prop_telefono').value.trim(),
+          direccion: $('prop_direccion').value.trim(), ciudad: $('prop_ciudad').value.trim(), autoriza_datos: true, autoriza_sensibles: true
+        };
+        const { data: owner, error: ownerErr } = await sb.from('personas').upsert(ownerData, { onConflict: 'cedula' }).select('id').single();
+        if(ownerErr) throw new Error('Error guardando propietario: ' + ownerErr.message);
+        ownerPersonaId = owner.id;
+      }
+      if(ownerChoice !== 'capital_cargo'){
+        const { data: ownerRelation, error: ownerRelErr } = await sb.from('persona_vehiculo').upsert({
+          persona_id: ownerPersonaId, vehiculo_id: vehiculo.id, rol: 'propietario', estado: 'pendiente', systram_estado: 'pendiente', systram_etapa: 'preparado'
+        }, { onConflict: 'persona_id,vehiculo_id,rol' }).select('id').single();
+        if(ownerRelErr) throw new Error('Error registrando propietario: ' + ownerRelErr.message);
+        relations.push(ownerRelation);
+      }
+      if($('vehiculo_arrendado').checked){
+        const tenCedula = $('ten_cedula').value.trim();
+        const tenParts = $('ten_nombre').value.trim().split(/\s+/);
+        const { data: tenedor, error: tenErr } = await sb.from('personas').upsert({
+          cedula: tenCedula, primer_nombre: tenParts.shift() || tenCedula, primer_apellido: tenParts.pop() || '',
+          segundo_nombre: tenParts.join(' ') || null, telefono: null, direccion: null, ciudad: null, autoriza_datos: true, autoriza_sensibles: true
+        }, { onConflict: 'cedula' }).select('id').single();
+        if(tenErr) throw new Error('Error guardando tenedor: ' + tenErr.message);
+        const { data: tenRelation, error: tenRelErr } = await sb.from('persona_vehiculo').upsert({
+          persona_id: tenedor.id, vehiculo_id: vehiculo.id, rol: 'tenedor', estado: 'pendiente', systram_estado: 'pendiente', systram_etapa: 'preparado'
+        }, { onConflict: 'persona_id,vehiculo_id,rol' }).select('id').single();
+        if(tenRelErr) throw new Error('Error registrando tenedor: ' + tenRelErr.message);
+        relations.push(tenRelation);
       }
 
       setOverlay('Guardando datos...', 'Registrando documentos...');
@@ -1434,18 +1528,8 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       $('mainForm').classList.add('hidden');
       $('successCard').classList.remove('hidden');
 
-      if(magicLink){
-        $('magicLinkBox').textContent = magicLink;
-        $('copyBtn').addEventListener('click', function(){
-          navigator.clipboard.writeText(magicLink).then(() => {
-            $('copyBtn').textContent = '✓ Copiado';
-            setTimeout(() => { $('copyBtn').innerHTML = '&#128203; Copiar enlace'; }, 2000);
-          });
-        });
-      } else {
-        $('magicLinkBox').textContent = 'Vinculación registrada exitosamente.';
-        $('copyBtn').style.display = 'none';
-      }
+      // El enlace queda guardado en personas.edit_token, pero no se expone
+      // en la pantalla pública. El equipo lo comparte manualmente si hace falta.
 
       $('successCard').scrollIntoView({behavior:'smooth', block:'start'});
 

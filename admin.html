@@ -516,9 +516,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
     <div class="login-logo">CC</div>
     <h2><span class="accent">Capital</span> Cargo Colombia</h2>
     <p>Panel de Administracion</p>
-    <div class="login-error" id="loginError">Contrasena incorrecta</div>
-    <input type="password" id="loginPass" placeholder="Contrasena" autocomplete="off">
-    <button class="btn-login" onclick="checkLogin()">Ingresar</button>
+    <div class="login-error" id="loginError">Correo o contrase&ntilde;a incorrectos</div>
+    <input type="email" id="loginEmail" placeholder="Correo electr&oacute;nico" autocomplete="username">
+    <input type="password" id="loginPass" placeholder="Contrase&ntilde;a" autocomplete="current-password">
+    <button class="btn-login" id="loginBtn" onclick="checkLogin()">Ingresar</button>
   </div>
 </div>
 
@@ -630,7 +631,6 @@ const SUPA_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZHZyanBlbGN5anJ2b25waW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDc0ODcsImV4cCI6MjEwODE4MzQ4N30.Wz7ceDsvmBZtSnad1cHV972pnOXXaE00VoGkt0bqF-g';
 const STORAGE_BASE = SUPA_URL + '/storage/v1/object/public/vinculacion-docs/';
 const ENRICH_URL = SUPA_URL + '/functions/v1/enrich-runt';
-const PASSWORD = 'capitalcargo2026';
 
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
@@ -692,17 +692,25 @@ const DOC_GROUPS_VEHICULO = {
 };
 
 // ===== Auth =====
-function checkLogin() {
-  const v = document.getElementById('loginPass').value;
-  if (v === PASSWORD) {
-    sessionStorage.setItem('cc_admin', '1');
+async function checkLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Ingresando...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  btn.disabled = false;
+  btn.textContent = 'Ingresar';
+  if (!error && data.session) {
     showApp();
-  } else {
-    const err = document.getElementById('loginError');
-    err.style.display = 'block';
-    document.getElementById('loginPass').classList.add('shake');
-    setTimeout(() => document.getElementById('loginPass').classList.remove('shake'), 400);
+    return;
   }
+  err.textContent = error?.message || 'No fue posible iniciar sesión';
+  err.style.display = 'block';
+  document.getElementById('loginPass').classList.add('shake');
+  setTimeout(() => document.getElementById('loginPass').classList.remove('shake'), 400);
 }
 document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') checkLogin(); });
 
@@ -711,7 +719,15 @@ function showApp() {
   document.getElementById('appContent').style.display = 'flex';
   loadAllData();
 }
-if (sessionStorage.getItem('cc_admin') === '1') showApp();
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session) showApp();
+});
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT' || !session) {
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('appContent').style.display = 'none';
+  }
+});
 
 // ===== Mobile nav =====
 function toggleMobileNav() {
@@ -766,7 +782,14 @@ async function loadAllData() {
 async function loadTable(table) {
   if (table === 'vehiculos') {
     const direct = await sb.from('vehiculos').select('id,placa,tipo,satelital,satelital_proveedor,created_at,estado,tarjeta_frente,tarjeta_reverso,fotos,tecnomecanica,soat').order('created_at', { ascending: false });
-    if (!direct.error && direct.data) { cache[table] = direct.data; return; }
+    if (!direct.error && direct.data) {
+      const ids = direct.data.map(v => v.id).filter(Boolean);
+      const rels = ids.length ? await sb.from('persona_vehiculo').select('vehiculo_id,rol,personas(id,cedula,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido)').in('vehiculo_id', ids) : {data:[]};
+      const owners = new Map();
+      (rels.data || []).forEach(rel => { if(rel.rol === 'propietario' && rel.personas) owners.set(rel.vehiculo_id, rel.personas); });
+      cache[table] = direct.data.map(v => ({...v, propietario: owners.get(v.id) || null, sin_propietario: !owners.has(v.id)}));
+      return;
+    }
     const { data, error } = await sb.from('persona_vehiculo')
       .select('id,vehiculo_id,rol,estado,created_at,personas!inner(id,cedula,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,telefono,ciudad)')
       .order('created_at', { ascending: false });
@@ -1093,7 +1116,8 @@ function getTableColumns(table) {
   }
   // vehiculos
   return [
-    { label:'Placa', val:r=>r.placa, render:r=>'<strong>'+esc(r.placa)+'</strong>' },
+    { label:'Placa', val:r=>r.placa, render:r=>'<strong>'+esc(r.placa)+'</strong>'+(!r.sin_propietario?'':' <span class="badge badge-fail">Sin propietario</span>') },
+    { label:'Propietario', val:r=>r.propietario ? fullName(r.propietario) : '', render:r=>r.propietario ? esc(fullName(r.propietario)) : '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();asignarPropietario(\''+escAttr(r.id)+'\')">Asignar propietario</button>' },
     { label:'Tipo', val:r=>r.tipo, render:r=>esc(r.tipo) },
     { label:'Satelital', val:r=>r.satelital_proveedor||r.satelital, render:r=>r.satelital_proveedor?esc(titleCase(r.satelital_proveedor)):(r.satelital?esc(r.satelital):'-') },
     { label:'Estado', val:r=>r.estado, render:r=>estadoBadge(r.estado) },
@@ -1108,6 +1132,25 @@ function getTableColumns(table) {
       return '<span class="doc-fraction '+cls+'">'+c+'/'+total+'</span>';
     }}
   ];
+}
+
+async function asignarPropietario(vehiculoId) {
+  const cedula = prompt('Cédula del propietario según la tarjeta de propiedad:');
+  if (!cedula || !cedula.trim()) return;
+  const nombre = prompt('Nombre completo del propietario:');
+  if (!nombre || !nombre.trim()) return;
+  const partes = nombre.trim().split(/\s+/);
+  const { data: persona, error: personaErr } = await sb.from('personas').upsert({
+    cedula: cedula.trim(), primer_nombre: partes.shift() || cedula.trim(), primer_apellido: partes.pop() || '',
+    segundo_nombre: partes.join(' ') || null, autoriza_datos: true, autoriza_sensibles: true
+  }, { onConflict: 'cedula' }).select('id').single();
+  if (personaErr) { showToast('No se pudo guardar el propietario: ' + personaErr.message, 'error'); return; }
+  const { error } = await sb.from('persona_vehiculo').upsert({
+    persona_id: persona.id, vehiculo_id: vehiculoId, rol: 'propietario', estado: 'pendiente', systram_estado: 'pendiente', systram_etapa: 'preparado'
+  }, { onConflict: 'persona_id,vehiculo_id,rol' });
+  if (error) { showToast('No se pudo asignar el propietario: ' + error.message, 'error'); return; }
+  showToast('Propietario asignado', 'success');
+  await loadTable('vehiculos'); updateCounts(); updateKPIs(); renderCurrentTab();
 }
 
 function sortTable(colIdx) {
