@@ -260,7 +260,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
   <div class="success-view" id="successView">
     <div class="check">&#10003;</div>
     <h2>¡Datos del vehículo enviados!</h2>
-    <p>Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
+    <p id="successMessage">Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
     <div class="nav-buttons" id="navButtons"></div>
   </div>
 </main>
@@ -528,6 +528,39 @@ async function buildTarjetaPdf(placa){
   return pdf;
 }
 
+// El RUNT de vehículo requiere que ya exista el propietario asociado a la
+// placa. La consulta se hace aquí (y no se asume) para no enviar una petición
+// que necesariamente fallaría cuando el formulario se diligencia en otro
+// orden. El panel conserva el vehículo para que el equipo complete el
+// propietario y ejecute el reintento trazable.
+async function requestVehicleRunt(placa){
+  var ownerResult = await sb.from('propietarios')
+    .select('cedula')
+    .eq('vehiculo_placa', placa)
+    .not('cedula', 'is', null)
+    .limit(1);
+  if(ownerResult.error) throw new Error('No fue posible validar el propietario: ' + ownerResult.error.message);
+  if(!ownerResult.data || !ownerResult.data.length){
+    return { requested:false, reason:'pendiente_propietario' };
+  }
+
+  var response = await fetch(SUPABASE_URL + '/functions/v1/enrich-runt', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer ' + SUPABASE_KEY
+    },
+    body:JSON.stringify({ tabla:'vehiculos', datos:{ placa:placa } })
+  });
+  var payload = null;
+  try { payload = await response.json(); } catch(_) {}
+  if(!response.ok || (payload && payload.success === false)){
+    throw new Error((payload && (payload.error || payload.message)) || 'La consulta RUNT no pudo ejecutarse.');
+  }
+  return { requested:true };
+}
+
 // --- Submit ---
 form.addEventListener('submit', async function(e){
   e.preventDefault();
@@ -574,7 +607,8 @@ form.addEventListener('submit', async function(e){
     var soatPath = await uploadFile(fileStore['soat'][0], placa, 'soat');
     updateProgress();
 
-    // Insert row
+    // La placa es única: al reenviar se actualiza el mismo expediente en vez
+    // de crear un vehículo duplicado.
     var row = {
       placa: placa,
       satelital: isSat,
@@ -590,12 +624,31 @@ form.addEventListener('submit', async function(e){
       tipo: tipoSelect.value
     };
 
-    var { error } = await sb.from('vehiculos').insert([row]);
+    var { error } = await sb.from('vehiculos').upsert([row], { onConflict:'placa' });
     if(error) throw new Error('Error guardando datos: ' + error.message);
+
+    var runtResult;
+    try {
+      runtResult = await requestVehicleRunt(placa);
+    } catch(runtError) {
+      // Los documentos y el vehículo ya están seguros en Supabase. No se
+      // reporta una vinculación completa: el administrador verá el resultado
+      // de la consulta en el panel RUNT y podrá reintentarlo.
+      console.warn('RUNT vehículo pendiente de revisión:', runtError);
+      runtResult = { requested:false, reason:'revision_runt' };
+    }
 
     overlay.classList.remove('active');
     form.style.display = 'none';
     successView.classList.add('active');
+    var successMessage = document.getElementById('successMessage');
+    if(runtResult && runtResult.requested){
+      successMessage.textContent = 'El vehículo y sus documentos quedaron registrados. La consulta RUNT fue solicitada y quedará visible en el panel administrativo.';
+    } else if(runtResult && runtResult.reason === 'pendiente_propietario'){
+      successMessage.textContent = 'El vehículo y sus documentos quedaron registrados. Falta completar el propietario asociado a esta placa antes de solicitar RUNT; el expediente no se pierde.';
+    } else {
+      successMessage.textContent = 'El vehículo y sus documentos quedaron registrados. La consulta RUNT quedó marcada para revisión; no se perdió la información.';
+    }
     // Build nav buttons
     var submittedPlaca = placaInput.value.trim().toUpperCase();
     var navBtns = document.getElementById('navButtons');
