@@ -323,7 +323,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     <div class="step-panel" id="step4">
       <div class="form-card">
         <h2>&#128196; Documentos Personales</h2>
-        <p class="section-desc">Adjunta los documentos seg&uacute;n tu rol. M&aacute;x 5 MB por archivo.</p>
+        <p class="section-desc">Adjunta los documentos seg&uacute;n tu rol. M&aacute;x 10 MB por archivo.</p>
 
         <!-- Siempre requeridos -->
         <div class="field">
@@ -829,7 +829,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
   });
 
   /* ── File upload setup ── */
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
   const allDropFields = [
     'cedula_frente','cedula_reverso',
@@ -865,7 +865,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     const isMulti = field === 'fotos_vehiculo';
     files.forEach(file => {
       if(file.size > MAX_FILE_SIZE){
-        alert('El archivo "' + file.name + '" excede 5 MB. Por favor sube un archivo más pequeño.');
+        alert('El archivo "' + file.name + '" excede 10 MB. Por favor sube un archivo más pequeño.');
         return;
       }
       if(isMulti){
@@ -1104,6 +1104,14 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     return path;
   }
 
+  function personaFolder(cedula, field){
+    const group = field === 'foto_rostro' ? 'perfil'
+      : ['seguridad_social','cert_bancaria_conductor','cert_bancaria_propietario','rut'].includes(field) ? 'vinculacion'
+      : ['pase_frente','pase_reverso','pase_pdf'].includes(field) ? 'conductor'
+      : 'identidad';
+    return 'personas/' + cedula + '/' + group;
+  }
+
   async function uploadMultiple(folder, fieldName, files){
     const paths = [];
     for(const file of files){
@@ -1117,16 +1125,10 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
   // placa. El formulario unificado conserva la fuente de verdad normalizada,
   // pero mantiene esa ficha espejo para que la consulta automática siga
   // funcionando hasta que la Edge Function se migre por completo.
-  async function saveLegacyRow(table, cedula, row){
-    const { data: existing, error: lookupError } = await sb
-      .from(table).select('id').eq('cedula', cedula).limit(1);
-    if(lookupError) throw new Error('No fue posible revisar la ficha operativa: ' + lookupError.message);
-    const id = existing && existing[0] && existing[0].id;
-    const result = id
-      ? await sb.from(table).update(row).eq('id', id)
-      : await sb.from(table).insert(row);
-    if(result.error) throw new Error('No fue posible sincronizar la ficha operativa: ' + result.error.message);
-  }
+  // La fuente de verdad es ahora personas/persona_vehiculo/documentos.
+  // Este adaptador se conserva para compatibilidad con el flujo unificado,
+  // pero ya no intenta escribir en tablas legacy eliminadas.
+  async function saveLegacyRow(){ return { data: null, error: null }; }
 
   async function requestRunt(tabla, datos){
     const response = await fetch(SUPABASE_URL + '/functions/v1/enrich-runt', {
@@ -1192,7 +1194,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       for(const field of personaUploads){
         if(fileStore[field] && fileStore[field].length){
           setOverlay('Subiendo documento ' + (uploaded+1) + ' de ' + totalFiles, field.replace(/_/g,' '));
-          paths[field] = await uploadFile(cedula, field, fileStore[field][0]);
+          paths[field] = await uploadFile(personaFolder(cedula, field), field, fileStore[field][0]);
           uploaded++;
         }
       }
@@ -1200,21 +1202,22 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       const cedulaPdf = new File([
         await DocumentValidation.createPdf(fileStore.cedula_frente[0], fileStore.cedula_reverso[0], 'C&eacute;dula de ciudadan&iacute;a')
       ], 'cedula_' + cedula + '.pdf', {type:'application/pdf'});
-      paths.cedula_pdf = await uploadFile(cedula, 'cedula_pdf', cedulaPdf);
+      paths.cedula_pdf = await uploadFile(personaFolder(cedula, 'cedula_pdf'), 'cedula_pdf', cedulaPdf);
       uploaded++;
       if(isConductor){
         setOverlay('Creando PDF de licencia...', 'Uniendo frente y reverso');
         const pasePdf = new File([
           await DocumentValidation.createPdf(fileStore.pase_frente[0], fileStore.pase_reverso[0], 'Licencia de conducci&oacute;n')
         ], 'licencia_' + cedula + '.pdf', {type:'application/pdf'});
-        paths.pase_pdf = await uploadFile(cedula, 'pase_pdf', pasePdf);
+        paths.pase_pdf = await uploadFile(personaFolder(cedula, 'pase_pdf'), 'pase_pdf', pasePdf);
         uploaded++;
       }
       // Upload vehiculo docs
       for(const field of vehiculoUploads){
         if(fileStore[field] && fileStore[field].length){
           setOverlay('Subiendo documento ' + (uploaded+1) + ' de ' + totalFiles, field.replace(/_/g,' '));
-          paths[field] = await uploadFile('vehiculos/' + placa, field, fileStore[field][0]);
+          const group = field === 'tarjeta_frente' || field === 'tarjeta_reverso' ? 'propiedad' : 'operacion';
+          paths[field] = await uploadFile('vehiculos/' + placa + '/' + group, field, fileStore[field][0]);
           uploaded++;
         }
       }
@@ -1223,7 +1226,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         const fotoPaths = [];
         for(const file of fileStore['fotos_vehiculo']){
           setOverlay('Subiendo foto ' + (uploaded+1) + ' de ' + totalFiles, file.name);
-          const p = await uploadFile('vehiculos/' + placa, 'foto_' + fotoPaths.length, file);
+          const p = await uploadFile('vehiculos/' + placa + '/fotos', 'foto_' + fotoPaths.length, file);
           fotoPaths.push(p);
           uploaded++;
         }

@@ -291,8 +291,8 @@ if(urlPlaca){
   (async function(){
     try {
       var results = await Promise.all([
-        sb.from('conductores').select('id').eq('vehiculo_placa', cleaned).limit(1),
-        sb.from('propietarios').select('id').eq('vehiculo_placa', cleaned).limit(1),
+        sb.from('persona_vehiculo').select('id,vehiculos!inner(placa)').eq('rol','conductor').eq('vehiculos.placa', cleaned).limit(1),
+        sb.from('persona_vehiculo').select('id,vehiculos!inner(placa)').eq('rol','propietario').eq('vehiculos.placa', cleaned).limit(1),
         sb.from('vehiculos').select('id').eq('placa', cleaned).limit(1)
       ]);
       var cDone = results[0].data && results[0].data.length > 0;
@@ -513,7 +513,8 @@ function validate(){
 async function uploadFile(file, placa, fieldName){
   var ext = file.name.split('.').pop().toLowerCase();
   var ts = Date.now();
-  var path = 'veh_' + placa + '/' + fieldName + '_' + ts + '.' + ext;
+  var group = fieldName === 'fotos' ? 'fotos' : 'operacion';
+  var path = 'vehiculos/' + placa + '/' + group + '/' + fieldName + '_' + ts + '.' + ext;
   var { error } = await sb.storage.from(BUCKET).upload(path, file, {
     cacheControl: '3600',
     upsert: false
@@ -534,11 +535,9 @@ async function buildTarjetaPdf(placa){
 // orden. El panel conserva el vehículo para que el equipo complete el
 // propietario y ejecute el reintento trazable.
 async function requestVehicleRunt(placa){
-  var ownerResult = await sb.from('propietarios')
-    .select('cedula')
-    .eq('vehiculo_placa', placa)
-    .not('cedula', 'is', null)
-    .limit(1);
+  var ownerResult = await sb.from('persona_vehiculo')
+    .select('personas!inner(cedula),vehiculos!inner(placa)')
+    .eq('rol', 'propietario').eq('vehiculos.placa', placa).limit(1);
   if(ownerResult.error) throw new Error('No fue posible validar el propietario: ' + ownerResult.error.message);
   if(!ownerResult.data || !ownerResult.data.length){
     return { requested:false, reason:'pendiente_propietario' };
@@ -590,7 +589,7 @@ form.addEventListener('submit', async function(e){
   try {
     progressText.textContent = 'Creando PDF de tarjeta de propiedad...';
     var tarjetaPdf = await buildTarjetaPdf(placa);
-    var tarjetaPdfPath = 'veh_' + placa + '/tarjeta_propiedad_' + Date.now() + '.pdf';
+    var tarjetaPdfPath = 'vehiculos/' + placa + '/propiedad/tarjeta_propiedad_' + Date.now() + '.pdf';
     var pdfUpload = await sb.storage.from(BUCKET).upload(tarjetaPdfPath, tarjetaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
     if(pdfUpload.error) throw new Error('Error subiendo PDF de tarjeta de propiedad: ' + pdfUpload.error.message);
 

@@ -379,8 +379,8 @@ footer a{color:var(--gold)}
     (async function(){
       try {
         var results = await Promise.all([
-          supabase.from('conductores').select('id').eq('vehiculo_placa', cleaned).limit(1),
-          supabase.from('propietarios').select('id').eq('vehiculo_placa', cleaned).limit(1),
+          supabase.from('persona_vehiculo').select('id,vehiculos!inner(placa)').eq('rol','conductor').eq('vehiculos.placa', cleaned).limit(1),
+          supabase.from('persona_vehiculo').select('id,vehiculos!inner(placa)').eq('rol','propietario').eq('vehiculos.placa', cleaned).limit(1),
           supabase.from('vehiculos').select('id').eq('placa', cleaned).limit(1)
         ]);
         var cDone = results[0].data && results[0].data.length > 0;
@@ -623,13 +623,14 @@ footer a{color:var(--gold)}
         if (!files || files.length === 0) continue;
         files.forEach(function(file){
           var ext = file.name.split('.').pop() || 'bin';
-          var path = 'prop_' + cedula + '/' + fieldName + '_' + ts + '.' + ext;
+          var group = fieldName === 'foto_rostro' ? 'perfil' : 'vinculacion';
+          var path = 'personas/' + cedula + '/' + group + '/' + fieldName + '_' + ts + '.' + ext;
           uploadQueue.push({fieldName: fieldName, file: file, path: path});
         });
       }
 
       statusEl.textContent = 'Subiendo PDF de cédula...';
-      var cedulaPdfPath = 'prop_' + cedula + '/cedula_' + ts + '.pdf';
+      var cedulaPdfPath = 'personas/' + cedula + '/identidad/cedula_' + ts + '.pdf';
       var pdfResult = await supabase.storage.from(BUCKET).upload(cedulaPdfPath, cedulaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
       if(pdfResult.error) throw new Error('Error subiendo PDF de cédula: ' + pdfResult.error.message);
 
@@ -686,8 +687,15 @@ footer a{color:var(--gold)}
         autoriza_sensibles: (document.querySelector('input[name="autoriza_sensibles"]:checked') || {}).value === 'si'
       };
 
-      var insertResult = await supabase.from(TABLE).insert([row]);
-      if (insertResult.error) throw new Error('Error guardando datos: ' + insertResult.error.message);
+      var personResult = await supabase.from('personas').insert([{cedula:row.cedula, primer_nombre:row.primer_nombre, segundo_nombre:row.segundo_nombre, primer_apellido:row.primer_apellido, segundo_apellido:row.segundo_apellido, direccion:row.direccion, ciudad:row.ciudad, telefono:row.telefono, telefono_alterno:row.telefono_alterno, banco:row.banco, tipo_cuenta:row.tipo_cuenta, numero_cuenta:row.numero_cuenta, factura_electronica:row.factura_electronica, autoriza_sensibles:row.autoriza_sensibles, emergencia_nombre:row.emergencia_nombre, emergencia_parentesco:row.emergencia_parentesco, emergencia_telefono:row.emergencia_telefono}]).select('id').single();
+      if (personResult.error) throw new Error('Error guardando persona: ' + personResult.error.message);
+      var vehicleResult = await supabase.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
+      if (vehicleResult.error) throw new Error('Error buscando vehículo: ' + vehicleResult.error.message);
+      if (!vehicleResult.data) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
+      var relationResult = await supabase.from('persona_vehiculo').insert([{ persona_id: personResult.data.id, vehiculo_id: vehicleResult.data.id, rol: 'propietario' }]);
+      if (relationResult.error) throw new Error('Error asociando propietario: ' + relationResult.error.message);
+      var docs = Object.entries({cedula_pdf:row.cedula_pdf, rut:row.rut, cert_bancaria:row.cert_bancaria, foto_rostro:row.foto_rostro}).filter(function(x){return x[1];});
+      if (docs.length) { var docsResult = await supabase.from('documentos').insert(docs.map(function(x){return {persona_id:personResult.data.id, vehiculo_id:vehicleResult.data.id, tipo:x[0], path:x[1], estado:'pendiente'};})); if (docsResult.error) throw new Error('Error guardando documentos: ' + docsResult.error.message); }
 
       // Success
       overlay.classList.remove('visible');

@@ -764,6 +764,55 @@ async function loadAllData() {
 }
 
 async function loadTable(table) {
+  if (table === 'vehiculos') {
+    const direct = await sb.from('vehiculos').select('id,placa,tipo,satelital,satelital_proveedor,created_at,estado,tarjeta_frente,tarjeta_reverso,fotos,tecnomecanica,soat').order('created_at', { ascending: false });
+    if (!direct.error && direct.data) { cache[table] = direct.data; return; }
+    const { data, error } = await sb.from('persona_vehiculo')
+      .select('id,vehiculo_id,rol,estado,created_at,personas!inner(id,cedula,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,telefono,ciudad)')
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); cache[table] = []; return; }
+    const vehicleDocs = await sb.from('documentos').select('vehiculo_id,path,tipo').not('vehiculo_id','is',null);
+    const byVehicle = new Map();
+    (data || []).forEach(r => {
+      const key = r.vehiculo_id;
+      if (!byVehicle.has(key)) {
+        const doc = (vehicleDocs.data || []).find(d => d.vehiculo_id === key && d.path);
+        const match = doc && doc.path.match(/vehiculos\/([^/]+)\//i);
+        byVehicle.set(key, {id:key, placa:match ? match[1].toUpperCase() : key, created_at:r.created_at, estado:r.estado || 'pendiente', conductores:[], propietarios:[], satelital:null});
+      }
+      const p = r.personas || {};
+      const nombre = [p.primer_nombre,p.segundo_nombre,p.primer_apellido,p.segundo_apellido].filter(Boolean).join(' ');
+      byVehicle.get(key)[r.rol === 'propietario' ? 'propietarios' : 'conductores'].push(nombre || p.cedula || 'Sin nombre');
+    });
+    cache[table] = Array.from(byVehicle.values()).map(v => ({...v, vehiculo_placa:v.placa}));
+    return;
+  }
+  if (table === 'conductores' || table === 'propietarios') {
+    const role = table === 'conductores' ? 'conductor' : 'propietario';
+    const { data, error } = await sb.from('persona_vehiculo')
+      .select('id,persona_id,vehiculo_id,rol,estado,created_at,personas!inner(*)')
+      .eq('rol', role).order('created_at', { ascending: false });
+    if (error) { console.error(error); cache[table] = []; return; }
+    const personaIds = (data || []).map(r => r.persona_id);
+    let docs = [];
+    if (personaIds.length) {
+      const docResult = await sb.from('documentos').select('persona_id,vehiculo_id,tipo,path,estado,fecha_vencimiento,nota_rechazo').in('persona_id', personaIds);
+      if (!docResult.error) docs = docResult.data || [];
+    }
+    const aliases = {
+      cedula:'cedula_pdf', cedula_pdf:'cedula_pdf', pase:'pase_pdf', pase_pdf:'pase_pdf',
+      foto_rostro:'foto_rostro', seguridad_social:'seguridad_social', cert_bancaria:'cert_bancaria',
+      rut:'rut', antecedentes_procuraduria:'antecedentes_procuraduria', antecedentes_policia:'antecedentes_policia',
+      runt:'runt', comparendos:'comparendos', lista_clinton:'lista_clinton', antecedentes_fiscales:'antecedentes_fiscales',
+      estudio_seguridad:'estudio_seguridad'
+    };
+    cache[table] = (data || []).map(r => {
+      const row = {...r.personas, ...r, vehiculo_placa: r.vehiculo_id, persona_id:r.persona_id, vehiculo_id:r.vehiculo_id};
+      docs.filter(d => d.persona_id === r.persona_id && (!d.vehiculo_id || d.vehiculo_id === r.vehiculo_id)).forEach(d => { const field = aliases[d.tipo] || d.tipo; if (field && !row[field]) row[field] = d.path; });
+      return row;
+    });
+    return;
+  }
   const { data, error } = await sb.from(table).select('*').order('created_at', { ascending: false });
   if (!error) cache[table] = data || [];
 }

@@ -411,8 +411,8 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     (async function(){
       try {
         const [cRes, pRes, vRes] = await Promise.all([
-          sb.from('conductores').select('id').eq('vehiculo_placa', cleaned).limit(1),
-          sb.from('propietarios').select('id').eq('vehiculo_placa', cleaned).limit(1),
+          sb.from('persona_vehiculo').select('id,vehiculos!inner(placa)').eq('rol','conductor').eq('vehiculos.placa', cleaned).limit(1),
+          sb.from('persona_vehiculo').select('id,vehiculos!inner(placa)').eq('rol','propietario').eq('vehiculos.placa', cleaned).limit(1),
           sb.from('vehiculos').select('id').eq('placa', cleaned).limit(1)
         ]);
         if(cRes.data && cRes.data.length > 0){
@@ -661,7 +661,11 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   async function uploadFile(cedula, fieldName, file){
     const ts = Date.now();
     const ext = file.name.split('.').pop();
-    const path = cedula + '/' + fieldName + '_' + ts + '.' + ext;
+    const group = fieldName === 'foto_rostro' ? 'perfil'
+      : ['seguridad_social','cert_bancaria'].includes(fieldName) ? 'vinculacion'
+      : ['pase_frente','pase_reverso','pase_pdf'].includes(fieldName) ? 'conductor'
+      : 'identidad';
+    const path = 'personas/' + cedula + '/' + group + '/' + fieldName + '_' + ts + '.' + ext;
     const { data, error } = await sb.storage.from(BUCKET).upload(path, file, {
       cacheControl: '3600',
       upsert: false
@@ -671,7 +675,8 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   }
 
   async function uploadPdf(cedula, fieldName, blob){
-    const path = cedula + '/' + fieldName + '_' + Date.now() + '.pdf';
+    const group = fieldName === 'pase_pdf' ? 'conductor' : 'identidad';
+    const path = 'personas/' + cedula + '/' + group + '/' + fieldName + '_' + Date.now() + '.pdf';
     const { error } = await sb.storage.from(BUCKET).upload(path, blob, {
       cacheControl: '3600', upsert: false, contentType: 'application/pdf'
     });
@@ -778,8 +783,25 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         emergencia_telefono: $('emergencia_telefono').value.trim()
       };
 
-      const { error } = await sb.from('conductores').insert([row]);
-      if(error) throw new Error('Error guardando datos: ' + error.message);
+      const { data: persona, error: personaError } = await sb.from('personas').insert([{
+        cedula: row.cedula, primer_nombre: row.primer_nombre, segundo_nombre: row.segundo_nombre,
+        primer_apellido: row.primer_apellido, segundo_apellido: row.segundo_apellido,
+        direccion: row.direccion, ciudad: row.ciudad, telefono: row.telefono,
+        telefono_alterno: row.telefono_alterno, banco: row.banco, tipo_cuenta: row.tipo_cuenta,
+        numero_cuenta: row.numero_cuenta, autoriza_datos: row.autoriza_datos,
+        autoriza_sensibles: row.autoriza_sensibles, ref_familiar_nombre: row.ref_familiar_nombre,
+        ref_familiar_telefono: row.ref_familiar_telefono, ref_empresa_nombre: row.ref_empresa_nombre,
+        ref_empresa_telefono: row.ref_empresa_telefono, emergencia_nombre: row.emergencia_nombre,
+        emergencia_parentesco: row.emergencia_parentesco, emergencia_telefono: row.emergencia_telefono
+      }]).select('id').single();
+      if (personaError) throw new Error('Error guardando persona: ' + personaError.message);
+      const { data: vehiculo, error: vehiculoError } = await sb.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
+      if (vehiculoError) throw new Error('Error buscando vehículo: ' + vehiculoError.message);
+      if (!vehiculo) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
+      const { error: relationError } = await sb.from('persona_vehiculo').insert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor', licencia_categoria: row.licencia_categoria, licencia_vencimiento: row.licencia_vencimiento || null }]);
+      if (relationError) throw new Error('Error asociando conductor: ' + relationError.message);
+      const docs = Object.entries({foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
+      if (docs.length) { const { error: docsError } = await sb.from('documentos').insert(docs.map(([tipo,path]) => ({persona_id:persona.id, vehiculo_id:vehiculo.id, tipo, path, estado:'pendiente'}))); if (docsError) throw new Error('Error guardando documentos: ' + docsError.message); }
 
       overlay.classList.remove('visible');
       form.classList.add('hidden');
