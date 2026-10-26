@@ -1174,14 +1174,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
     try {
       const isConductor = role === 'conductor' || role === 'ambos';
-      if(isConductor){
-        const paseCheck = await DocumentValidation.validatePair(
-          fileStore.pase_frente[0], fileStore.pase_reverso[0], 'pase', cedula,
-          message => setOverlay('Validando licencia...', message)
-        );
-        if(!paseCheck.ok) throw new Error(paseCheck.message);
-      }
-
       setOverlay('Subiendo documentos...', '0 de ' + (totalFiles + 1 + (isConductor ? 1 : 0)));
       const paths = {};
 
