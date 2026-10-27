@@ -151,7 +151,8 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     <div class="step-panel active" id="step1">
       <div class="form-card">
         <h2>&#128100; &iquest;Cu&aacute;l es su relaci&oacute;n con el veh&iacute;culo?</h2>
-        <p class="section-desc">Seleccione su rol y la placa del veh&iacute;culo a vincular.</p>
+        <p class="section-desc">Seleccione un solo rol y diligencie los datos del veh&iacute;culo correspondiente.</p>
+        <p class="hint" style="margin-bottom:1.1rem">La vinculaci&oacute;n completa se consolida con tres componentes: conductor, propietario y veh&iacute;culo. Si usted es conductor y tambi&eacute;n desea registrar al propietario, podr&aacute; agregarlo al finalizar.</p>
 
         <div class="field">
           <label><span class="req" style="color:var(--red);margin-right:2px">*</span> Rol</label>
@@ -165,15 +166,12 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
               <label for="rol_propietario"><span class="role-icon">&#128203;</span>Propietario</label>
             </div>
             <div class="role-card">
-              <input type="radio" id="rol_ambos" name="rol" value="ambos">
-              <label for="rol_ambos"><span class="role-icon">&#129309;</span>Conductor y Propietario</label>
-            </div>
-            <div class="role-card">
               <input type="radio" id="rol_tenedor" name="rol" value="tenedor">
               <label for="rol_tenedor"><span class="role-icon">&#128273;</span>Tenedor</label>
             </div>
           </div>
           <div class="error-msg" id="err_rol">Debe seleccionar un rol</div>
+          <p class="hint" style="margin-top:.65rem">Si también necesita registrarse como propietario, deberá iniciar una nueva vinculación y volver a diligenciar los datos del vehículo.</p>
         </div>
 
         <div class="field">
@@ -302,7 +300,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="error-msg" id="err_numero_cuenta">Campo requerido</div>
         </div>
 
-        <!-- Factura electrónica: solo propietario/ambos -->
+        <!-- Factura electrónica: solo propietario -->
         <div class="field cond" id="cond_factura">
           <label>&iquest;Factura electr&oacute;nicamente? <span class="req">*</span></label>
           <div class="radio-group" id="radioFactura">
@@ -347,7 +345,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="error-msg" id="err_cedula_reverso">Este documento es requerido</div>
         </div>
 
-        <!-- Solo conductor/ambos -->
+        <!-- Solo conductor -->
         <div class="cond" id="cond_docs_conductor">
           <div class="field">
             <label>Foto Rostro <span class="req">*</span></label>
@@ -404,7 +402,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           </div>
         </div>
 
-        <!-- Solo propietario/ambos -->
+        <!-- Solo propietario -->
         <div class="cond" id="cond_docs_propietario">
           <div class="field">
             <label>Foto del propietario <span class="req">*</span></label>
@@ -693,6 +691,14 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       <h2>&iexcl;Vinculaci&oacute;n enviada!</h2>
       <p class="sub-msg">Tu informaci&oacute;n fue recibida. Nos comunicaremos contigo pronto.</p>
       <p class="copy-note">Si necesitas corregir o completar algo, nos comunicaremos contigo y te enviaremos un enlace personal de acceso.</p>
+      <p style="font-size:.88rem;color:var(--gray-600);margin-bottom:.65rem">Tu enlace personal para consultar o actualizar tus datos:</p>
+      <div class="magic-link-box" id="magicLinkBox"></div>
+      <button class="copy-btn" id="copyBtn">&#128203; Copiar enlace</button>
+      <p class="copy-note">Guarda este enlace. Con &eacute;l puedes ver y actualizar tu informaci&oacute;n.</p>
+      <div id="completionNote" style="margin:1.25rem 0 1rem;padding:1rem;background:#FFF3CD;border:1px solid #FFECB5;border-radius:var(--radius);font-size:.86rem;color:#856404;text-align:left;line-height:1.5">
+        <strong>Importante:</strong> la vinculaci&oacute;n completa se consolida cuando recibimos los tres datos: conductor, propietario y veh&iacute;culo.
+      </div>
+      <a class="btn-outline-nav" id="newOwnerLink" href="vinculacion.html" style="text-decoration:none;display:none">Agregar propietario y completar vinculaci&oacute;n</a>
     </div>
   </div>
 
@@ -728,7 +734,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
   /* ── State ── */
   let currentStep = 1;
-  let selectedRole = null; // 'conductor' | 'propietario' | 'ambos' | 'tenedor'
+  let selectedRole = null; // 'conductor' | 'propietario' | 'tenedor'
   let isEditMode = false;
   let editPersonaId = null;
   let fileStore = {}; // field -> File[] (most single, fotos_vehiculo multiple)
@@ -807,8 +813,8 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
   /* ── Conditional visibility ── */
   function updateConditionals(){
     const role = selectedRole;
-    const isConductor = role === 'conductor' || role === 'ambos';
-    const isPropietario = role === 'propietario' || role === 'ambos';
+    const isConductor = role === 'conductor';
+    const isPropietario = role === 'propietario';
 
     toggleCond('cond_factura', isPropietario);
     toggleCond('cond_docs_conductor', isConductor);
@@ -1045,7 +1051,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       if(!requireText('banco')) ok = false;
       if(!requireText('numero_cuenta')) ok = false;
       if(!document.querySelector('input[name="tipo_cuenta"]:checked')){ showErr('tipo_cuenta'); ok = false; }
-      const isProp = selectedRole === 'propietario' || selectedRole === 'ambos';
+      const isProp = selectedRole === 'propietario';
       if(isProp && !document.querySelector('input[name="factura_electronica"]:checked')){
         showErr('factura_electronica'); ok = false;
       }
@@ -1054,8 +1060,8 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     if(n === 4){
       if(!requireFile('cedula_frente')) ok = false;
       if(!requireFile('cedula_reverso')) ok = false;
-      const isCond = selectedRole === 'conductor' || selectedRole === 'ambos';
-      const isProp = selectedRole === 'propietario' || selectedRole === 'ambos';
+      const isCond = selectedRole === 'conductor';
+      const isProp = selectedRole === 'propietario';
       if(isCond){
         if(!requireFile('foto_rostro')) ok = false;
         if(!requireFile('pase_frente')) ok = false;
@@ -1301,11 +1307,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         personaData.tipo_cuenta = (document.querySelector('input[name="tipo_cuenta"]:checked') || {}).value || null;
         personaData.numero_cuenta = $('numero_cuenta').value.trim() || null;
       }
-      if(role === 'propietario' || role === 'ambos'){
+      if(role === 'propietario'){
         const factura = document.querySelector('input[name="factura_electronica"]:checked');
         personaData.factura_electronica = factura ? factura.value === 'Si' : false;
       }
-      if(role === 'conductor' || role === 'ambos'){
+      if(role === 'conductor'){
         personaData.ref_familiar_nombre = $('ref_familiar_nombre').value.trim() || null;
         personaData.ref_familiar_telefono = $('ref_familiar_telefono').value.trim() || null;
         personaData.ref_empresa_nombre = $('ref_empresa_nombre').value.trim() || null;
@@ -1530,6 +1536,16 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
       // El enlace queda guardado en personas.edit_token, pero no se expone
       // en la pantalla pública. El equipo lo comparte manualmente si hace falta.
+
+      if(role === 'conductor'){
+        $('completionNote').innerHTML = '<strong>Falta un paso:</strong> ya recibimos los datos del conductor y del veh&iacute;culo. Para consolidar la vinculaci&oacute;n necesitamos tambi&eacute;n los datos del propietario y del veh&iacute;culo.';
+        $('newOwnerLink').textContent = 'Agregar propietario y completar vinculación';
+        $('newOwnerLink').style.display = 'block';
+      } else if(role === 'propietario'){
+        $('completionNote').innerHTML = '<strong>Falta un paso:</strong> ya recibimos los datos del propietario y del veh&iacute;culo. Para consolidar la vinculaci&oacute;n necesitamos tambi&eacute;n los datos del conductor y del veh&iacute;culo.';
+        $('newOwnerLink').textContent = 'Agregar conductor y completar vinculación';
+        $('newOwnerLink').style.display = 'block';
+      }
 
       $('successCard').scrollIntoView({behavior:'smooth', block:'start'});
 
