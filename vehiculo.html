@@ -28,6 +28,11 @@ header p{font-size:.8rem;color:var(--gray-500);letter-spacing:.04em}
 .field input.error,.field select.error{border-color:var(--red)}
 .field .error-msg{color:var(--red);font-size:.75rem;margin-top:3px;display:none}
 .field input.error~.error-msg,.field select.error~.error-msg,.field.has-error .error-msg{display:block}
+.satelital-consent{display:flex;align-items:flex-start;gap:.6rem;padding:.85rem;border:1.5px solid var(--gray-200);border-radius:var(--radius);margin-top:.85rem;background:var(--gray-50);font-size:.82rem;line-height:1.45;color:var(--gray-700)}
+.satelital-consent.invalid{border-color:var(--red);background:#fff5f5}
+.satelital-consent input{width:19px;height:19px;accent-color:var(--gold);flex-shrink:0;margin-top:.1rem}
+.satelital-consent-error{color:var(--red);font-size:.75rem;margin-top:.3rem;display:none}
+.satelital-consent-error.visible{display:block}
 .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23495057' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2.5rem}
 /* Radio groups */
 .radio-group{display:flex;gap:.75rem;flex-wrap:wrap}
@@ -173,6 +178,11 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
           <label for="satelital_password">Contraseña satelital</label>
           <input type="text" id="satelital_password" name="satelital_password" autocomplete="off">
         </div>
+        <div id="satelitalConsent" class="satelital-consent">
+          <input type="checkbox" id="autorizaSatelital">
+          <label for="autorizaSatelital">Autorizo a Capital Cargo Colombia a utilizar el sistema satelital del veh&iacute;culo para seguimiento, seguridad, trazabilidad y coordinaci&oacute;n operativa.</label>
+        </div>
+        <div id="satelitalConsentError" class="satelital-consent-error">Debes aceptar esta autorizaci&oacute;n para registrar el uso del sistema satelital.</div>
       </div>
     </div>
 
@@ -260,7 +270,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
   <div class="success-view" id="successView">
     <div class="check">&#10003;</div>
     <h2>¡Datos del vehículo enviados!</h2>
-    <p id="successMessage">Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
+    <p id="successMessage">El veh&iacute;culo qued&oacute; registrado con la placa indicada. Ahora agrega el conductor y el propietario para completar la vinculaci&oacute;n del carro.</p>
     <div class="nav-buttons" id="navButtons"></div>
   </div>
 </main>
@@ -492,6 +502,17 @@ function validate(){
     } else {
       otroInput.classList.remove('error');
     }
+    const consent = document.getElementById('autorizaSatelital');
+    const consentBox = document.getElementById('satelitalConsent');
+    const consentError = document.getElementById('satelitalConsentError');
+    if(satVal.value === 'si' && !consent.checked){
+      consentBox.classList.add('invalid');
+      consentError.classList.add('visible');
+      valid = false;
+    } else {
+      consentBox.classList.remove('invalid');
+      consentError.classList.remove('visible');
+    }
   }
 
   // File fields
@@ -653,7 +674,8 @@ form.addEventListener('submit', async function(e){
     var navBtns = document.getElementById('navButtons');
     navBtns.innerHTML =
       '<a class="btn-outline" href="conductor.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Conductor</a>' +
-      '<a class="btn-outline" href="propietario.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Propietario</a>';
+      '<a class="btn-outline" href="propietario.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Propietario</a>' +
+      '<a class="btn-outline" href="index.html">Ir al inicio</a>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch(err){

@@ -332,7 +332,7 @@ footer a{color:var(--gold)}
     <div class="success-screen">
       <div class="checkmark">&#10003;</div>
       <h2>&iexcl;Datos del propietario enviados!</h2>
-      <p>Tu informaci&oacute;n fue recibida. Nos comunicaremos contigo pronto.</p>
+      <p>El propietario qued&oacute; asociado a la placa indicada. La vinculaci&oacute;n se completa cuando tambi&eacute;n est&eacute;n registrados el conductor y el veh&iacute;culo.</p>
       <div class="nav-buttons" id="navButtons"></div>
     </div>
   </div>
@@ -705,7 +705,8 @@ footer a{color:var(--gold)}
       var navBtns = document.getElementById('navButtons');
       navBtns.innerHTML =
         '<a class="btn-outline" href="conductor.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Conductor</a>' +
-        '<a class="btn-outline" href="vehiculo.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Veh\u00EDculo</a>';
+        '<a class="btn-outline" href="vehiculo.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Veh\u00EDculo</a>' +
+        '<a class="btn-outline" href="index.html">Ir al inicio</a>';
       window.scrollTo({top: 0, behavior: 'smooth'});
 
     } catch(err){

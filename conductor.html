@@ -370,7 +370,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 <div class="success-card hidden" id="successCard">
   <div class="check">&#10003;</div>
   <h2>¡Datos del conductor enviados!</h2>
-  <p>Tu información fue recibida. Nos comunicaremos contigo pronto.</p>
+  <p>El conductor qued&oacute; asociado a la placa indicada. La vinculaci&oacute;n se completa cuando tambi&eacute;n est&eacute;n registrados el veh&iacute;culo y el propietario.</p>
   <div class="nav-buttons" id="navButtons"></div>
 </div>
 </main>
@@ -809,7 +809,8 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       var navBtns = $('navButtons');
       navBtns.innerHTML =
         '<a class="btn-outline" href="propietario.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Propietario</a>' +
-        '<a class="btn-outline" href="vehiculo.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Veh&iacute;culo</a>';
+        '<a class="btn-outline" href="vehiculo.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Veh&iacute;culo</a>' +
+        '<a class="btn-outline" href="index.html">Ir al inicio</a>';
       successCard.scrollIntoView({behavior:'smooth',block:'center'});
 
     } catch(err){

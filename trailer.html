@@ -28,6 +28,9 @@ header p{font-size:.8rem;color:var(--gray-500);letter-spacing:.04em}
 .field input.error{border-color:var(--red)}
 .field .error-msg{color:var(--red);font-size:.75rem;margin-top:3px;display:none}
 .field input.error~.error-msg{display:block}
+.owner-required{display:none;background:#fff5f5;border:1px solid #f1b0b7;border-radius:var(--radius);padding:.85rem;margin:-.35rem 0 1.15rem;color:var(--red);font-size:.82rem;line-height:1.5}
+.owner-required.visible{display:block}
+.owner-required a{display:inline-block;margin-top:.5rem;color:var(--red);font-weight:700}
 /* Radio groups */
 .radio-group{display:flex;gap:.75rem;flex-wrap:wrap}
 .radio-group label{display:flex;align-items:center;gap:.5rem;font-weight:400;padding:.6rem 1rem;border:1.5px solid var(--gray-300);border-radius:var(--radius);cursor:pointer;transition:all .2s;min-width:80px;justify-content:center;-webkit-tap-highlight-color:transparent}
@@ -59,6 +62,7 @@ header p{font-size:.8rem;color:var(--gray-500);letter-spacing:.04em}
 .success-screen .checkmark{width:80px;height:80px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.5rem;color:#fff}
 .success-screen h2{color:var(--navy);margin-bottom:.75rem;font-size:1.3rem}
 .success-screen p{color:var(--gray-600);font-size:.95rem;line-height:1.6}
+.success-home{display:block;margin-top:1.25rem;padding:.75rem;background:var(--white);color:var(--gold);border:2px solid var(--gold);border-radius:var(--radius);font-size:.95rem;font-weight:700;text-decoration:none}
 /* Overlay */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
 .overlay.visible{display:flex}
@@ -100,6 +104,11 @@ footer a{color:var(--gold)}
                style="text-transform:uppercase">
         <div class="hint">Ingresa la placa de la mula a la que se acopla este trailer</div>
         <div class="error-msg" id="errVehiculoPlaca">Formato invalido. Ejemplo: ABC12D o ABC123</div>
+      </div>
+
+      <div class="owner-required" id="ownerRequired">
+        Para registrar el trailer primero debe existir un propietario asociado a esta placa de mula.
+        <br><a id="ownerLink" href="propietario.html">Registrar propietario de la mula</a>
       </div>
 
       <!-- Placa del trailer -->
@@ -174,7 +183,8 @@ footer a{color:var(--gold)}
   <div class="success-screen" id="successScreen">
     <div class="checkmark">&#10003;</div>
     <h2>Datos del trailer enviados!</h2>
-    <p>Tu informacion fue recibida.</p>
+    <p>El trailer qued&oacute; asociado a la mula y a su propietario registrado.</p>
+    <a class="success-home" href="index.html">Ir al inicio</a>
   </div>
 
 </div>
@@ -324,6 +334,21 @@ footer a{color:var(--gold)}
       placaVehInput.focus();
       return;
     }
+
+    // El propietario de la mula debe existir antes de registrar el trailer.
+    var ownerResult = await sb.from('propietarios').select('id').eq('vehiculo_placa', placaVeh).limit(1);
+    if (ownerResult.error){
+      alert('No fue posible verificar el propietario de la mula: ' + ownerResult.error.message);
+      return;
+    }
+    if (!ownerResult.data || ownerResult.data.length === 0){
+      document.getElementById('ownerLink').href = 'propietario.html?placa=' + encodeURIComponent(placaVeh);
+      document.getElementById('ownerRequired').classList.add('visible');
+      placaVehInput.classList.add('error');
+      placaVehInput.focus();
+      return;
+    }
+    document.getElementById('ownerRequired').classList.remove('visible');
 
     var placaTrailer = document.getElementById('placaTrailer').value.trim().toUpperCase() || null;
 
