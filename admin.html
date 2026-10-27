@@ -439,6 +439,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .toast-error{border-left:3px solid #DC2626;color:#991B1B}
 .toast-info{border-left:3px solid #2563EB;color:#1E40AF}
 
+/* ===== Document download actions ===== */
+.doc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.doc-actions .btn{font-size:.78rem}
+
 /* ===== Login ===== */
 .login-overlay{
   position:fixed;inset:0;
@@ -625,6 +629,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
 // ===== Config =====
 const SUPA_URL = 'https://kidvrjpelcyjrvonpimf.supabase.co';
@@ -1453,6 +1458,7 @@ function renderPanelDocs(body, table, r) {
   if (Array.isArray(r._documentos)) {
     const docs = r._documentos.filter(d => d && d.path);
     html += '<div style="margin-bottom:16px;font-size:.82rem;color:var(--gray-600)">Documentos recibidos: <span class="doc-fraction complete">'+docs.length+'/'+docs.length+'</span></div>';
+    html += documentDownloadActions(table, r);
     if (!docs.length) {
       body.innerHTML = html + '<div class="empty-state">No hay documentos recibidos para este registro.</div>';
       return;
@@ -1472,6 +1478,7 @@ function renderPanelDocs(body, table, r) {
   const total = documentTotal(r, table);
   const cls = uploaded >= total ? 'complete' : 'partial';
   html += '<div style="margin-bottom:16px;font-size:.82rem;color:var(--gray-600)">Documentos cargados: <span class="doc-fraction '+cls+'">'+uploaded+'/'+total+'</span></div>';
+  html += documentDownloadActions(table, r);
 
   Object.keys(groups).forEach(groupName => {
     html += '<div class="doc-group"><div class="doc-group-label">'+groupName+'</div><div class="docs-grid">';
@@ -1497,6 +1504,91 @@ function renderPanelDocs(body, table, r) {
   }
 
   body.innerHTML = html;
+}
+
+function documentDownloadActions(table, r) {
+  const label = table === 'vehiculos' ? 'Descargar papeles del carro' : 'Descargar papeles de la persona';
+  const scope = table === 'vehiculos' ? 'vehicle' : 'person';
+  return '<div class="doc-actions"><button class="btn btn-primary btn-sm" onclick="downloadRecordDocuments(\''+scope+'\',\''+escAttr(r.id)+'\',\''+escAttr(table)+'\')">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' + label + '</button></div>';
+}
+
+function recordDocuments(r, table, scope) {
+  const docs = [];
+  const seen = new Set();
+  const add = (path, type, label) => {
+    if (!path || seen.has(path)) return;
+    seen.add(path);
+    docs.push({ path, type: type || 'documento', label: label || DOC_LABELS[type] || type || 'Documento' });
+  };
+
+  if (Array.isArray(r._documentos)) {
+    r._documentos.forEach(d => {
+      if (!d || !d.path) return;
+      const belongs = scope === 'vehicle' ? String(d.vehiculo_id || '') === String(r.id || r.vehiculo_id || '') : String(d.persona_id || '') === String(r.persona_id || '');
+      if (belongs || (!d.persona_id && !d.vehiculo_id && scope === 'vehicle')) add(d.path, d.tipo, DOC_LABELS[d.tipo] || d.tipo);
+    });
+  }
+
+  // Compatibility with the older denormalized columns.
+  const fields = table === 'vehiculos' ? DOC_FIELDS.vehiculos : DOC_FIELDS[table] || [];
+  fields.forEach(field => add(r[field], field, DOC_LABELS[field] || field));
+  if (table === 'vehiculos' && Array.isArray(r.fotos)) r.fotos.forEach((path, i) => add(path, 'foto_vehiculo_'+(i+1), 'Foto del vehículo '+(i+1)));
+  if (table !== 'vehiculos') {
+    if (!r.cedula_pdf) { add(r.cedula_frente, 'cedula_frente', 'Cédula - frente'); add(r.cedula_reverso, 'cedula_reverso', 'Cédula - reverso'); }
+    if (table === 'conductores' && !r.pase_pdf) { add(r.pase_frente, 'pase_frente', 'Pase - frente'); add(r.pase_reverso, 'pase_reverso', 'Pase - reverso'); }
+  } else if (!r.tarjeta_pdf) {
+    add(r.tarjeta_frente, 'tarjeta_frente', 'Tarjeta - frente'); add(r.tarjeta_reverso, 'tarjeta_reverso', 'Tarjeta - reverso');
+  }
+  return docs;
+}
+
+function safeFileName(value) {
+  return String(value || 'documento').replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').replace(/\s+/g, ' ').trim().slice(0, 100) || 'documento';
+}
+
+async function downloadRecordDocuments(scope, id, table) {
+  if (typeof JSZip === 'undefined') { showToast('No se pudo cargar el descargador ZIP', 'error'); return; }
+  const record = (cache[table] || []).find(r => String(r.id) === String(id));
+  if (!record) { showToast('No se encontró el registro', 'error'); return; }
+  const docs = recordDocuments(record, table, scope);
+  if (!docs.length) { showToast('Este registro no tiene documentos para descargar', 'info'); return; }
+
+  const zip = new JSZip();
+  const usedNames = new Set();
+  let downloaded = 0;
+  let failed = 0;
+  showToast('Preparando documentos...', 'info');
+  await Promise.all(docs.map(async (doc, index) => {
+    try {
+      const response = await fetch(STORAGE_BASE + doc.path);
+      if (!response.ok) throw new Error('HTTP '+response.status);
+      const blob = await response.blob();
+      const original = String(doc.path).split('/').pop() || ('documento_'+(index+1));
+      const extension = original.includes('.') ? original.slice(original.lastIndexOf('.')) : '';
+      let filename = safeFileName(doc.label) + extension;
+      let suffix = 2;
+      while (usedNames.has(filename)) filename = safeFileName(doc.label)+'_'+(suffix++)+extension;
+      usedNames.add(filename);
+      zip.file(filename, blob);
+      downloaded++;
+    } catch (error) {
+      failed++;
+      console.warn('No se pudo descargar '+doc.path, error);
+    }
+  }));
+
+  if (!downloaded) { showToast('No se pudo descargar ningún documento', 'error'); return; }
+  const archive = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(archive);
+  const subject = scope === 'vehicle' ? ('vehiculo_'+(record.placa || record.vehiculo_placa || record.id)) : ('persona_'+(record.cedula || record.persona_id || record.id));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = safeFileName(subject)+'_documentos.zip';
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); }, 500);
+  showToast('ZIP descargado'+(failed ? ' ('+failed+' documento(s) no disponible(s))' : ''), failed ? 'info' : 'success');
 }
 
 function renderPanelRunt(body, table, r) {
