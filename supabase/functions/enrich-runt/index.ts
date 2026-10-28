@@ -21,34 +21,47 @@ async function ocrCaptcha(base64Image: string): Promise<string | null> {
   const imageData = base64Image.startsWith("data:")
     ? base64Image
     : `data:image/png;base64,${base64Image}`;
+  const encoded = imageData.split(",").pop() || "";
+  const bytes = Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0));
 
-  const form = new FormData();
-  form.append("base64Image", imageData);
-  form.append("OCREngine", "2");
-  form.append("isTable", "false");
-  form.append("scale", "true");
+  // Captchas are short and noisy. Try both free OCR.space engines and only
+  // accept a compact alphanumeric candidate, avoiding form text/garbage.
+  for (const engine of ["2", "1"]) {
+    const form = new FormData();
+    // Send it as a real file. OCR.space is more reliable with multipart file
+    // uploads than with base64Image for small captcha images.
+    form.append("file", new Blob([bytes], { type: "image/png" }), "captcha.png");
+    form.append("OCREngine", engine);
+    form.append("language", "eng");
+    form.append("isTable", "false");
+    form.append("scale", "true");
+    form.append("detectOrientation", "false");
 
-  const res = await fetch("https://api.ocr.space/parse/image", {
-    method: "POST",
-    headers: { apikey: OCR_SPACE_KEY },
-    body: form,
-  });
+    const res = await fetch("https://api.ocr.space/parse/image", {
+      method: "POST",
+      headers: { apikey: OCR_SPACE_KEY },
+      body: form,
+    });
 
-  if (!res.ok) {
-    console.warn(`OCR.space HTTP ${res.status}`);
-    return null;
+    if (!res.ok) {
+      console.warn(`OCR.space engine ${engine} HTTP ${res.status}`);
+      continue;
+    }
+
+    const data = await res.json();
+    if (data?.IsErroredOnProcessing) {
+      console.warn(`OCR.space engine ${engine}: ${JSON.stringify(data.ErrorMessage)}`);
+      continue;
+    }
+
+    const parsed = data?.ParsedResults?.[0]?.ParsedText?.trim() || "";
+    const clean = parsed.replace(/[^a-zA-Z0-9]/g, "");
+    console.log(`OCR engine ${engine}: "${parsed}" -> clean: "${clean}"`);
+    if (clean.length >= 4 && clean.length <= 8) return clean;
   }
 
-  const data = await res.json();
-  const parsed = data?.ParsedResults?.[0]?.ParsedText?.trim();
-  if (!parsed) {
-    console.warn("OCR.space: no text parsed");
-    return null;
-  }
-
-  const clean = parsed.replace(/[^a-zA-Z0-9]/g, "");
-  console.log(`OCR result: "${parsed}" -> clean: "${clean}"`);
-  return clean || null;
+  console.warn("OCR.space: no valid captcha candidate");
+  return null;
 }
 
 // ─── RUNT Licencia flow ───
@@ -301,41 +314,28 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      const { data: prop } = await sb
-        .from("propietarios")
-        .select("cedula")
-        .eq("vehiculo_placa", placa)
+      // The unified schema stores vehicle ownership in persona_vehiculo;
+      // the old propietarios/conductores tables are no longer authoritative.
+      const { data: relation, error: relationError } = await sb
+        .from("persona_vehiculo")
+        .select("personas!inner(cedula), vehiculos!inner(placa)")
+        .eq("vehiculos.placa", placa)
+        .eq("rol", "propietario")
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (!prop?.cedula) {
-        const { data: cond } = await sb
-          .from("conductores")
-          .select("cedula")
-          .eq("vehiculo_placa", placa)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
-
-        if (!cond?.cedula) {
-          return new Response(
-            JSON.stringify({ error: `No cedula found for placa ${placa}` }),
-            { status: 400, headers: { "Content-Type": "application/json" } }
-          );
-        }
-
-        const result = await enrichVehiculo(placa, cond.cedula);
-        await saveVehiculo(placa, cond.cedula, result);
-
+      if (relationError) throw new Error(`No fue posible buscar la relación del vehículo: ${relationError.message}`);
+      const cedula = relation?.personas?.cedula;
+      if (!cedula) {
         return new Response(
-          JSON.stringify({ ok: true, tabla: "runt_vehiculos", success: result.success }),
-          { headers: { "Content-Type": "application/json" } }
+          JSON.stringify({ error: `No hay propietario asociado a la placa ${placa}; RUNT no fue consultado` }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
 
-      const result = await enrichVehiculo(placa, prop.cedula);
-      await saveVehiculo(placa, prop.cedula, result);
+      const result = await enrichVehiculo(placa, cedula);
+      await saveVehiculo(placa, cedula, result);
 
       return new Response(
         JSON.stringify({ ok: true, tabla: "runt_vehiculos", success: result.success }),

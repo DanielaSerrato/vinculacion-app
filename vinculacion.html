@@ -327,7 +327,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         <div class="field">
           <label>C&eacute;dula Frente <span class="req">*</span></label>
           <div class="file-drop" id="drop_cedula_frente">
-            <input type="file" id="file_cedula_frente" accept="image/jpeg,image/png,image/webp">
+            <input type="file" id="file_cedula_frente" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
             <div class="icon">&#128196;</div>
             <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
           </div>
@@ -337,7 +337,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         <div class="field">
           <label>C&eacute;dula Reverso <span class="req">*</span></label>
           <div class="file-drop" id="drop_cedula_reverso">
-            <input type="file" id="file_cedula_reverso" accept="image/jpeg,image/png,image/webp">
+            <input type="file" id="file_cedula_reverso" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
             <div class="icon">&#128196;</div>
             <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
           </div>
@@ -361,7 +361,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="field">
             <label>Pase de Conducci&oacute;n Frente <span class="req">*</span></label>
             <div class="file-drop" id="drop_pase_frente">
-            <input type="file" id="file_pase_frente" accept="image/jpeg,image/png,image/webp">
+            <input type="file" id="file_pase_frente" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
               <div class="icon">&#128196;</div>
               <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
             </div>
@@ -371,7 +371,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <div class="field">
             <label>Pase de Conducci&oacute;n Reverso <span class="req">*</span></label>
             <div class="file-drop" id="drop_pase_reverso">
-            <input type="file" id="file_pase_reverso" accept="image/jpeg,image/png,image/webp">
+            <input type="file" id="file_pase_reverso" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
               <div class="icon">&#128196;</div>
               <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
             </div>
@@ -717,6 +717,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="document-validation.js"></script>
 <script>
@@ -911,19 +912,24 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     });
   });
 
-  function handleFiles(field, files, prevEl){
+  async function handleFiles(field, files, prevEl){
     const isMulti = field === 'fotos_vehiculo';
-    files.forEach(file => {
+    for (const file of files) {
       if(file.size > MAX_FILE_SIZE){
         alert('El archivo "' + file.name + '" excede 10 MB. Por favor sube un archivo más pequeño.');
         return;
       }
-      if(isMulti){
-        fileStore[field].push(file);
-      } else {
-        fileStore[field] = [file];
+      try {
+        const normalized = await DocumentValidation.normalizeImageFile(file);
+        if(isMulti){
+          fileStore[field].push(normalized);
+        } else {
+          fileStore[field] = [normalized];
+        }
+      } catch (error) {
+        alert(error.message || 'No fue posible preparar la imagen.');
       }
-    });
+    }
     renderPreview(field, prevEl);
     // Clear invalid state
     const drop = $('drop_' + field);
@@ -1377,8 +1383,25 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       }
 
       // The vehicle owner is always explicit, even when the main applicant has another role.
+      // Keep a normalized relationship for corporate ownership too; the admin panel
+      // reads ownership from persona_vehiculo, not only from vehiculos.propietario_nit.
       let ownerPersonaId = persona.id;
-      if(ownerChoice === 'otra_persona'){
+      if(ownerChoice === 'capital_cargo'){
+        const { data: owner, error: ownerErr } = await sb.from('personas').upsert({
+          cedula: '900491068-0',
+          primer_nombre: 'Capital',
+          segundo_nombre: null,
+          primer_apellido: 'Cargo',
+          segundo_apellido: null,
+          telefono: null,
+          direccion: null,
+          ciudad: null,
+          autoriza_datos: true,
+          autoriza_sensibles: true
+        }, { onConflict: 'cedula' }).select('id').single();
+        if(ownerErr) throw new Error('Error guardando propietario corporativo: ' + ownerErr.message);
+        ownerPersonaId = owner.id;
+      } else if(ownerChoice === 'otra_persona'){
         const ownerData = {
           cedula: $('prop_cedula').value.trim(), primer_nombre: $('prop_primer_nombre').value.trim(),
           segundo_nombre: $('prop_segundo_nombre').value.trim() || null, primer_apellido: $('prop_primer_apellido').value.trim(),
@@ -1389,13 +1412,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         if(ownerErr) throw new Error('Error guardando propietario: ' + ownerErr.message);
         ownerPersonaId = owner.id;
       }
-      if(ownerChoice !== 'capital_cargo'){
-        const { data: ownerRelation, error: ownerRelErr } = await sb.from('persona_vehiculo').upsert({
-          persona_id: ownerPersonaId, vehiculo_id: vehiculo.id, rol: 'propietario', estado: 'pendiente', systram_estado: 'pendiente', systram_etapa: 'preparado'
-        }, { onConflict: 'persona_id,vehiculo_id,rol' }).select('id').single();
-        if(ownerRelErr) throw new Error('Error registrando propietario: ' + ownerRelErr.message);
-        relations.push(ownerRelation);
-      }
+      const { data: ownerRelation, error: ownerRelErr } = await sb.from('persona_vehiculo').upsert({
+        persona_id: ownerPersonaId, vehiculo_id: vehiculo.id, rol: 'propietario', estado: 'pendiente', systram_estado: 'pendiente', systram_etapa: 'preparado'
+      }, { onConflict: 'persona_id,vehiculo_id,rol' }).select('id').single();
+      if(ownerRelErr) throw new Error('Error registrando propietario: ' + ownerRelErr.message);
+      relations.push(ownerRelation);
       if($('vehiculo_arrendado').checked){
         const tenCedula = $('ten_cedula').value.trim();
         const tenParts = $('ten_nombre').value.trim().split(/\s+/);

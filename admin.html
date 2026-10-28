@@ -818,7 +818,7 @@ async function loadTable(table) {
   if (table === 'conductores' || table === 'propietarios') {
     const role = table === 'conductores' ? 'conductor' : 'propietario';
     const { data, error } = await sb.from('persona_vehiculo')
-      .select('id,persona_id,vehiculo_id,rol,estado,created_at,personas!inner(*)')
+      .select('id,persona_id,vehiculo_id,rol,estado,created_at,personas!inner(*),vehiculos(placa)')
       .eq('rol', role).order('created_at', { ascending: false });
     if (error) { console.error(error); cache[table] = []; return; }
     const personaIds = (data || []).map(r => r.persona_id);
@@ -835,7 +835,7 @@ async function loadTable(table) {
       estudio_seguridad:'estudio_seguridad'
     };
     cache[table] = (data || []).map(r => {
-      const row = {...r.personas, ...r, vehiculo_placa: r.vehiculo_id, persona_id:r.persona_id, vehiculo_id:r.vehiculo_id};
+      const row = {...r.personas, ...r, vehiculo_placa: r.vehiculos?.placa || r.vehiculo_id, persona_id:r.persona_id, vehiculo_id:r.vehiculo_id};
       docs.filter(d => d.persona_id === r.persona_id && (!d.vehiculo_id || d.vehiculo_id === r.vehiculo_id)).forEach(d => { const field = aliases[d.tipo] || d.tipo; if (field && !row[field]) row[field] = d.path; });
       return row;
     });
@@ -933,6 +933,26 @@ function mergeVinculacionUnificada() {
   });
   cache.conductores = [...(cache.conductores || []), ...nuevosConductores];
   cache.propietarios = [...(cache.propietarios || []), ...nuevosPropietarios];
+
+  // La migración histórica creó algunas relaciones cuyo vehiculo_id quedó
+  // visible como UUID porque el vehículo no tenía placa asociada. Si la misma
+  // cédula ya tiene una relación con una placa real, no mostramos ese renglón
+  // fantasma como si fuera otro vehículo.
+  ['conductores', 'propietarios'].forEach(table => {
+    const rows = cache[table] || [];
+    const cedulasConPlacaReal = new Set(rows
+      .filter(row => row.cedula && row.vehiculo_placa && !isUuidVehicleId(row.vehiculo_placa))
+      .map(row => String(row.cedula).trim()));
+    cache[table] = rows.filter(row => !(
+      row.cedula &&
+      cedulasConPlacaReal.has(String(row.cedula).trim()) &&
+      isUuidVehicleId(row.vehiculo_placa)
+    ));
+  });
+}
+
+function isUuidVehicleId(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || '').trim());
 }
 
 async function loadRuntLicencias() {
@@ -1142,14 +1162,31 @@ function getTableColumns(table) {
 async function asignarPropietario(vehiculoId) {
   const cedula = prompt('Cédula del propietario según la tarjeta de propiedad:');
   if (!cedula || !cedula.trim()) return;
-  const nombre = prompt('Nombre completo del propietario:');
-  if (!nombre || !nombre.trim()) return;
-  const partes = nombre.trim().split(/\s+/);
-  const { data: persona, error: personaErr } = await sb.from('personas').upsert({
-    cedula: cedula.trim(), primer_nombre: partes.shift() || cedula.trim(), primer_apellido: partes.pop() || '',
-    segundo_nombre: partes.join(' ') || null, autoriza_datos: true, autoriza_sensibles: true
-  }, { onConflict: 'cedula' }).select('id').single();
-  if (personaErr) { showToast('No se pudo guardar el propietario: ' + personaErr.message, 'error'); return; }
+  const cedulaLimpia = cedula.trim().replace(/[^0-9A-Za-z]/g, '');
+  if (!cedulaLimpia) return;
+
+  // Reutilizar la persona existente evita duplicados y permite enlazar
+  // rápidamente un conductor que también sea propietario.
+  const { data: existente, error: busquedaErr } = await sb.from('personas')
+    .select('id,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido')
+    .eq('cedula', cedulaLimpia)
+    .maybeSingle();
+  if (busquedaErr) { showToast('No se pudo buscar la persona: ' + busquedaErr.message, 'error'); return; }
+
+  let persona = existente;
+  if (!persona) {
+    const nombre = prompt('La cédula no existe. Nombre completo del propietario:');
+    if (!nombre || !nombre.trim()) return;
+    const partes = nombre.trim().split(/\s+/);
+    const primerNombre = partes.shift() || cedulaLimpia;
+    const primerApellido = partes.length ? partes.pop() : '';
+    const { data: creada, error: personaErr } = await sb.from('personas').upsert({
+      cedula: cedulaLimpia, primer_nombre: primerNombre, primer_apellido: primerApellido,
+      segundo_nombre: partes.join(' ') || null, autoriza_datos: true, autoriza_sensibles: true
+    }, { onConflict: 'cedula' }).select('id').single();
+    if (personaErr) { showToast('No se pudo guardar el propietario: ' + personaErr.message, 'error'); return; }
+    persona = creada;
+  }
   const { error } = await sb.from('persona_vehiculo').upsert({
     persona_id: persona.id, vehiculo_id: vehiculoId, rol: 'propietario', estado: 'pendiente', systram_estado: 'pendiente', systram_etapa: 'preparado'
   }, { onConflict: 'persona_id,vehiculo_id,rol' });
@@ -1817,11 +1854,12 @@ async function consultarRuntLic(condId, cedula, primerApellido) {
   if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Consultando...'; }
 
   try {
-    await fetch(ENRICH_URL, {
+    const response = await fetch(ENRICH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
       body: JSON.stringify({ tabla: 'conductores', datos: { cedula, primer_apellido: primerApellido } })
     });
+    if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || 'La consulta RUNT falló');
     await loadRuntLicencias();
     showToast('Consulta RUNT completada', 'success');
     updateKPIs();
@@ -1838,11 +1876,12 @@ async function consultarRuntVeh(vehId, placa) {
   if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Consultando...'; }
 
   try {
-    await fetch(ENRICH_URL, {
+    const response = await fetch(ENRICH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
       body: JSON.stringify({ tabla: 'vehiculos', datos: { placa } })
     });
+    if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || 'La consulta RUNT falló');
     await loadRuntVehiculos();
     showToast('Consulta RUNT completada', 'success');
     renderCurrentTab();

@@ -7,6 +7,21 @@
   };
   const bad = message => ({ ok: false, message: message });
 
+  async function normalizeImageFile(file) {
+    const name = String(file.name || '').toLowerCase();
+    const type = String(file.type || '').toLowerCase();
+    const isHeic = type === 'image/heic' || type === 'image/heif' || /\.(heic|heif)$/.test(name);
+    if (!isHeic) return file;
+    if (typeof window.heic2any !== 'function') {
+      throw new Error('No se pudo preparar la foto HEIC. Verifica tu conexión e inténtalo de nuevo.');
+    }
+    const converted = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+    const blob = Array.isArray(converted) ? converted[0] : converted;
+    return new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+      type: 'image/jpeg', lastModified: Date.now()
+    });
+  }
+
   function loadImage(file) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file), image = new Image();
@@ -92,5 +107,5 @@
     }
     return pdf.output('blob');
   }
-  window.DocumentValidation = { validatePair, createPdf };
+  window.DocumentValidation = { validatePair, createPdf, normalizeImageFile };
 })();

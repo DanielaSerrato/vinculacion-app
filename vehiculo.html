@@ -197,7 +197,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
         <div class="file-drop">
           <div class="icon">&#128206;</div>
           <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp">
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es obligatorio.</div>
@@ -209,7 +209,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
         <div class="file-drop">
           <div class="icon">&#128206;</div>
           <div class="text">Arrastra o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp">
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es obligatorio.</div>
@@ -221,7 +221,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
         <div class="file-drop">
           <div class="icon">&#128247;</div>
           <div class="text">Arrastra o <strong>selecciona archivos</strong> (hasta 6)</div>
-          <input type="file" accept="image/jpeg,image/png,image/webp" multiple>
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple>
         </div>
         <div class="file-preview"></div>
         <div class="file-count"></div>
@@ -278,6 +278,7 @@ footer{text-align:center;padding:1.5rem 1rem;color:var(--gray-400);font-size:.72
 <footer>Capital Cargo Colombia · NIT 900491068-0 · gerencia@capitalcargocolombia.com</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="document-validation.js"></script>
 <script>
@@ -381,7 +382,7 @@ document.querySelectorAll('.field[data-upload]').forEach(function(field){
   const countEl = field.querySelector('.file-count');
   fileStore[name] = [];
 
-  function addFiles(files){
+  async function addFiles(files){
     var list = Array.from(files);
     for(var i = 0; i < list.length; i++){
       if(fileStore[name].length >= max) break;
@@ -393,7 +394,11 @@ document.querySelectorAll('.field[data-upload]').forEach(function(field){
         alert('Para ' + name.replace('_',' ') + ' debes subir una foto JPG, PNG o WebP.');
         continue;
       }
-      fileStore[name].push(list[i]);
+      try {
+        fileStore[name].push(await DocumentValidation.normalizeImageFile(list[i]));
+      } catch (error) {
+        alert(error.message || 'No fue posible preparar la imagen.');
+      }
     }
     renderPreview();
     field.classList.remove('has-error');

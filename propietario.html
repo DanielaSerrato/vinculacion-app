@@ -193,7 +193,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cedula_frente" data-required="true">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp">
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -204,7 +204,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cedula_reverso" data-required="true">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp">
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -260,7 +260,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="foto_rostro" data-required="true">
           <div class="icon">&#128247;</div>
           <div class="text">Arrastra aquí o <strong>selecciona la foto</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp">
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
         </div>
         <div class="file-preview"></div><div class="error-msg">La foto del propietario es requerida.</div>
       </div>
@@ -357,6 +357,7 @@ footer a{color:var(--gold)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="document-validation.js"></script>
 <script>
@@ -464,7 +465,7 @@ footer a{color:var(--gold)}
     });
   });
 
-  function handleFiles(files, fieldName, previewContainer){
+  async function handleFiles(files, fieldName, previewContainer){
     for (var i = 0; i < files.length; i++){
       var file = files[i];
       if (file.size > MAX_FILE_SIZE){
@@ -475,7 +476,11 @@ footer a{color:var(--gold)}
         alert('Para ' + fieldName.replace('_',' ') + ' debes subir una imagen JPG, PNG o WebP.');
         continue;
       }
-      fileStore[fieldName] = [file]; // single file per field
+      try {
+        fileStore[fieldName] = [await DocumentValidation.normalizeImageFile(file)]; // single file per field
+      } catch (error) {
+        alert(error.message || 'No fue posible preparar la imagen.');
+      }
     }
     renderPreviews(fieldName, previewContainer);
   }
