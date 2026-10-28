@@ -265,38 +265,6 @@ footer a{color:var(--gold)}
         <div class="file-preview"></div><div class="error-msg">La foto del propietario es requerida.</div>
       </div>
 
-      <div class="field">
-        <label for="telefono_alterno">Teléfono alterno</label>
-        <input type="text" id="telefono_alterno" name="telefono_alterno" inputmode="tel" pattern="[0-9]{7,15}">
-        <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
-      </div>
-      <div class="field">
-        <label for="referencia_nombre">Referencia personal</label>
-        <input type="text" id="referencia_nombre" name="referencia_nombre">
-        <div class="hint">Opcional para el propietario.</div>
-      </div>
-      <div class="field">
-        <label for="referencia_telefono">Tel&eacute;fono de referencia</label>
-        <input type="text" id="referencia_telefono" name="referencia_telefono" inputmode="tel" pattern="[0-9]{7,15}">
-        <div class="hint">Opcional para el propietario.</div>
-        <div class="error-msg">Ingresa entre 7 y 15 d&iacute;gitos si lo diligencias.</div>
-      </div>
-      <div class="field">
-        <label for="emergencia_nombre">Contacto de emergencia</label>
-        <input type="text" id="emergencia_nombre" name="emergencia_nombre">
-        <div class="hint">Opcional para el propietario.</div>
-      </div>
-      <div class="field">
-        <label for="emergencia_parentesco">Parentesco</label>
-        <input type="text" id="emergencia_parentesco" name="emergencia_parentesco">
-        <div class="hint">Opcional para el propietario.</div>
-      </div>
-      <div class="field">
-        <label for="emergencia_telefono">Tel&eacute;fono de emergencia</label>
-        <input type="text" id="emergencia_telefono" name="emergencia_telefono" inputmode="tel" pattern="[0-9]{7,15}">
-        <div class="hint">Opcional para el propietario.</div>
-        <div class="error-msg">Ingresa entre 7 y 15 d&iacute;gitos si lo diligencias.</div>
-      </div>
 
       <div class="field">
         <label>¿Autoriza el manejo de sus datos? <span class="req">*</span></label>
@@ -525,10 +493,6 @@ footer a{color:var(--gold)}
       inp.classList.toggle('error', !ok);
       if (!ok) valid = false;
     });
-    ['telefono_alterno','referencia_telefono','emergencia_telefono'].forEach(function(id){
-      var inp = document.getElementById(id), ok = !inp.value.trim() || /^[0-9]{7,15}$/.test(inp.value.trim());
-      inp.classList.toggle('error', !ok); if(!ok) valid = false;
-    });
 
     // Radio group — factura_electronica
     var radioGroup = document.getElementById('radioFactura');
@@ -686,12 +650,12 @@ footer a{color:var(--gold)}
         rut: uploadedPaths['rut'] || null,
         cert_bancaria: uploadedPaths['cert_bancaria'] || null,
         foto_rostro: uploadedPaths['foto_rostro'] || null,
-        telefono_alterno: document.getElementById('telefono_alterno').value.trim() || null,
-        referencia_nombre: document.getElementById('referencia_nombre').value.trim(),
-        referencia_telefono: document.getElementById('referencia_telefono').value.trim(),
-        emergencia_nombre: document.getElementById('emergencia_nombre').value.trim(),
-        emergencia_parentesco: document.getElementById('emergencia_parentesco').value.trim(),
-        emergencia_telefono: document.getElementById('emergencia_telefono').value.trim(),
+        telefono_alterno: null,
+        referencia_nombre: null,
+        referencia_telefono: null,
+        emergencia_nombre: null,
+        emergencia_parentesco: null,
+        emergencia_telefono: null,
         autoriza_sensibles: (document.querySelector('input[name="autoriza_sensibles"]:checked') || {}).value === 'si'
       };
 
