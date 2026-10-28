@@ -287,25 +287,12 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="error-text" id="err_licencia_vencimiento">Campo requerido</div>
   </div>
 
-  <div class="section-title"><span class="badge">5</span> Consultas y documentos obligatorios</div>
-  <div id="documentos_obligatorios"></div>
-
   <!-- Referencias -->
-  <div class="section-title"><span class="badge">6</span> Teléfonos, referencias y emergencias</div>
+  <div class="section-title"><span class="badge">5</span> Teléfonos, referencias y emergencias</div>
   <div class="field">
     <label for="telefono_alterno">Teléfono alterno</label>
     <input type="text" id="telefono_alterno" name="telefono_alterno" inputmode="tel" pattern="[0-9]{7,15}">
     <div class="error-text" id="err_telefono_alterno">Ingresa entre 7 y 15 dígitos</div>
-  </div>
-  <div class="field">
-    <label for="ref_familiar_nombre" class="required">Nombre referencia familiar</label>
-    <input type="text" id="ref_familiar_nombre" name="ref_familiar_nombre" required>
-    <div class="error-text" id="err_ref_familiar_nombre">Campo requerido</div>
-  </div>
-  <div class="field">
-    <label for="ref_familiar_telefono" class="required">Teléfono referencia familiar</label>
-    <input type="text" id="ref_familiar_telefono" name="ref_familiar_telefono" inputmode="tel" required>
-    <div class="error-text" id="err_ref_familiar_telefono">Campo requerido</div>
   </div>
   <div class="field">
     <label for="ref_empresa_nombre" class="required">Nombre empresa de referencia</label>
@@ -318,12 +305,12 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="error-text" id="err_ref_empresa_telefono">Campo requerido</div>
   </div>
   <div class="field">
-    <label for="emergencia_nombre" class="required">Contacto de emergencia</label>
+    <label for="emergencia_nombre" class="required">Contacto de emergencia (referencia familiar)</label>
     <input type="text" id="emergencia_nombre" name="emergencia_nombre" required>
     <div class="error-text" id="err_emergencia_nombre">Campo requerido</div>
   </div>
   <div class="field">
-    <label for="emergencia_parentesco" class="required">Parentesco del contacto de emergencia</label>
+    <label for="emergencia_parentesco" class="required">Parentesco</label>
     <input type="text" id="emergencia_parentesco" name="emergencia_parentesco" required>
     <div class="error-text" id="err_emergencia_parentesco">Campo requerido</div>
   </div>
@@ -334,7 +321,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   </div>
 
   <!-- Consentimiento manejo de datos -->
-  <div class="section-title"><span class="badge">7</span> Consentimiento</div>
+  <div class="section-title"><span class="badge">6</span> Consentimiento</div>
   <div class="field">
     <label class="required">¿Autoriza el manejo de sus datos?</label>
     <div class="radio-group">
@@ -447,17 +434,8 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
   /* --- File state --- */
   const fileState = {};
-  const consultationDocuments = [
-    ['antecedentes_procuraduria','Antecedentes Procuraduría'], ['antecedentes_policia','Antecedentes Policía Nacional'],
-    ['runt','Consulta RUNT'], ['comparendos','Consulta de comparendos'], ['lista_clinton','Consulta lista Clinton'],
-    ['antecedentes_fiscales','Antecedentes fiscales (Contraloría)'], ['estudio_seguridad','Estudio de seguridad']
-  ];
-  const consultationFiles = consultationDocuments.map(item => item[0]);
-  document.getElementById('documentos_obligatorios').innerHTML = consultationDocuments.map(([id, label]) =>
-    '<div class="field"><label class="required">' + label + '</label><div class="upload-area" id="drop_' + id + '"><input type="file" id="file_' + id + '" accept="*/*" required><div class="upload-icon">&#128196;</div><div class="upload-text"><strong>Selecciona el certificado</strong></div></div><div class="preview-container" id="preview_' + id + '"></div><div class="error-text" id="err_' + id + '">Documento requerido</div></div>'
-  ).join('');
-  const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria', ...consultationFiles];
-  const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria', ...consultationFiles];
+  const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
+  const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
 
   /* --- DOM helpers --- */
   const $ = id => document.getElementById(id);
@@ -616,7 +594,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     // Text fields
     const textReq = ['primer_nombre','primer_apellido','cedula','direccion','ciudad','telefono',
                      'numero_cuenta','banco','licencia_categoria','licencia_vencimiento',
-                     'ref_familiar_nombre','ref_familiar_telefono','ref_empresa_nombre','ref_empresa_telefono',
+                     'ref_empresa_nombre','ref_empresa_telefono',
                      'emergencia_nombre','emergencia_parentesco','emergencia_telefono'];
     textReq.forEach(id => {
       const v = $(id).value.trim();
@@ -630,7 +608,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     // Telefono pattern
     const tel = $('telefono').value.trim();
     if(tel && !/^[0-9]{7,15}$/.test(tel)) fail('telefono');
-    ['telefono_alterno','ref_familiar_telefono','ref_empresa_telefono','emergencia_telefono'].forEach(id => {
+    ['telefono_alterno','ref_empresa_telefono','emergencia_telefono'].forEach(id => {
       const value = $(id).value.trim();
       if(value && !/^[0-9]{7,15}$/.test(value)) fail(id);
     });
@@ -712,7 +690,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       const uploadQueue = [];
 
       // Cédula y pase se retienen únicamente como sus PDFs de dos páginas.
-      ['cert_bancaria', ...consultationFiles].forEach(f => {
+      ['cert_bancaria'].forEach(f => {
         if(fileState[f]) uploadQueue.push({field: f, file: fileState[f]});
       });
 
@@ -767,8 +745,8 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         lista_clinton: paths.lista_clinton,
         antecedentes_fiscales: paths.antecedentes_fiscales,
         estudio_seguridad: paths.estudio_seguridad,
-        ref_familiar_nombre: $('ref_familiar_nombre').value.trim(),
-        ref_familiar_telefono: $('ref_familiar_telefono').value.trim(),
+        ref_familiar_nombre: $('emergencia_nombre').value.trim(),
+        ref_familiar_telefono: $('emergencia_telefono').value.trim(),
         ref_empresa_nombre: $('ref_empresa_nombre').value.trim(),
         ref_empresa_telefono: $('ref_empresa_telefono').value.trim(),
         emergencia_nombre: $('emergencia_nombre').value.trim(),

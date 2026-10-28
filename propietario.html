@@ -189,8 +189,8 @@ footer a{color:var(--gold)}
 
       <!-- File uploads -->
       <div class="field" data-upload="cedula_frente">
-        <label>C&eacute;dula frente <span class="req">*</span></label>
-        <div class="file-drop" data-field="cedula_frente" data-required="true">
+        <label>C&eacute;dula frente <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
+        <div class="file-drop" data-field="cedula_frente">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
           <input type="file" accept="*/*">
@@ -200,8 +200,8 @@ footer a{color:var(--gold)}
       </div>
 
       <div class="field" data-upload="cedula_reverso">
-        <label>C&eacute;dula reverso <span class="req">*</span></label>
-        <div class="file-drop" data-field="cedula_reverso" data-required="true">
+        <label>C&eacute;dula reverso <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
+        <div class="file-drop" data-field="cedula_reverso">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
           <input type="file" accept="*/*">
@@ -255,9 +255,9 @@ footer a{color:var(--gold)}
       </div>
 
       <div class="field" data-upload="foto_rostro">
-        <label>Foto del propietario <span class="req">*</span></label>
+        <label>Foto del propietario <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
         <p class="hint">Foto nítida de rostro, en JPG, PNG o WebP.</p>
-        <div class="file-drop" data-field="foto_rostro" data-required="true">
+        <div class="file-drop" data-field="foto_rostro">
           <div class="icon">&#128247;</div>
           <div class="text">Arrastra aquí o <strong>selecciona la foto</strong></div>
           <input type="file" accept="*/*">
@@ -613,8 +613,13 @@ footer a{color:var(--gold)}
       var cedula = document.getElementById('cedula').value.trim();
       var ts = Date.now();
       var uploadedPaths = {};
-      statusEl.textContent = 'Validando y creando PDF de cédula...';
-      var cedulaPdf = await buildCedulaPdf(cedula);
+      var cedulaPdf = null;
+      var cedulaPdfPath = null;
+      var hasCedulaFiles = (fileStore.cedula_frente && fileStore.cedula_frente.length) && (fileStore.cedula_reverso && fileStore.cedula_reverso.length);
+      if (hasCedulaFiles) {
+        statusEl.textContent = 'Validando y creando PDF de cédula...';
+        cedulaPdf = await buildCedulaPdf(cedula);
+      }
 
       // Collect all files to upload
       var uploadQueue = [];
@@ -630,10 +635,12 @@ footer a{color:var(--gold)}
         });
       }
 
-      statusEl.textContent = 'Subiendo PDF de cédula...';
-      var cedulaPdfPath = 'personas/' + cedula + '/identidad/cedula_' + ts + '.pdf';
-      var pdfResult = await supabase.storage.from(BUCKET).upload(cedulaPdfPath, cedulaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
-      if(pdfResult.error) throw new Error('Error subiendo PDF de cédula: ' + pdfResult.error.message);
+      if (cedulaPdf) {
+        statusEl.textContent = 'Subiendo PDF de cédula...';
+        cedulaPdfPath = 'personas/' + cedula + '/identidad/cedula_' + ts + '.pdf';
+        var pdfResult = await supabase.storage.from(BUCKET).upload(cedulaPdfPath, cedulaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
+        if(pdfResult.error) throw new Error('Error subiendo PDF de cédula: ' + pdfResult.error.message);
+      }
 
       // Upload files
       var totalUploads = uploadQueue.length;
