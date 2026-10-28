@@ -181,7 +181,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <label class="required">Cédula frente</label>
     <div class="hint">Foto nítida en JPG, PNG o WebP. Se revisará antes de crear el PDF.</div>
     <div class="upload-area" id="drop_cedula_frente">
-      <input type="file" id="file_cedula_frente" accept="image/jpeg,image/png,image/webp" required>
+      <input type="file" id="file_cedula_frente" accept="*/*" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -191,7 +191,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   <div class="field">
     <label class="required">Cédula reverso</label>
     <div class="upload-area" id="drop_cedula_reverso">
-      <input type="file" id="file_cedula_reverso" accept="image/jpeg,image/png,image/webp" required>
+      <input type="file" id="file_cedula_reverso" accept="*/*" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -202,7 +202,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <label class="required">Pase de conducción frente</label>
     <div class="hint">Foto nítida en JPG, PNG o WebP. Se revisará antes de crear el PDF.</div>
     <div class="upload-area" id="drop_pase_frente">
-      <input type="file" id="file_pase_frente" accept="image/jpeg,image/png,image/webp" required>
+      <input type="file" id="file_pase_frente" accept="*/*" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -212,7 +212,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   <div class="field">
     <label class="required">Pase de conducción reverso</label>
     <div class="upload-area" id="drop_pase_reverso">
-      <input type="file" id="file_pase_reverso" accept="image/jpeg,image/png,image/webp" required>
+      <input type="file" id="file_pase_reverso" accept="*/*" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -247,7 +247,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <label class="required">Certificación bancaria (anticipo)</label>
     <div class="hint">Cuenta del conductor destinada al pago del anticipo.</div>
     <div class="upload-area" id="drop_cert_bancaria">
-      <input type="file" id="file_cert_bancaria" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+      <input type="file" id="file_cert_bancaria" accept="*/*" required>
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -258,7 +258,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <label class="required">Foto del rostro (cuello a medio cuerpo)</label>
     <div class="hint">Foto nítida del conductor, en JPG, PNG o WebP. Se registra en Fotografías de Systram.</div>
     <div class="upload-area" id="drop_foto_rostro">
-      <input type="file" id="file_foto_rostro" accept="image/jpeg,image/png,image/webp" required>
+      <input type="file" id="file_foto_rostro" accept="*/*" required>
       <div class="upload-icon">&#128247;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -269,7 +269,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <label>Seguridad social (EPS, pensión, ARL)</label>
     <div class="hint">Dato potencialmente sensible. Su entrega es facultativa.</div>
     <div class="upload-area" id="drop_seguridad_social">
-      <input type="file" id="file_seguridad_social" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+      <input type="file" id="file_seguridad_social" accept="*/*">
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
@@ -454,7 +454,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   ];
   const consultationFiles = consultationDocuments.map(item => item[0]);
   document.getElementById('documentos_obligatorios').innerHTML = consultationDocuments.map(([id, label]) =>
-    '<div class="field"><label class="required">' + label + '</label><div class="upload-area" id="drop_' + id + '"><input type="file" id="file_' + id + '" accept="application/pdf,image/*" required><div class="upload-icon">&#128196;</div><div class="upload-text"><strong>Selecciona el certificado</strong></div></div><div class="preview-container" id="preview_' + id + '"></div><div class="error-text" id="err_' + id + '">Documento requerido</div></div>'
+    '<div class="field"><label class="required">' + label + '</label><div class="upload-area" id="drop_' + id + '"><input type="file" id="file_' + id + '" accept="*/*" required><div class="upload-icon">&#128196;</div><div class="upload-text"><strong>Selecciona el certificado</strong></div></div><div class="preview-container" id="preview_' + id + '"></div><div class="error-text" id="err_' + id + '">Documento requerido</div></div>'
   ).join('');
   const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria', ...consultationFiles];
   const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria', ...consultationFiles];
@@ -524,11 +524,6 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     const previewEl = $('preview_' + field);
 
     if(file.size > MAX_FILE_SIZE){
-      errEl.classList.add('visible');
-      return;
-    }
-    if(['cedula_frente','cedula_reverso','pase_frente','pase_reverso','foto_rostro'].includes(field) && !file.type.startsWith('image/')){
-      errEl.textContent = 'Para validar este documento, sube una foto JPG, PNG o WebP.';
       errEl.classList.add('visible');
       return;
     }

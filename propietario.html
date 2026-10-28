@@ -193,7 +193,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cedula_frente" data-required="true">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
+          <input type="file" accept="*/*">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -204,7 +204,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cedula_reverso" data-required="true">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
+          <input type="file" accept="*/*">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -215,7 +215,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="rut" data-required="true">
           <div class="icon">&#128196;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+          <input type="file" accept="*/*">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -248,7 +248,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="cert_bancaria" data-required="true">
           <div class="icon">&#127974;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
-          <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+          <input type="file" accept="*/*">
         </div>
         <div class="file-preview"></div>
         <div class="error-msg">Este documento es requerido.</div>
@@ -260,7 +260,7 @@ footer a{color:var(--gold)}
         <div class="file-drop" data-field="foto_rostro" data-required="true">
           <div class="icon">&#128247;</div>
           <div class="text">Arrastra aquí o <strong>selecciona la foto</strong></div>
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
+          <input type="file" accept="*/*">
         </div>
         <div class="file-preview"></div><div class="error-msg">La foto del propietario es requerida.</div>
       </div>
@@ -470,10 +470,6 @@ footer a{color:var(--gold)}
       var file = files[i];
       if (file.size > MAX_FILE_SIZE){
         alert('El archivo "' + file.name + '" excede 10 MB. Por favor sube un archivo mas pequeno.');
-        continue;
-      }
-      if (['cedula_frente','cedula_reverso','foto_rostro'].includes(fieldName) && !file.type.startsWith('image/')){
-        alert('Para ' + fieldName.replace('_',' ') + ' debes subir una imagen JPG, PNG o WebP.');
         continue;
       }
       try {

@@ -55,7 +55,7 @@
   }
 
   async function inspect(file) {
-    if (!file || !file.type.startsWith('image/')) return bad('Usa una foto en JPG, PNG o WebP; el documento debe poder verificarse.');
+    if (!file) return bad('Selecciona un archivo.');
     const image = await loadImage(file);
     if (Math.max(image.naturalWidth, image.naturalHeight) < 1200 || Math.min(image.naturalWidth, image.naturalHeight) < 600) {
       return bad('La foto tiene poca resolución. Tómala de cerca, con el documento completo y buena luz.');
