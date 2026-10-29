@@ -546,7 +546,14 @@ async function uploadFile(file, placa, fieldName){
 }
 
 async function buildTarjetaPdf(placa){
-  var pdf = await DocumentValidation.createPdf(fileStore.tarjeta_frente[0], fileStore.tarjeta_reverso[0], 'Tarjeta de propiedad - ' + placa);
+  var pdf;
+  try {
+    pdf = await DocumentValidation.createPdf(fileStore.tarjeta_frente[0], fileStore.tarjeta_reverso[0], 'Tarjeta de propiedad - ' + placa);
+  } catch(error) {
+    // PDF y otros formatos se conservan tal como fueron adjuntados.
+    if(error.code === 'IMAGE_UNREADABLE') return null;
+    throw error;
+  }
   if(pdf.size > 10 * 1024 * 1024) throw new Error('El PDF de la tarjeta de propiedad supera 10 MB.');
   return pdf;
 }
@@ -609,11 +616,23 @@ form.addEventListener('submit', async function(e){
   progressFill.style.width = '0%';
 
   try {
-    progressText.textContent = 'Creando PDF de tarjeta de propiedad...';
+    progressText.textContent = 'Preparando tarjeta de propiedad...';
     var tarjetaPdf = await buildTarjetaPdf(placa);
-    var tarjetaPdfPath = 'vehiculos/' + placa + '/propiedad/tarjeta_propiedad_' + Date.now() + '.pdf';
-    var pdfUpload = await sb.storage.from(BUCKET).upload(tarjetaPdfPath, tarjetaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
-    if(pdfUpload.error) throw new Error('Error subiendo PDF de tarjeta de propiedad: ' + pdfUpload.error.message);
+    var tarjetaPdfPath = null;
+    var tarjetaFrentePath = null;
+    var tarjetaReversoPath = null;
+    totalFiles += tarjetaPdf ? 1 : 2;
+    if(tarjetaPdf){
+      tarjetaPdfPath = 'vehiculos/' + placa + '/propiedad/tarjeta_propiedad_' + Date.now() + '.pdf';
+      var pdfUpload = await sb.storage.from(BUCKET).upload(tarjetaPdfPath, tarjetaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
+      if(pdfUpload.error) throw new Error('Error subiendo PDF de tarjeta de propiedad: ' + pdfUpload.error.message);
+      updateProgress();
+    } else {
+      tarjetaFrentePath = await uploadFile(fileStore.tarjeta_frente[0], placa, 'tarjeta_frente');
+      updateProgress();
+      tarjetaReversoPath = await uploadFile(fileStore.tarjeta_reverso[0], placa, 'tarjeta_reverso');
+      updateProgress();
+    }
 
     var fotosPaths = [];
     for(var i = 0; i < fileStore['fotos'].length; i++){
@@ -636,8 +655,8 @@ form.addEventListener('submit', async function(e){
       satelital_proveedor: isSat ? (proveedorSelect.value === 'Otro' ? document.getElementById('satelital_proveedor_otro').value.trim() : proveedorSelect.value) || null : null,
       satelital_usuario: isSat ? (document.getElementById('satelital_usuario').value.trim() || null) : null,
       satelital_password: isSat ? (document.getElementById('satelital_password').value.trim() || null) : null,
-      tarjeta_frente: null,
-      tarjeta_reverso: null,
+      tarjeta_frente: tarjetaFrentePath,
+      tarjeta_reverso: tarjetaReversoPath,
       tarjeta_pdf: tarjetaPdfPath,
       fotos: fotosPaths,
       tecnomecanica: tecnomecanicaPath,

@@ -26,7 +26,12 @@
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file), image = new Image();
       image.onload = () => { URL.revokeObjectURL(url); resolve(image); };
-      image.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No fue posible leer la imagen.')); };
+      image.onerror = () => {
+        URL.revokeObjectURL(url);
+        const error = new Error('No fue posible leer como imagen el archivo "' + file.name + '".');
+        error.code = 'IMAGE_UNREADABLE';
+        reject(error);
+      };
       image.src = url;
     });
   }
