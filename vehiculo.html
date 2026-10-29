@@ -665,6 +665,15 @@ form.addEventListener('submit', async function(e){
     };
 
     var { error } = await sb.from('vehiculos').upsert([row], { onConflict:'placa' });
+    if(error && error.code === 'PGRST204' && /\btarjeta_pdf\b/.test(error.message || '')){
+      // Compatibilidad con bases donde aún no se aplicó la migración de tarjeta_pdf.
+      // El panel administrativo también lee la tarjeta desde estos campos.
+      var legacyRow = Object.assign({}, row);
+      legacyRow.tarjeta_frente = row.tarjeta_pdf || row.tarjeta_frente;
+      delete legacyRow.tarjeta_pdf;
+      var retry = await sb.from('vehiculos').upsert([legacyRow], { onConflict:'placa' });
+      error = retry.error;
+    }
     if(error) throw new Error('Error guardando datos: ' + error.message);
 
     var runtResult;
