@@ -276,16 +276,6 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="preview-container" id="preview_seguridad_social"></div>
     <div class="error-text" id="err_seguridad_social">Archivo muy grande (máx 10 MB)</div>
   </div>
-  <div class="field">
-    <label for="licencia_categoria" class="required">Categoría de la licencia</label>
-    <input type="text" id="licencia_categoria" name="licencia_categoria" placeholder="Ej. C2" required>
-    <div class="error-text" id="err_licencia_categoria">Campo requerido</div>
-  </div>
-  <div class="field">
-    <label for="licencia_vencimiento" class="required">Vencimiento de la licencia</label>
-    <input type="date" id="licencia_vencimiento" name="licencia_vencimiento" required>
-    <div class="error-text" id="err_licencia_vencimiento">Campo requerido</div>
-  </div>
 
   <!-- Referencias -->
   <div class="section-title"><span class="badge">5</span> Teléfonos, referencias y emergencias</div>
@@ -593,7 +583,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
     // Text fields
     const textReq = ['primer_nombre','primer_apellido','cedula','direccion','ciudad','telefono',
-                     'numero_cuenta','banco','licencia_categoria','licencia_vencimiento',
+                     'numero_cuenta','banco',
                      'ref_empresa_nombre','ref_empresa_telefono',
                      'emergencia_nombre','emergencia_parentesco','emergencia_telefono'];
     textReq.forEach(id => {
@@ -729,8 +719,6 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         tipo_cuenta: (document.querySelector('input[name="tipo_cuenta"]:checked') || {}).value || null,
         foto_rostro: paths.foto_rostro || null,
         seguridad_social: paths.seguridad_social || null,
-        licencia_categoria: $('licencia_categoria').value.trim().toUpperCase(),
-        licencia_vencimiento: $('licencia_vencimiento').value,
         cedula_frente: null,
         cedula_reverso: null,
         pase_frente: null,
@@ -769,7 +757,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       const { data: vehiculo, error: vehiculoError } = await sb.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
       if (vehiculoError) throw new Error('Error buscando vehículo: ' + vehiculoError.message);
       if (!vehiculo) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
-      const { error: relationError } = await sb.from('persona_vehiculo').insert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor', licencia_categoria: row.licencia_categoria, licencia_vencimiento: row.licencia_vencimiento || null }]);
+      const { error: relationError } = await sb.from('persona_vehiculo').insert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor' }]);
       if (relationError) throw new Error('Error asociando conductor: ' + relationError.message);
       const docs = Object.entries({foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
       if (docs.length) { const { error: docsError } = await sb.from('documentos').insert(docs.map(([tipo,path]) => ({persona_id:persona.id, vehiculo_id:vehiculo.id, tipo, path, estado:'pendiente'}))); if (docsError) throw new Error('Error guardando documentos: ' + docsError.message); }

@@ -255,19 +255,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           </div>
         </div>
 
-        <div class="cond" id="cond_licencia">
-          <div class="field">
-            <label for="licencia_categoria">Categor&iacute;a de licencia</label>
-            <input type="text" id="licencia_categoria" name="licencia_categoria" placeholder="Se confirma autom&aacute;ticamente en RUNT">
-            <div class="hint">Si no la conoces, la confirmaremos en la consulta RUNT.</div>
-          </div>
-          <div class="field">
-            <label for="licencia_vencimiento">Fecha de vencimiento de la licencia</label>
-            <input type="date" id="licencia_vencimiento" name="licencia_vencimiento">
-            <div class="hint">Se valida contra RUNT antes de completar la vinculaci&oacute;n.</div>
-          </div>
-        </div>
-
         <div class="nav-btns">
           <button type="button" class="btn-back" id="btn2Back">&larr; Atr&aacute;s</button>
           <button type="button" class="btn-next" id="btn2Next">Siguiente &rarr;</button>
@@ -821,7 +808,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     toggleCond('cond_docs_conductor', isConductor);
     toggleCond('cond_docs_propietario', isPropietario);
     toggleCond('cond_contacto_vinculacion', role && role !== 'tenedor');
-    toggleCond('cond_licencia', isConductor);
 
     // Satelital sub-fields
     const satVal = document.querySelector('input[name="satelital"]:checked');
@@ -1371,8 +1357,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
             vehiculo_id: vehiculo.id,
             rol: r,
             estado: 'pendiente',
-            licencia_categoria: (r === 'conductor' ? $('licencia_categoria').value.trim() || null : null),
-            licencia_vencimiento: (r === 'conductor' ? $('licencia_vencimiento').value || null : null),
             systram_estado: 'pendiente',
             systram_etapa: 'preparado'
           }, { onConflict: 'persona_id,vehiculo_id,rol' })
@@ -1492,8 +1476,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
             pase_pdf: paths.pase_pdf,
             seguridad_social: paths.seguridad_social || null,
             cert_bancaria: paths.cert_bancaria_conductor || null,
-            licencia_categoria: $('licencia_categoria').value.trim() || null,
-            licencia_vencimiento: $('licencia_vencimiento').value || null,
             ref_familiar_nombre: personaData.ref_familiar_nombre || null,
             ref_familiar_telefono: personaData.ref_familiar_telefono || null,
             ref_empresa_nombre: personaData.ref_empresa_nombre || null,
