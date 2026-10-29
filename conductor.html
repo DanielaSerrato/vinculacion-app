@@ -384,6 +384,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   const BUCKET = 'vinculacion-docs';
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const $ = id => document.getElementById(id);
 
   /* --- Pre-fill placa from URL & progress tracker --- */
   const urlPlaca = new URLSearchParams(window.location.search).get('placa');
@@ -438,7 +439,6 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
 
   /* --- DOM helpers --- */
-  const $ = id => document.getElementById(id);
   const form = $('conductorForm');
   const overlay = $('overlay');
   const progressText = $('progressText');
