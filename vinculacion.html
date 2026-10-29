@@ -266,7 +266,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     <div class="step-panel" id="step3">
       <div class="form-card">
         <h2>&#127974; Datos Bancarios</h2>
-        <p class="section-desc">Informaci&oacute;n de tu cuenta para pagos y anticipos.</p>
+        <p class="section-desc" id="bankDetailsHint">Informaci&oacute;n de tu cuenta para pagos y anticipos.</p>
 
         <div class="field">
           <label for="banco">Banco <span class="req">*</span></label>
@@ -285,6 +285,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
           <label for="numero_cuenta">N&uacute;mero de cuenta <span class="req">*</span></label>
           <input type="text" id="numero_cuenta" name="numero_cuenta" inputmode="numeric">
           <div class="error-msg" id="err_numero_cuenta">Campo requerido</div>
+        </div>
+        <div class="field cond" id="cond_llave_pago">
+          <label for="llave_pago">Llave de pago (opcional)</label>
+          <input type="text" id="llave_pago" name="llave_pago" placeholder="Celular, correo o llave">
+          <div class="hint">Este dato es opcional y no reemplaza el número de cuenta.</div>
         </div>
 
         <!-- Factura electrónica: solo propietario -->
@@ -377,15 +382,15 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
             <div class="error-msg" id="err_seguridad_social">Este documento es requerido</div>
           </div>
           <div class="field">
-            <label>Certificaci&oacute;n Bancaria <span class="req">*</span></label>
-            <div class="hint">Cuenta del conductor para pago del anticipo.</div>
+            <label>Certificaci&oacute;n bancaria (opcional)</label>
+            <div class="hint">Este documento es opcional. Adjunta la certificaci&oacute;n si la tienes.</div>
             <div class="file-drop" id="drop_cert_bancaria_conductor">
               <input type="file" id="file_cert_bancaria_conductor" accept="*/*">
               <div class="icon">&#128196;</div>
               <div class="text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
             </div>
             <div class="file-preview" id="prev_cert_bancaria_conductor"></div>
-            <div class="error-msg" id="err_cert_bancaria_conductor">Este documento es requerido</div>
+            <div class="error-msg" id="err_cert_bancaria_conductor">El archivo no puede superar 10 MB.</div>
           </div>
         </div>
 
@@ -804,6 +809,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     const isConductor = role === 'conductor';
     const isPropietario = role === 'propietario';
 
+    $('bankDetailsHint').textContent = isConductor
+      ? 'El número de cuenta es obligatorio. La llave de pago y la certificación bancaria son opcionales.'
+      : 'Información de tu cuenta para pagos y anticipos.';
+    toggleCond('cond_llave_pago', isConductor);
+
     toggleCond('cond_factura', isPropietario);
     toggleCond('cond_docs_conductor', isConductor);
     toggleCond('cond_docs_propietario', isPropietario);
@@ -1059,7 +1069,6 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
         if(!requireFile('pase_frente')) ok = false;
         if(!requireFile('pase_reverso')) ok = false;
         if(!requireFile('seguridad_social')) ok = false;
-        if(!requireFile('cert_bancaria_conductor')) ok = false;
       }
       if(isProp){
         if(!requireFile('foto_rostro_propietario')) ok = false;
@@ -1160,7 +1169,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
 
   function personaFolder(cedula, field){
     const group = field === 'foto_rostro' ? 'perfil'
-      : ['seguridad_social','cert_bancaria_conductor','cert_bancaria_propietario','rut'].includes(field) ? 'vinculacion'
+      : ['seguridad_social','cert_bancaria_conductor','cert_bancaria_propietario','rut','llave_pago'].includes(field) ? 'vinculacion'
       : ['pase_frente','pase_reverso','pase_pdf'].includes(field) ? 'conductor'
       : 'identidad';
     return 'personas/' + cedula + '/' + group;
@@ -1218,7 +1227,8 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
     const vehiculoUploads = ['tarjeta_frente','tarjeta_reverso','tecnomecanica','soat'];
     const multiUploads = ['fotos_vehiculo'];
 
-    let totalFiles = 0;
+    const llavePago = (role === 'conductor' || role === 'ambos') ? $('llave_pago').value.trim() : '';
+    let totalFiles = llavePago ? 1 : 0;
     personaUploads.forEach(f => { if(fileStore[f] && fileStore[f].length) totalFiles += fileStore[f].length; });
     vehiculoUploads.forEach(f => { if(fileStore[f] && fileStore[f].length) totalFiles += fileStore[f].length; });
     multiUploads.forEach(f => { if(fileStore[f] && fileStore[f].length) totalFiles += fileStore[f].length; });
@@ -1230,6 +1240,11 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       const isConductor = role === 'conductor' || role === 'ambos';
       setOverlay('Subiendo documentos...', '0 de ' + (totalFiles + 1 + (isConductor ? 1 : 0)));
       const paths = {};
+      if(llavePago){
+        const llaveFile = new File([llavePago], 'llave_pago.txt', {type:'text/plain'});
+        paths.llave_pago = await uploadFile(personaFolder(cedula, 'llave_pago'), 'llave_pago', llaveFile);
+        uploaded++;
+      }
 
       // Upload persona docs
       for(const field of personaUploads){
@@ -1421,6 +1436,7 @@ footer{text-align:center;padding:1.5rem 1rem;font-size:.75rem;color:var(--gray-4
       // ── INSERT documentos ──
       const docRows = [];
       const personaDocMap = {
+        llave_pago: 'llave_pago',
         cedula_frente: 'cedula_frente', cedula_reverso: 'cedula_reverso',
         cedula_pdf: 'cedula_pdf',
         foto_rostro: 'foto_rostro', foto_rostro_propietario: 'foto_rostro', pase_frente: 'pase_frente', pase_reverso: 'pase_reverso',

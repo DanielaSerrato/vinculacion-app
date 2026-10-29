@@ -672,6 +672,7 @@ const DOC_LABELS = {
   cedula_pdf:'Cédula (PDF generado)', pase_pdf:'Pase (PDF generado)',
   tarjeta_pdf:'Tarjeta de propiedad (PDF)',
   cert_bancaria:'Cert. Bancaria', rut:'RUT',
+  llave_pago:'Llave de pago (opcional)',
   antecedentes_procuraduria:'Antecedentes Procuraduría',
   antecedentes_policia:'Antecedentes Policía Nacional',
   runt:'Consulta RUNT', comparendos:'Consulta de Comparendos',
@@ -685,7 +686,7 @@ const DOC_LABELS = {
 const DOC_GROUPS_CONDUCTOR = {
   'Identidad': ['cedula_pdf'],
   'Licencia': ['pase_pdf'],
-  'Vinculación': ['foto_rostro','seguridad_social','cert_bancaria'],
+  'Vinculación': ['foto_rostro','seguridad_social','cert_bancaria','llave_pago'],
   'Validaciones de seguridad': ['antecedentes_procuraduria','antecedentes_policia','runt','comparendos','lista_clinton','antecedentes_fiscales','estudio_seguridad']
 };
 const DOC_GROUPS_PROPIETARIO = {
@@ -1520,6 +1521,7 @@ function renderPanelDocs(body, table, r) {
   Object.keys(groups).forEach(groupName => {
     html += '<div class="doc-group"><div class="doc-group-label">'+groupName+'</div><div class="docs-grid">';
     groups[groupName].forEach(field => {
+      if(field === 'llave_pago' && !r[field]) return;
       if ((table === 'conductores' || table === 'propietarios') && field === 'cedula_pdf' && !r[field] && (r.cedula_frente || r.cedula_reverso)) {
         html += docThumb(r.cedula_frente, 'Cédula - frente') + docThumb(r.cedula_reverso, 'Cédula - reverso');
       } else if (table === 'conductores' && field === 'pase_pdf' && !r[field] && (r.pase_frente || r.pase_reverso)) {
@@ -1570,6 +1572,7 @@ function recordDocuments(r, table, scope) {
   // Compatibility with the older denormalized columns.
   const fields = table === 'vehiculos' ? DOC_FIELDS.vehiculos : DOC_FIELDS[table] || [];
   fields.forEach(field => add(r[field], field, DOC_LABELS[field] || field));
+  if(table === 'conductores') add(r.llave_pago, 'llave_pago', DOC_LABELS.llave_pago);
   if (table === 'vehiculos' && Array.isArray(r.fotos)) r.fotos.forEach((path, i) => add(path, 'foto_vehiculo_'+(i+1), 'Foto del vehículo '+(i+1)));
   if (table !== 'vehiculos') {
     if (!r.cedula_pdf) { add(r.cedula_frente, 'cedula_frente', 'Cédula - frente'); add(r.cedula_reverso, 'cedula_reverso', 'Cédula - reverso'); }

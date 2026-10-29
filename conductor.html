@@ -219,10 +219,16 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="preview-container" id="preview_pase_reverso"></div>
     <div class="error-text" id="err_pase_reverso">Este documento es requerido</div>
   </div>
+  <p class="hint">El número de cuenta es obligatorio. La llave de pago y la certificación bancaria son opcionales.</p>
   <div class="field">
     <label for="numero_cuenta" class="required">Número de cuenta</label>
     <input type="text" id="numero_cuenta" name="numero_cuenta" inputmode="numeric" required>
-    <div class="error-text" id="err_numero_cuenta">Campo requerido</div>
+    <div class="error-text" id="err_numero_cuenta">El número de cuenta es obligatorio.</div>
+  </div>
+  <div class="field">
+    <label for="llave_pago">Llave de pago (opcional)</label>
+    <input type="text" id="llave_pago" name="llave_pago" placeholder="Celular, correo o llave">
+    <div class="hint">Este dato es opcional y no reemplaza el número de cuenta.</div>
   </div>
   <div class="field">
     <label for="banco" class="required">Banco</label>
@@ -244,15 +250,15 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="error-text" id="err_tipo_cuenta">Debes seleccionar un tipo de cuenta</div>
   </div>
   <div class="field">
-    <label class="required">Certificación bancaria (anticipo)</label>
-    <div class="hint">Cuenta del conductor destinada al pago del anticipo.</div>
+    <label>Certificación bancaria para el anticipo (opcional)</label>
+    <div class="hint">Este documento es opcional. Adjunta la certificación si la tienes.</div>
     <div class="upload-area" id="drop_cert_bancaria">
-      <input type="file" id="file_cert_bancaria" accept="*/*" required>
+      <input type="file" id="file_cert_bancaria" accept="*/*">
       <div class="upload-icon">&#128196;</div>
       <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
     </div>
     <div class="preview-container" id="preview_cert_bancaria"></div>
-    <div class="error-text" id="err_cert_bancaria">Este documento es requerido</div>
+    <div class="error-text" id="err_cert_bancaria">El archivo no puede superar 10 MB.</div>
   </div>
   <div class="field">
     <label class="required">Foto del rostro (cuello a medio cuerpo)</label>
@@ -426,7 +432,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   /* --- File state --- */
   const fileState = {};
   const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
-  const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
+  const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso'];
 
   /* --- DOM helpers --- */
   const form = $('conductorForm');
@@ -625,7 +631,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     const ts = Date.now();
     const ext = file.name.split('.').pop();
     const group = fieldName === 'foto_rostro' ? 'perfil'
-      : ['seguridad_social','cert_bancaria'].includes(fieldName) ? 'vinculacion'
+      : ['seguridad_social','cert_bancaria','llave_pago'].includes(fieldName) ? 'vinculacion'
       : ['pase_frente','pase_reverso','pase_pdf'].includes(fieldName) ? 'conductor'
       : 'identidad';
     const path = 'personas/' + cedula + '/' + group + '/' + fieldName + '_' + ts + '.' + ext;
@@ -688,6 +694,11 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       ['foto_rostro','seguridad_social'].forEach(f => {
         if(fileState[f]) uploadQueue.push({field: f, file: fileState[f]});
       });
+      const llavePago = $('llave_pago').value.trim();
+      if(llavePago){
+        // Se conserva como soporte en documentos, sin depender de columnas nuevas.
+        uploadQueue.push({field: 'llave_pago', file: new File([llavePago], 'llave_pago.txt', {type:'text/plain'})});
+      }
 
       let uploaded = 0;
       for(const item of uploadQueue){
@@ -759,7 +770,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       if (!vehiculo) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
       const { error: relationError } = await sb.from('persona_vehiculo').insert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor' }]);
       if (relationError) throw new Error('Error asociando conductor: ' + relationError.message);
-      const docs = Object.entries({foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
+      const docs = Object.entries({llave_pago:paths.llave_pago, foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
       if (docs.length) { const { error: docsError } = await sb.from('documentos').insert(docs.map(([tipo,path]) => ({persona_id:persona.id, vehiculo_id:vehiculo.id, tipo, path, estado:'pendiente'}))); if (docsError) throw new Error('Error guardando documentos: ' + docsError.message); }
 
       overlay.classList.remove('visible');
