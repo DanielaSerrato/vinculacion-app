@@ -768,10 +768,10 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       const { data: vehiculo, error: vehiculoError } = await sb.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
       if (vehiculoError) throw new Error('Error buscando vehículo: ' + vehiculoError.message);
       if (!vehiculo) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
-      const { error: relationError } = await sb.from('persona_vehiculo').insert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor' }]);
+      const { error: relationError } = await sb.from('persona_vehiculo').upsert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor' }], { onConflict:'persona_id,vehiculo_id,rol' });
       if (relationError) throw new Error('Error asociando conductor: ' + relationError.message);
       const docs = Object.entries({llave_pago:paths.llave_pago, foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
-      if (docs.length) { const { error: docsError } = await sb.from('documentos').insert(docs.map(([tipo,path]) => ({persona_id:persona.id, vehiculo_id:vehiculo.id, tipo, path, estado:'pendiente'}))); if (docsError) throw new Error('Error guardando documentos: ' + docsError.message); }
+      if (docs.length) { const { error: docsError } = await sb.from('documentos').insert(docs.map(([tipo,path]) => ({persona_id:persona.id, vehiculo_id:vehiculo.id, tipo, path, estado:'recibido'}))); if (docsError) throw new Error('Error guardando documentos: ' + docsError.message); }
 
       overlay.classList.remove('visible');
       form.classList.add('hidden');

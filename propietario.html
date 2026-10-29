@@ -664,10 +664,10 @@ footer a{color:var(--gold)}
       var vehicleResult = await supabase.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
       if (vehicleResult.error) throw new Error('Error buscando vehículo: ' + vehicleResult.error.message);
       if (!vehicleResult.data) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
-      var relationResult = await supabase.from('persona_vehiculo').insert([{ persona_id: personResult.data.id, vehiculo_id: vehicleResult.data.id, rol: 'propietario' }]);
+      var relationResult = await supabase.from('persona_vehiculo').upsert([{ persona_id: personResult.data.id, vehiculo_id: vehicleResult.data.id, rol: 'propietario' }], { onConflict:'persona_id,vehiculo_id,rol' });
       if (relationResult.error) throw new Error('Error asociando propietario: ' + relationResult.error.message);
       var docs = Object.entries({cedula_pdf:row.cedula_pdf, rut:row.rut, cert_bancaria:row.cert_bancaria, foto_rostro:row.foto_rostro}).filter(function(x){return x[1];});
-      if (docs.length) { var docsResult = await supabase.from('documentos').insert(docs.map(function(x){return {persona_id:personResult.data.id, vehiculo_id:vehicleResult.data.id, tipo:x[0], path:x[1], estado:'pendiente'};})); if (docsResult.error) throw new Error('Error guardando documentos: ' + docsResult.error.message); }
+      if (docs.length) { var docsResult = await supabase.from('documentos').insert(docs.map(function(x){return {persona_id:personResult.data.id, vehiculo_id:vehicleResult.data.id, tipo:x[0], path:x[1], estado:'recibido'};})); if (docsResult.error) throw new Error('Error guardando documentos: ' + docsResult.error.message); }
 
       // Success
       overlay.classList.remove('visible');
