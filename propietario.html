@@ -189,7 +189,7 @@ footer a{color:var(--gold)}
 
       <!-- File uploads -->
       <div class="field" data-upload="cedula_frente">
-        <label>C&eacute;dula frente <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
+        <label id="labelCedulaFrente">C&eacute;dula frente <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
         <div class="file-drop" data-field="cedula_frente">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
@@ -200,7 +200,7 @@ footer a{color:var(--gold)}
       </div>
 
       <div class="field" data-upload="cedula_reverso">
-        <label>C&eacute;dula reverso <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
+        <label id="labelCedulaReverso">C&eacute;dula reverso <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
         <div class="file-drop" data-field="cedula_reverso">
           <div class="icon">&#128179;</div>
           <div class="text">Arrastra aqu&iacute; o <strong>selecciona archivo</strong></div>
@@ -254,8 +254,9 @@ footer a{color:var(--gold)}
         <div class="error-msg">Este documento es requerido.</div>
       </div>
 
-      <div class="field" data-upload="foto_rostro">
-        <label>Foto del propietario <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
+      <div id="ownerPhotoHome">
+      <div class="field" data-upload="foto_rostro" id="ownerPhotoField">
+        <label id="labelFotoRostro">Foto del propietario <span style="color:var(--gray-500);font-size:.82em">(opcional)</span></label>
         <p class="hint">Foto nítida de rostro, en JPG, PNG o WebP.</p>
         <div class="file-drop" data-field="foto_rostro">
           <div class="icon">&#128247;</div>
@@ -264,15 +265,93 @@ footer a{color:var(--gold)}
         </div>
         <div class="file-preview"></div><div class="error-msg">La foto del propietario es requerida.</div>
       </div>
+      </div>
 
+      <section id="driverSection" aria-labelledby="driverSectionTitle">
+        <h2 id="driverSectionTitle">Conductor del vehículo</h2>
+        <div class="field">
+          <label>¿Usted también conduce este vehículo? <span class="req">*</span></label>
+          <div class="radio-group" id="radioConductor">
+            <label><input type="radio" name="es_conductor" value="si" required> Sí, también soy conductor</label>
+            <label><input type="radio" name="es_conductor" value="no" required> No, conduce otra persona</label>
+          </div>
+          <div class="error-msg" id="err_es_conductor">Indica si también conduces el vehículo.</div>
+        </div>
+        <div id="driverExtras" hidden>
+          <p class="section-desc">Usaremos tus datos personales, cédula, cuenta y certificación bancaria para ambos roles. Completa únicamente los extras del conductor. Las dos caras de la cédula y la foto serán obligatorias.</p>
+          <div class="field" data-upload="pase_frente">
+            <label>Pase de conducción frente <span class="req">*</span></label>
+            <div class="file-drop" data-field="pase_frente">
+              <div class="icon">&#128196;</div>
+              <div class="text">Arrastra aquí o <strong>selecciona archivo</strong></div>
+              <input type="file" accept="*/*" disabled>
+            </div>
+            <div class="file-preview"></div><div class="error-msg">El frente del pase es obligatorio para el conductor.</div>
+          </div>
+          <div class="field" data-upload="pase_reverso">
+            <label>Pase de conducción reverso <span class="req">*</span></label>
+            <div class="file-drop" data-field="pase_reverso">
+              <div class="icon">&#128196;</div>
+              <div class="text">Arrastra aquí o <strong>selecciona archivo</strong></div>
+              <input type="file" accept="*/*" disabled>
+            </div>
+            <div class="file-preview"></div><div class="error-msg">El reverso del pase es obligatorio para el conductor.</div>
+          </div>
+          <div id="driverPhotoSlot"></div>
+          <div class="field">
+            <label for="telefono_alterno">Teléfono alterno (opcional)</label>
+            <input type="text" id="telefono_alterno" inputmode="tel" pattern="[0-9]{7,15}" disabled>
+            <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
+          </div>
+          <div class="field">
+            <label for="ref_empresa_nombre">Nombre empresa de referencia <span class="req">*</span></label>
+            <input type="text" id="ref_empresa_nombre" data-driver-required disabled>
+            <div class="error-msg">Campo requerido.</div>
+          </div>
+          <div class="field">
+            <label for="ref_empresa_telefono">Teléfono empresa de referencia <span class="req">*</span></label>
+            <input type="text" id="ref_empresa_telefono" inputmode="tel" pattern="[0-9]{7,15}" data-driver-required disabled>
+            <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
+          </div>
+          <div class="field">
+            <label for="emergencia_nombre">Contacto de emergencia <span class="req">*</span></label>
+            <input type="text" id="emergencia_nombre" data-driver-required disabled>
+            <div class="error-msg">Campo requerido.</div>
+          </div>
+          <div class="field">
+            <label for="emergencia_parentesco">Parentesco <span class="req">*</span></label>
+            <input type="text" id="emergencia_parentesco" data-driver-required disabled>
+            <div class="error-msg">Campo requerido.</div>
+          </div>
+          <div class="field">
+            <label for="emergencia_telefono">Teléfono de emergencia <span class="req">*</span></label>
+            <input type="text" id="emergencia_telefono" inputmode="tel" pattern="[0-9]{7,15}" data-driver-required disabled>
+            <div class="error-msg">Ingresa entre 7 y 15 dígitos.</div>
+          </div>
+          <div class="field">
+            <label for="llave_pago">Llave de pago (opcional)</label>
+            <input type="text" id="llave_pago" placeholder="Celular, correo o llave" disabled>
+            <div class="hint">Este dato es opcional y no reemplaza el número de cuenta.</div>
+          </div>
+          <div class="field" data-upload="seguridad_social">
+            <label>Seguridad social (opcional)</label>
+            <div class="file-drop" data-field="seguridad_social">
+              <div class="icon">&#128196;</div>
+              <div class="text">Arrastra aquí o <strong>selecciona archivo</strong></div>
+              <input type="file" accept="*/*" disabled>
+            </div>
+            <div class="file-preview"></div><div class="error-msg">El archivo no puede superar 10 MB.</div>
+          </div>
+        </div>
+      </section>
 
       <div class="field">
-        <label>¿Autoriza el manejo de sus datos? <span class="req">*</span></label>
+        <label id="labelConsent">¿Autoriza el manejo de sus datos? <span class="req">*</span></label>
         <div class="radio-group" id="radioSensibles">
           <label><input type="radio" name="autoriza_sensibles" value="si" required> Sí, autorizo</label>
           <label><input type="radio" name="autoriza_sensibles" value="no" required> No autorizo</label>
         </div>
-        <div class="error-msg">Debes seleccionar una opci&oacute;n.</div>
+        <div class="error-msg" id="errConsent">Debes seleccionar una opci&oacute;n.</div>
       </div>
 
       <!-- Privacy notice -->
@@ -290,7 +369,7 @@ footer a{color:var(--gold)}
 
       <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
         <span class="spinner" id="btnSpinner"></span>
-        Enviar datos del propietario
+        <span id="btnSubmitText">Enviar datos del propietario</span>
       </button>
 
       <a href="index.html" style="display:flex;align-items:center;justify-content:center;gap:.35rem;color:var(--gray-600);font-size:.9rem;text-decoration:none;margin-top:1rem;font-weight:600">&larr; Volver</a>
@@ -301,8 +380,8 @@ footer a{color:var(--gold)}
   <div id="successScreen" class="form-card" style="display:none">
     <div class="success-screen">
       <div class="checkmark">&#10003;</div>
-      <h2>&iexcl;Datos del propietario enviados!</h2>
-      <p>El propietario qued&oacute; asociado a la placa indicada. La vinculaci&oacute;n se completa cuando tambi&eacute;n est&eacute;n registrados el conductor y el veh&iacute;culo.</p>
+      <h2 id="successTitle">&iexcl;Datos del propietario enviados!</h2>
+      <p id="successMessage">El propietario qued&oacute; asociado a la placa indicada. La vinculaci&oacute;n se completa cuando tambi&eacute;n est&eacute;n registrados el conductor y el veh&iacute;culo.</p>
       <div class="nav-buttons" id="navButtons"></div>
     </div>
   </div>
@@ -386,6 +465,40 @@ footer a{color:var(--gold)}
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
   const fileStore = {}; // fieldName -> File[]
+
+  function isAlsoDriver(){
+    return (document.querySelector('input[name="es_conductor"]:checked') || {}).value === 'si';
+  }
+
+  function updateDriverSection(){
+    const driver = isAlsoDriver();
+    const extras = document.getElementById('driverExtras');
+    extras.hidden = !driver;
+    document.getElementById(driver ? 'driverPhotoSlot' : 'ownerPhotoHome').appendChild(document.getElementById('ownerPhotoField'));
+    extras.querySelectorAll('input').forEach(input => { input.disabled = !driver; });
+    extras.querySelectorAll('input[data-driver-required]').forEach(input => { input.required = driver; });
+    document.querySelector('[data-field="foto_rostro"] input').disabled = false;
+    ['cedula_frente','cedula_reverso','foto_rostro','pase_frente','pase_reverso'].forEach(field => {
+      const drop = document.querySelector('.file-drop[data-field="' + field + '"]');
+      drop.dataset.required = String(driver);
+      drop.querySelector('input').required = driver;
+      drop.style.borderColor = '';
+      drop.parentElement.querySelector('.error-msg').style.display = '';
+    });
+    [['labelCedulaFrente','Cédula frente'],['labelCedulaReverso','Cédula reverso'],['labelFotoRostro','Foto del propietario']].forEach(([id, label]) => {
+      document.getElementById(id).innerHTML = label + (driver ? ' <span class="req">*</span>' : ' <span style="color:var(--gray-500);font-size:.82em">(opcional)</span>');
+    });
+    document.getElementById('labelConsent').innerHTML = (driver
+      ? '¿Autoriza el manejo de sus datos como propietario y conductor?'
+      : '¿Autoriza el manejo de sus datos?') + ' <span class="req">*</span>';
+    document.getElementById('btnSubmitText').textContent = driver ? 'Enviar datos del propietario y conductor' : 'Enviar datos del propietario';
+    document.getElementById('err_es_conductor').style.display = '';
+    document.getElementById('errConsent').style.display = '';
+    extras.querySelectorAll('.error-msg').forEach(el => { el.style.display = ''; });
+    extras.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+  }
+  document.querySelectorAll('input[name="es_conductor"]').forEach(input => input.addEventListener('change', updateDriverSection));
+  updateDriverSection();
 
   /* ── Privacy toggle ── */
   window.togglePrivacy = function(){
@@ -486,6 +599,10 @@ footer a{color:var(--gold)}
   function validate(){
     var valid = true;
     var form = document.getElementById('formCard');
+    var alsoDriver = isAlsoDriver();
+    var driverChoice = document.querySelector('input[name="es_conductor"]:checked');
+    document.getElementById('err_es_conductor').style.display = driverChoice ? '' : 'block';
+    if(!driverChoice) valid = false;
 
     // Text inputs
     form.querySelectorAll('input[type="text"][required]').forEach(function(inp){
@@ -520,11 +637,19 @@ footer a{color:var(--gold)}
     var radioSensibles = document.getElementById('radioSensibles');
     var checkedSensibles = document.querySelector('input[name="autoriza_sensibles"]:checked');
     var errSensibles = radioSensibles.parentElement.querySelector('.error-msg');
-    if (!checkedSensibles){
+    if (!checkedSensibles || (alsoDriver && checkedSensibles.value !== 'si')){
+      errSensibles.textContent = alsoDriver ? 'Para registrarte también como conductor, debes autorizar el manejo de tus datos.' : 'Debes seleccionar una opción.';
       errSensibles.style.display = 'block';
       valid = false;
     } else {
       errSensibles.style.display = '';
+    }
+
+    if(alsoDriver){
+      var alternatePhone = document.getElementById('telefono_alterno');
+      var phoneValid = !alternatePhone.value.trim() || /^[0-9]{7,15}$/.test(alternatePhone.value.trim());
+      alternatePhone.classList.toggle('error', !phoneValid);
+      if(!phoneValid) valid = false;
     }
 
     // Required file uploads
@@ -564,6 +689,7 @@ footer a{color:var(--gold)}
     if (!validate()) return;
 
     submitting = true;
+    var alsoDriver = isAlsoDriver();
     var overlay = document.getElementById('overlay');
     var statusEl = document.getElementById('overlayStatus');
     var btnSubmit = document.getElementById('btnSubmit');
@@ -579,16 +705,24 @@ footer a{color:var(--gold)}
       var uploadedPaths = {};
       var cedulaPdf = null;
       var cedulaPdfPath = null;
+      var pasePdfPath = null;
       var hasCedulaFiles = (fileStore.cedula_frente && fileStore.cedula_frente.length) && (fileStore.cedula_reverso && fileStore.cedula_reverso.length);
       if (hasCedulaFiles) {
         statusEl.textContent = 'Validando y creando PDF de cédula...';
         cedulaPdf = await buildCedulaPdf(cedula);
       }
+      var pasePdf = null;
+      if(alsoDriver){
+        statusEl.textContent = 'Creando PDF del pase de conducción...';
+        pasePdf = await DocumentValidation.createPdf(fileStore.pase_frente[0], fileStore.pase_reverso[0], 'Licencia de conducción - ' + cedula);
+        if(pasePdf.size > MAX_FILE_SIZE) throw new Error('El PDF del pase supera 10 MB.');
+      }
 
       // Collect all files to upload
       var uploadQueue = [];
       for (var fieldName in fileStore){
-        if(fieldName === 'cedula_frente' || fieldName === 'cedula_reverso') continue;
+        if(['cedula_frente','cedula_reverso','pase_frente','pase_reverso'].includes(fieldName)) continue;
+        if(!alsoDriver && fieldName === 'seguridad_social') continue;
         var files = fileStore[fieldName];
         if (!files || files.length === 0) continue;
         files.forEach(function(file){
@@ -598,12 +732,20 @@ footer a{color:var(--gold)}
           uploadQueue.push({fieldName: fieldName, file: file, path: path});
         });
       }
+      if(alsoDriver && document.getElementById('llave_pago').value.trim()){
+        uploadQueue.push({fieldName:'llave_pago', file:new File([document.getElementById('llave_pago').value.trim()], 'llave_pago.txt', {type:'text/plain'}), path:'personas/' + cedula + '/vinculacion/llave_pago_' + ts + '.txt'});
+      }
 
       if (cedulaPdf) {
         statusEl.textContent = 'Subiendo PDF de cédula...';
         cedulaPdfPath = 'personas/' + cedula + '/identidad/cedula_' + ts + '.pdf';
         var pdfResult = await supabase.storage.from(BUCKET).upload(cedulaPdfPath, cedulaPdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
         if(pdfResult.error) throw new Error('Error subiendo PDF de cédula: ' + pdfResult.error.message);
+      }
+      if(pasePdf){
+        pasePdfPath = 'personas/' + cedula + '/conductor/pase_' + ts + '.pdf';
+        var paseResult = await supabase.storage.from(BUCKET).upload(pasePdfPath, pasePdf, {cacheControl:'3600', upsert:false, contentType:'application/pdf'});
+        if(paseResult.error) throw new Error('Error subiendo PDF del pase: ' + paseResult.error.message);
       }
 
       // Upload files
@@ -659,26 +801,48 @@ footer a{color:var(--gold)}
         autoriza_sensibles: (document.querySelector('input[name="autoriza_sensibles"]:checked') || {}).value === 'si'
       };
 
-      var personResult = await supabase.from('personas').upsert([{cedula:row.cedula, primer_nombre:row.primer_nombre, segundo_nombre:row.segundo_nombre, primer_apellido:row.primer_apellido, segundo_apellido:row.segundo_apellido, direccion:row.direccion, ciudad:row.ciudad, telefono:row.telefono, telefono_alterno:row.telefono_alterno, banco:row.banco, tipo_cuenta:row.tipo_cuenta, numero_cuenta:row.numero_cuenta, factura_electronica:row.factura_electronica, autoriza_sensibles:row.autoriza_sensibles, emergencia_nombre:row.emergencia_nombre, emergencia_parentesco:row.emergencia_parentesco, emergencia_telefono:row.emergencia_telefono}], { onConflict: 'cedula' }).select('id').single();
+      var personaData = {cedula:row.cedula, primer_nombre:row.primer_nombre, segundo_nombre:row.segundo_nombre, primer_apellido:row.primer_apellido, segundo_apellido:row.segundo_apellido, direccion:row.direccion, ciudad:row.ciudad, telefono:row.telefono, banco:row.banco, tipo_cuenta:row.tipo_cuenta, numero_cuenta:row.numero_cuenta, factura_electronica:row.factura_electronica, autoriza_sensibles:row.autoriza_sensibles};
+      if(alsoDriver){
+        ['telefono_alterno','ref_empresa_nombre','ref_empresa_telefono','emergencia_nombre','emergencia_parentesco','emergencia_telefono'].forEach(field => { personaData[field] = document.getElementById(field).value.trim() || null; });
+        personaData.ref_familiar_nombre = personaData.emergencia_nombre;
+        personaData.ref_familiar_telefono = personaData.emergencia_telefono;
+        personaData.autoriza_datos = true;
+      }
+      var personResult = await supabase.from('personas').upsert([personaData], { onConflict: 'cedula' }).select('id').single();
       if (personResult.error) throw new Error('Error guardando persona: ' + personResult.error.message);
       var vehicleResult = await supabase.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
       if (vehicleResult.error) throw new Error('Error buscando vehículo: ' + vehicleResult.error.message);
       if (!vehicleResult.data) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
-      var relationResult = await supabase.from('persona_vehiculo').upsert([{ persona_id: personResult.data.id, vehiculo_id: vehicleResult.data.id, rol: 'propietario' }], { onConflict:'persona_id,vehiculo_id,rol' });
-      if (relationResult.error) throw new Error('Error asociando propietario: ' + relationResult.error.message);
-      var docs = Object.entries({cedula_pdf:row.cedula_pdf, rut:row.rut, cert_bancaria:row.cert_bancaria, foto_rostro:row.foto_rostro}).filter(function(x){return x[1];});
+      var docs = Object.entries({cedula_pdf:row.cedula_pdf, rut:row.rut, cert_bancaria:row.cert_bancaria, foto_rostro:row.foto_rostro, pase_pdf:pasePdfPath, seguridad_social:uploadedPaths.seguridad_social, llave_pago:uploadedPaths.llave_pago}).filter(function(x){return x[1];});
       if (docs.length) { var docsResult = await supabase.from('documentos').insert(docs.map(function(x){return {persona_id:personResult.data.id, vehiculo_id:vehicleResult.data.id, tipo:x[0], path:x[1], estado:'recibido'};})); if (docsResult.error) throw new Error('Error guardando documentos: ' + docsResult.error.message); }
+      var roles = alsoDriver ? ['propietario','conductor'] : ['propietario'];
+      var relationResult = await supabase.from('persona_vehiculo').upsert(roles.map(function(rol){ return {persona_id:personResult.data.id, vehiculo_id:vehicleResult.data.id, rol:rol}; }), { onConflict:'persona_id,vehiculo_id,rol' });
+      if (relationResult.error) throw new Error('Error asociando los roles al vehículo: ' + relationResult.error.message);
 
       // Success
       overlay.classList.remove('visible');
       document.getElementById('propForm').style.display = 'none';
       document.getElementById('privacyBox').style.display = 'none';
       document.getElementById('successScreen').style.display = 'block';
+      document.getElementById('successTitle').textContent = alsoDriver ? '¡Propietario y conductor registrados!' : '¡Datos del propietario enviados!';
+      document.getElementById('successMessage').textContent = alsoDriver
+        ? 'Tus datos quedaron registrados como propietario y conductor de esta placa. No necesitas completar otro formulario de conductor.'
+        : 'El propietario quedó asociado a la placa indicada. El conductor puede completar su formulario por separado.';
+      document.getElementById('progressTracker').style.display = 'flex';
+      roles.forEach(function(rol){
+        var suffix = rol === 'conductor' ? 'Conductor' : 'Propietario';
+        document.getElementById('dot' + suffix).classList.remove('current');
+        document.getElementById('dot' + suffix).classList.add('done');
+        document.getElementById('dot' + suffix).innerHTML = '&#10003;';
+        document.getElementById('lbl' + suffix).classList.remove('current-label');
+        document.getElementById('lbl' + suffix).classList.add('done-label');
+      });
+      if(alsoDriver) document.getElementById('line1').classList.add('done');
       // Build nav buttons
       var submittedPlaca = document.getElementById('vehiculo_placa').value.trim().toUpperCase();
       var navBtns = document.getElementById('navButtons');
       navBtns.innerHTML =
-        '<a class="btn-outline" href="conductor.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Conductor</a>' +
+        (alsoDriver ? '' : '<a class="btn-outline" href="conductor.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Conductor</a>') +
         '<a class="btn-outline" href="vehiculo.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Veh\u00EDculo</a>' +
         '<a class="btn-outline" href="index.html">Ir al inicio</a>';
       window.scrollTo({top: 0, behavior: 'smooth'});

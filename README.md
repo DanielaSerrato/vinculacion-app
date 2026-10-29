@@ -49,6 +49,25 @@ Conductor/Propietario recibe link por WhatsApp
 
 ## Supabase
 
+### Una persona como conductor y propietario
+
+Ambos formularios permiten registrar los dos roles en un solo envío:
+
+- En `conductor.html`, responder que también es propietario habilita RUT,
+  facturación electrónica y certificación bancaria obligatoria. Se reutilizan
+  los datos personales, la cuenta, la cédula y la certificación ya adjunta.
+- En `propietario.html`, responder que también conduce habilita pase, fotografía,
+  referencia empresarial y contacto de emergencia. La cédula pasa a ser
+  obligatoria para el rol de conductor. Llave de pago y seguridad social son opcionales.
+- Se guarda una sola persona por cédula y una relación por cada rol y vehículo.
+  Los documentos compartidos se suben una sola vez. Al elegir otra persona,
+  se conserva el enlace al formulario separado y los datos del otro rol existentes.
+- No se requieren columnas ni migraciones nuevas para este flujo.
+
+Pruebas de navegador: `python tests/test_conductor_propietario.py` (Python
+Playwright y Chrome instalados). El guardado y la generación de PDF se simulan;
+las conexiones HTTP(S) están bloqueadas durante las pruebas.
+
 - **Proyecto:** kidvrjpelcyjrvonpimf (sa-east-1)
 - **Storage:** bucket `vinculacion-docs` (10MB max por archivo)
 - **RLS:** anon puede insertar registros y subir archivos

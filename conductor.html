@@ -219,7 +219,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="preview-container" id="preview_pase_reverso"></div>
     <div class="error-text" id="err_pase_reverso">Este documento es requerido</div>
   </div>
-  <p class="hint">El número de cuenta es obligatorio. La llave de pago y la certificación bancaria son opcionales.</p>
+  <p class="hint" id="bankDetailsHint">El número de cuenta es obligatorio. La llave de pago y la certificación bancaria son opcionales si solo eres conductor.</p>
   <div class="field">
     <label for="numero_cuenta" class="required">Número de cuenta</label>
     <input type="text" id="numero_cuenta" name="numero_cuenta" inputmode="numeric" required>
@@ -249,9 +249,10 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     </div>
     <div class="error-text" id="err_tipo_cuenta">Debes seleccionar un tipo de cuenta</div>
   </div>
-  <div class="field">
-    <label>Certificación bancaria para el anticipo (opcional)</label>
-    <div class="hint">Este documento es opcional. Adjunta la certificación si la tienes.</div>
+  <div id="certBancariaHome">
+  <div class="field" id="certBancariaField">
+    <label id="certBancariaLabel">Certificación bancaria para el anticipo (opcional)</label>
+    <div class="hint" id="certBancariaHint">Este documento es opcional. Adjunta la certificación si la tienes.</div>
     <div class="upload-area" id="drop_cert_bancaria">
       <input type="file" id="file_cert_bancaria" accept="*/*">
       <div class="upload-icon">&#128196;</div>
@@ -259,6 +260,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     </div>
     <div class="preview-container" id="preview_cert_bancaria"></div>
     <div class="error-text" id="err_cert_bancaria">El archivo no puede superar 10 MB.</div>
+  </div>
   </div>
   <div class="field">
     <label class="required">Foto del rostro (cuello a medio cuerpo)</label>
@@ -316,8 +318,56 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     <div class="error-text" id="err_emergencia_telefono">Ingresa entre 7 y 15 dígitos</div>
   </div>
 
+  <!-- Propietario: se reutilizan los datos y soportes del conductor -->
+  <section id="ownerSection" aria-labelledby="ownerSectionTitle">
+  <div class="section-title" id="ownerSectionTitle"><span class="badge">6</span> Propietario del vehículo</div>
+  <div class="field">
+    <label class="required" id="label_es_propietario">¿Usted también es el propietario del vehículo?</label>
+    <div class="radio-group" role="radiogroup" aria-labelledby="label_es_propietario">
+      <div class="radio-option">
+        <input type="radio" id="propietario_si" name="es_propietario" value="si" required>
+        <label for="propietario_si">Sí, también soy propietario</label>
+      </div>
+      <div class="radio-option">
+        <input type="radio" id="propietario_no" name="es_propietario" value="no" required>
+        <label for="propietario_no">No, es otra persona</label>
+      </div>
+    </div>
+    <div class="error-text" id="err_es_propietario">Indica si también eres propietario del vehículo.</div>
+  </div>
+  <div id="ownerExtras" class="hidden">
+    <p class="hint">Usaremos los datos personales, la cédula y la cuenta bancaria que ya ingresaste para registrar también al propietario. Esta cuenta se usará para anticipos y saldos.</p>
+    <div class="field">
+      <label class="required">¿Factura electrónicamente?</label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" id="factura_si" name="factura_electronica" value="si" disabled>
+          <label for="factura_si">Sí</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="factura_no" name="factura_electronica" value="no" disabled>
+          <label for="factura_no">No</label>
+        </div>
+      </div>
+      <div class="error-text" id="err_factura_electronica">Indica si facturas electrónicamente.</div>
+    </div>
+    <div class="field">
+      <label class="required">RUT del propietario</label>
+      <div class="hint">Adjunta el RUT correspondiente a tu cédula. Máximo 10 MB.</div>
+      <div class="upload-area" id="drop_rut">
+        <input type="file" id="file_rut" accept="*/*" disabled>
+        <div class="upload-icon">&#128196;</div>
+        <div class="upload-text"><strong>Toca para seleccionar</strong> o arrastra un archivo</div>
+      </div>
+      <div class="preview-container" id="preview_rut"></div>
+      <div class="error-text" id="err_rut">El RUT es obligatorio cuando también eres propietario.</div>
+    </div>
+    <div id="ownerCertBancaria"></div>
+  </div>
+  </section>
+
   <!-- Consentimiento manejo de datos -->
-  <div class="section-title"><span class="badge">6</span> Consentimiento</div>
+  <div class="section-title"><span class="badge">7</span> Consentimiento</div>
   <div class="field">
     <label class="required">¿Autoriza el manejo de sus datos?</label>
     <div class="radio-group">
@@ -352,8 +402,8 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
 <div class="success-card hidden" id="successCard">
   <div class="check">&#10003;</div>
-  <h2>¡Datos del conductor enviados!</h2>
-  <p>El conductor qued&oacute; asociado a la placa indicada. La vinculaci&oacute;n se completa cuando tambi&eacute;n est&eacute;n registrados el veh&iacute;culo y el propietario.</p>
+  <h2 id="successTitle">¡Datos del conductor enviados!</h2>
+  <p id="successMessage">El conductor qued&oacute; asociado a la placa indicada. La vinculaci&oacute;n se completa cuando tambi&eacute;n est&eacute;n registrados el veh&iacute;culo y el propietario.</p>
   <div class="nav-buttons" id="navButtons"></div>
 </div>
 </main>
@@ -431,7 +481,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
 
   /* --- File state --- */
   const fileState = {};
-  const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria'];
+  const fileFields = ['foto_rostro','seguridad_social','cedula_frente','cedula_reverso','pase_frente','pase_reverso','cert_bancaria','rut'];
   const requiredFileFields = ['foto_rostro','cedula_frente','cedula_reverso','pase_frente','pase_reverso'];
 
   /* --- DOM helpers --- */
@@ -441,6 +491,45 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   const successCard = $('successCard');
   const blockedMsg = $('blockedMsg');
   const restOfForm = $('restOfForm');
+  let submitting = false;
+
+  function isAlsoOwner(){
+    return (document.querySelector('input[name="es_propietario"]:checked') || {}).value === 'si';
+  }
+
+  function updateCertificateHint(){
+    $('certBancariaHint').textContent = isAlsoOwner()
+      ? (fileState.cert_bancaria
+        ? 'Usaremos la certificación que ya adjuntaste para el conductor y el propietario. No necesitas subirla otra vez.'
+        : 'Como propietario, debes adjuntar la certificación de la cuenta indicada para anticipos y saldos.')
+      : 'Este documento es opcional. Adjunta la certificación si la tienes.';
+  }
+
+  function updateOwnerSection(){
+    const owner = isAlsoOwner();
+    const blocked = (document.querySelector('input[name="autoriza_datos"]:checked') || {}).value === 'no';
+    $('ownerExtras').classList.toggle('hidden', !owner);
+    // Se mueve el mismo control: conserva el archivo y su vista previa.
+    $(owner ? 'ownerCertBancaria' : 'certBancariaHome').appendChild($('certBancariaField'));
+    $('ownerExtras').querySelectorAll('input').forEach(input => { input.disabled = !owner || blocked; });
+    $('file_cert_bancaria').disabled = blocked;
+    $('file_cert_bancaria').required = owner;
+    $('file_rut').required = owner;
+    document.querySelectorAll('input[name="factura_electronica"]').forEach(input => { input.required = owner; });
+    $('certBancariaLabel').textContent = owner
+      ? 'Certificación bancaria para anticipos y saldos'
+      : 'Certificación bancaria para el anticipo (opcional)';
+    $('certBancariaLabel').classList.toggle('required', owner);
+    $('bankDetailsHint').textContent = owner
+      ? 'El número de cuenta y la certificación bancaria son obligatorios cuando también eres propietario. La llave de pago es opcional.'
+      : 'El número de cuenta es obligatorio. La llave de pago y la certificación bancaria son opcionales si solo eres conductor.';
+    $('btnSubmit').textContent = owner ? 'Enviar datos del conductor y propietario' : 'Enviar datos';
+    ['rut','cert_bancaria','factura_electronica','es_propietario'].forEach(field => $('err_' + field).classList.remove('visible'));
+    updateCertificateHint();
+  }
+
+  document.querySelectorAll('input[name="es_propietario"]').forEach(input => input.addEventListener('change', updateOwnerSection));
+  updateOwnerSection();
 
   /* --- Placa auto-uppercase --- */
   $('vehiculo_placa').addEventListener('input', function(){
@@ -459,6 +548,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         restOfForm.querySelectorAll('input,button[type=submit]').forEach(el => el.disabled = false);
         $('btnSubmit').disabled = false;
       }
+      updateOwnerSection();
     });
   });
 
@@ -498,11 +588,13 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     const previewEl = $('preview_' + field);
 
     if(file.size > MAX_FILE_SIZE){
+      errEl.textContent = 'El archivo no puede superar 10 MB.';
       errEl.classList.add('visible');
       return;
     }
     errEl.classList.remove('visible');
     fileState[field] = file;
+    if(field === 'cert_bancaria') updateCertificateHint();
 
     // Build preview
     const isImage = file.type.startsWith('image/');
@@ -537,6 +629,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       previewEl.innerHTML = '';
       const fileInput = $('file_' + field);
       if(fileInput) fileInput.value = '';
+      if(field === 'cert_bancaria') updateCertificateHint();
     });
     previewEl.appendChild(removeBtn);
     previewEl.classList.add('visible');
@@ -557,7 +650,10 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   function showError(fieldId, msg){
     const errEl = $('err_' + fieldId);
     const input = $(fieldId);
-    if(errEl) errEl.classList.add('visible');
+    if(errEl){
+      if(msg) errEl.textContent = msg;
+      errEl.classList.add('visible');
+    }
     if(input) input.classList.add('invalid');
   }
 
@@ -566,9 +662,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     let ok = true;
     let firstErr = null;
 
-    function fail(id){
+    function fail(id, msg){
       ok = false;
-      showError(id);
+      showError(id, msg);
       if(!firstErr) firstErr = $(id) || $('err_' + id);
     }
 
@@ -622,6 +718,14 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       if(!fileState[field]) fail(field);
     });
 
+    const ownerChoice = document.querySelector('input[name="es_propietario"]:checked');
+    if(!ownerChoice) fail('es_propietario');
+    if(isAlsoOwner()){
+      if(!document.querySelector('input[name="factura_electronica"]:checked')) fail('factura_electronica');
+      if(!fileState.rut) fail('rut', 'El RUT es obligatorio cuando también eres propietario.');
+      if(!fileState.cert_bancaria) fail('cert_bancaria', 'La certificación bancaria es obligatoria cuando también eres propietario.');
+    }
+
     if(firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
     return ok;
   }
@@ -631,7 +735,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
     const ts = Date.now();
     const ext = file.name.split('.').pop();
     const group = fieldName === 'foto_rostro' ? 'perfil'
-      : ['seguridad_social','cert_bancaria','llave_pago'].includes(fieldName) ? 'vinculacion'
+      : ['seguridad_social','cert_bancaria','llave_pago','rut'].includes(fieldName) ? 'vinculacion'
       : ['pase_frente','pase_reverso','pase_pdf'].includes(fieldName) ? 'conductor'
       : 'identidad';
     const path = 'personas/' + cedula + '/' + group + '/' + fieldName + '_' + ts + '.' + ext;
@@ -673,8 +777,12 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
   /* --- Submit --- */
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+    if(submitting) return;
     if(!validate()) return;
 
+    submitting = true;
+    $('btnSubmit').disabled = true;
+    const alsoOwner = isAlsoOwner();
     overlay.classList.add('visible');
     progressText.textContent = 'Subiendo documentos...';
 
@@ -689,6 +797,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       ['cert_bancaria'].forEach(f => {
         if(fileState[f]) uploadQueue.push({field: f, file: fileState[f]});
       });
+      if(alsoOwner) uploadQueue.push({field: 'rut', file: fileState.rut});
 
       // Optional files
       ['foto_rostro','seguridad_social'].forEach(f => {
@@ -753,7 +862,7 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         emergencia_telefono: $('emergencia_telefono').value.trim()
       };
 
-      const { data: persona, error: personaError } = await sb.from('personas').upsert([{
+      const personaData = {
         cedula: row.cedula, primer_nombre: row.primer_nombre, segundo_nombre: row.segundo_nombre,
         primer_apellido: row.primer_apellido, segundo_apellido: row.segundo_apellido,
         direccion: row.direccion, ciudad: row.ciudad, telefono: row.telefono,
@@ -763,24 +872,43 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
         ref_familiar_telefono: row.ref_familiar_telefono, ref_empresa_nombre: row.ref_empresa_nombre,
         ref_empresa_telefono: row.ref_empresa_telefono, emergencia_nombre: row.emergencia_nombre,
         emergencia_parentesco: row.emergencia_parentesco, emergencia_telefono: row.emergencia_telefono
-      }], { onConflict: 'cedula' }).select('id').single();
+      };
+      if(alsoOwner){
+        personaData.factura_electronica = document.querySelector('input[name="factura_electronica"]:checked').value === 'si';
+      }
+      const { data: persona, error: personaError } = await sb.from('personas').upsert([personaData], { onConflict: 'cedula' }).select('id').single();
       if (personaError) throw new Error('Error guardando persona: ' + personaError.message);
       const { data: vehiculo, error: vehiculoError } = await sb.from('vehiculos').select('id').eq('placa', row.vehiculo_placa).limit(1).maybeSingle();
       if (vehiculoError) throw new Error('Error buscando vehículo: ' + vehiculoError.message);
       if (!vehiculo) throw new Error('El vehículo aún no existe en el sistema. Completa primero el formulario del vehículo.');
-      const { error: relationError } = await sb.from('persona_vehiculo').upsert([{ persona_id: persona.id, vehiculo_id: vehiculo.id, rol: 'conductor' }], { onConflict:'persona_id,vehiculo_id,rol' });
-      if (relationError) throw new Error('Error asociando conductor: ' + relationError.message);
-      const docs = Object.entries({llave_pago:paths.llave_pago, foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
+      const docs = Object.entries({rut:paths.rut, llave_pago:paths.llave_pago, foto_rostro:row.foto_rostro, seguridad_social:row.seguridad_social, cedula_pdf:row.cedula_pdf, pase_pdf:row.pase_pdf, cert_bancaria:row.cert_bancaria, antecedentes_procuraduria:row.antecedentes_procuraduria, antecedentes_policia:row.antecedentes_policia, runt:row.runt, comparendos:row.comparendos, lista_clinton:row.lista_clinton, antecedentes_fiscales:row.antecedentes_fiscales, estudio_seguridad:row.estudio_seguridad}).filter(([,path]) => path);
       if (docs.length) { const { error: docsError } = await sb.from('documentos').insert(docs.map(([tipo,path]) => ({persona_id:persona.id, vehiculo_id:vehiculo.id, tipo, path, estado:'recibido'}))); if (docsError) throw new Error('Error guardando documentos: ' + docsError.message); }
+      const roles = alsoOwner ? ['conductor','propietario'] : ['conductor'];
+      const { error: relationError } = await sb.from('persona_vehiculo').upsert(roles.map(rol => ({persona_id:persona.id, vehiculo_id:vehiculo.id, rol})), { onConflict:'persona_id,vehiculo_id,rol' });
+      if (relationError) throw new Error('Error asociando los roles al vehículo: ' + relationError.message);
 
       overlay.classList.remove('visible');
       form.classList.add('hidden');
       successCard.classList.remove('hidden');
+      $('successTitle').textContent = alsoOwner ? '¡Conductor y propietario registrados!' : '¡Datos del conductor enviados!';
+      $('successMessage').textContent = alsoOwner
+        ? 'Tus datos quedaron registrados como conductor y propietario de esta placa. No necesitas completar otro formulario de propietario.'
+        : 'El conductor quedó asociado a la placa indicada. El propietario puede completar su formulario por separado.';
+      $('progressTracker').style.display = 'flex';
+      roles.forEach(rol => {
+        const suffix = rol === 'conductor' ? 'Conductor' : 'Propietario';
+        $('dot' + suffix).classList.remove('current');
+        $('dot' + suffix).classList.add('done');
+        $('dot' + suffix).innerHTML = '&#10003;';
+        $('lbl' + suffix).classList.remove('current-label');
+        $('lbl' + suffix).classList.add('done-label');
+      });
+      if(alsoOwner) $('line1').classList.add('done');
       // Build nav buttons
       var submittedPlaca = $('vehiculo_placa').value.trim().toUpperCase();
       var navBtns = $('navButtons');
       navBtns.innerHTML =
-        '<a class="btn-outline" href="propietario.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Propietario</a>' +
+        (alsoOwner ? '' : '<a class="btn-outline" href="propietario.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Propietario</a>') +
         '<a class="btn-outline" href="vehiculo.html?placa=' + encodeURIComponent(submittedPlaca) + '">Seguir con Veh&iacute;culo</a>' +
         '<a class="btn-outline" href="index.html">Ir al inicio</a>';
       successCard.scrollIntoView({behavior:'smooth',block:'center'});
@@ -789,6 +917,9 @@ footer{text-align:center;padding:1.25rem 1rem;font-size:.8rem;color:var(--gray-5
       overlay.classList.remove('visible');
       alert('Ocurrió un error: ' + err.message);
       console.error(err);
+    } finally {
+      submitting = false;
+      $('btnSubmit').disabled = false;
     }
   });
 
